@@ -154,7 +154,7 @@ timer divulgar, chuvatimer, windtimer, nighttimer, objectspawntimer, versiontime
 network n;
 network_event e;
 savedata sd("serverdata.dat", "server_data");
-const string prefskey = "fcknikckjjieifiififwsssiriirioaioieiwwkowowkwkokwokakoaokoekoakoaokfffffawewaa";
+const string prefskey = "charbhoom";
 dictionary d, d2;
 http httpn;
 //mapispawn@[] mapispawns;
@@ -290,12 +290,12 @@ void writedata(string fv = "", int fvv = -55555) {
 	file_put("admin_log.svr", adminlog, 250);
 	string bandata;
 	bandata = serialize(compjails);
-	bandata = string_encrypt(bandata, "fcknikckjjieifiififwsssiriirioaioieiwwkowowkwkokwokakoaokoekoakoaokfffffawewaa");
+	bandata = string_encrypt(bandata, "charbhoom");
 	f.open("jaildata.dat", "wb");
 	f.write(bandata);
 	f.close();
 	bandata = serialize(ipjails);
-	bandata = string_encrypt(bandata, "fcknikckjjieifiififwsssiriirioaioieiwwkowowkwkokwokakoaokoekoakoaokfffffawewaa");
+	bandata = string_encrypt(bandata, "charbhoom");
 	f.open("jaildata2.dat", "wb");
 	f.write(bandata);
 	f.close();
@@ -957,10 +957,11 @@ msgs.insert_last("contribute to our game at: https://github.com/amirmahdifard/ul
 		send_reliable(0, "notify_startrek_chime " + msgs[frase], 0);
 	}
 	while ((e = n.request()).type != event_none) {
-					if (e.type == event_disconnect) {
-						int index = get_player_index(e.peer_id);
-						authenticated_peers.delete("" + e.peer_id);
-						if (index > -1) {				n.disconnect_peer_softly(players[index].peer_id);
+		if (e.type == event_disconnect) {
+			int index = get_player_index(e.peer_id);
+			authenticated_peers.delete("" + e.peer_id);
+			if (index > -1) {
+				n.disconnect_peer_softly(players[index].peer_id);
 				log("disconnections", players[index].name + " lost connection", true, true);
 				for (uint i2 = 0; i2 < arenas.length(); i2++) {
 					if (players[index].map == arenas[i2].map) {
@@ -1352,7 +1353,10 @@ msgs.insert_last("contribute to our game at: https://github.com/amirmahdifard/ul
 						send_reliable(players[index], "pong", 0);
 				} else if (parsed[0] == "newplayer" and parsed.length() > 7) {
 					string auth_name = "";
+					string peer_addr = n.get_peer_address(e.peer_id);
+					
 					if (!authenticated_peers.get("" + e.peer_id, auth_name) || auth_name != parsed[5]) {
+						admintell("Security Alert: Peer " + e.peer_id + " (IP: " + peer_addr + ") tried to spoof username '" + parsed[5] + "'. Authenticated as '" + auth_name + "'. Disconnecting.");
 						send_reliable(e.peer_id, "block Authentication failed. Please log in properly.", 0);
 						n.disconnect_peer(e.peer_id);
 						return;
