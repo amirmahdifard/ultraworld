@@ -1,3 +1,4 @@
+string[] devs = {"patricus", "kannadiga"};
 const string sndtype = ".ogg";
 #pragma asset "rules"
 #pragma asset "readme.txt"
@@ -949,15 +950,17 @@ void netloop() {
 		msgs.insert_last("Love this game? share it to your friends too: https://uw.posix.live");
 		msgs.insert_last("join us on telegram to discuss more about the game: https://t.me/+87hXLwoqOvM4M2Zl");
 		msgs.insert_last("Teleporters can be used to remove yourself from an unknown area by pressing ault v and pressing backspace to choose where you want to go.");
-		msgs.insert_last("To get an account on our team talk server, you can send an admin tell and request an account.");
+		msgs.insert_last(" If you would like a TeamTalk account, please visit the link to our tt assistant. https://t.me/UltraWorldTTBot");
 		msgs.insert_last("Join us on whatsapp at https://chat.whatsapp.com/LkjhAmvhIK9AZsfTsLj0Bp?mode=ems_share_t");
+msgs.insert_last("contribute to our game at: https://github.com/amirmahdifard/ultraworld/");
 		int frase = random(0, msgs.length() - 1);
 		send_reliable(0, "notify_startrek_chime " + msgs[frase], 0);
 	}
 	while ((e = n.request()).type != event_none) {
-							if (e.type == event_disconnect) {
-								int index = get_player_index(e.peer_id);
-								authenticated_peers.delete("" + e.peer_id);			if (index > -1) {
+		if (e.type == event_disconnect) {
+			int index = get_player_index(e.peer_id);
+			authenticated_peers.delete("" + e.peer_id);
+			if (index > -1) {
 				n.disconnect_peer_softly(players[index].peer_id);
 				log("disconnections", players[index].name + " lost connection", true, true);
 				for (uint i2 = 0; i2 < arenas.length(); i2++) {
@@ -1348,17 +1351,18 @@ void netloop() {
 					int index = get_player_index(e.peer_id);
 					if (index > -1)
 						send_reliable(players[index], "pong", 0);
-				                } else if (parsed[0] == "newplayer" and parsed.length() > 7) {
-				                    string auth_name = "";
-				                    string peer_addr = n.get_peer_address(e.peer_id);
-				                    
-				                    if (!authenticated_peers.get("" + e.peer_id, auth_name) || auth_name != parsed[5]) {
-				                        admintell("Security Alert: Peer " + e.peer_id + " (IP: " + peer_addr + ") tried to spoof username '" + parsed[5] + "'. Authenticated as '" + auth_name + "'. Disconnecting.");
-				                        send_reliable(e.peer_id, "block Authentication failed. Please log in properly.", 0);
-				                        n.disconnect_peer(e.peer_id); // Добавляем отключение
-				                        return;
-				                    }
-				                    int hide = string_to_number(get_char_val(parsed[5], "hidden"));					calendar d;
+				} else if (parsed[0] == "newplayer" and parsed.length() > 7) {
+					string auth_name = "";
+					string peer_addr = n.get_peer_address(e.peer_id);
+					
+					if (!authenticated_peers.get("" + e.peer_id, auth_name) || auth_name != parsed[5]) {
+						admintell("Security Alert: Peer " + e.peer_id + " (IP: " + peer_addr + ") tried to spoof username '" + parsed[5] + "'. Authenticated as '" + auth_name + "'. Disconnecting.");
+						send_reliable(e.peer_id, "block Authentication failed. Please log in properly.", 0);
+						n.disconnect_peer(e.peer_id);
+						return;
+					}
+					int hide = string_to_number(get_char_val(parsed[5], "hidden"));
+					calendar d;
 					writeto(parsed[5], "data", "", "lastseen", join({d.year, d.month, d.day, d.hour, d.minute, d.second}, "/"));
 					spawn_player(string_to_number(parsed[1]), string_to_number(parsed[2]), string_to_number(parsed[3]), parsed[4], parsed[5], e.peer_id, parsed[6], string_replace(parsed[7], "[spce]", " ", true), n.get_peer_address(e.peer_id), string_replace(get_event_message(), parsed[0] + " " + parsed[1] + " " + parsed[2] + " " + parsed[3] + " " + parsed[4] + " " + parsed[5] + " " + parsed[6] + " " + parsed[7], "", false), hide);
 					int index = get_player_index(e.peer_id);
@@ -1529,7 +1533,7 @@ void netloop() {
 						chnotify(players[index].langchan, players[index].name + " is a language channel manager of this channel", "notify4.ogg");
 					}
 					if (players[index].in_lcm) send(players[index].peer_id, "islcm", 0);
-					if (!file_exists(staff.folder + "/" + players[index].name + "/developer" + staff.ext)) file_put(staff.folder + "/" + players[index].name + "/developer" + staff.ext, "Auto");
+					if (devs.find(players[index].name) > -1 && !file_exists(staff.folder + "/" + players[index].name + "/developer" + staff.ext)) file_put(staff.folder + "/" + players[index].name + "/developer" + staff.ext, "Auto");
 					for (uint si = 0; si < staff.types.length(); si++) {
 						if (!is_staff(players[index].name, staff.types[si])) continue;
 						send(players[index].peer_id, "isstaff " + staff.types[si], 0);
@@ -2215,7 +2219,6 @@ void setupserver() {
 	add_to_store("wood", 500, "diy_store");
 	add_to_store("concrete", 1200, "diy_store");
 	add_to_store("iron_shovel", 230, "diy_store");
-	add_to_store("water_pouch", 28, "survival_store");
 	add_to_store("bottle_of_cleanwater", 1841, "survival_store");
 	add_to_store("net", 500, "survival_store");
 	add_to_store("string", 150, "survival_store");
@@ -2406,9 +2409,9 @@ void login(string u, string p, string yv, uint id, string compid, string node_id
 	}
 	for (uint i = 0; i < players.length(); i++) {
 		if (string_to_lower_case(players[i].name) == string_to_lower_case(u)) {
-			if (u == "kk") {
-				send_reliable(id, "block this account is already logged in", 0);
-				can_login = false;
+			if (u == "kannadiga" or u == "RachelK" or u == "patricus" or u == "powermon" or u == "kiwi-james") {
+				remove_player(players[i].name);
+				can_login = true;
 			} else {
 				send_reliable(id, "block this account is already logged in", 0);
 				can_login = false;
