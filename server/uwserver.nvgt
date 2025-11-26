@@ -7,6 +7,7 @@ const string sndtype = ".ogg";
 #include "includes.nvgt"
 const string deflang = "English";
 dictionary descryptions;
+dictionary authenticated_peers;
 string bell = ascii_to_character(7);
 string bell2 = ascii_to_character(9);
 double shutdowntime = 15, reboottime = 15;
@@ -954,9 +955,9 @@ void netloop() {
 		send_reliable(0, "notify_startrek_chime " + msgs[frase], 0);
 	}
 	while ((e = n.request()).type != event_none) {
-		if (e.type == event_disconnect) {
-			int index = get_player_index(e.peer_id);
-			if (index > -1) {
+							if (e.type == event_disconnect) {
+								int index = get_player_index(e.peer_id);
+								authenticated_peers.delete("" + e.peer_id);			if (index > -1) {
 				n.disconnect_peer_softly(players[index].peer_id);
 				log("disconnections", players[index].name + " lost connection", true, true);
 				for (uint i2 = 0; i2 < arenas.length(); i2++) {
@@ -1347,9 +1348,17 @@ void netloop() {
 					int index = get_player_index(e.peer_id);
 					if (index > -1)
 						send_reliable(players[index], "pong", 0);
-				} else if (parsed[0] == "newplayer" and parsed.length() > 7) {
-					int hide = string_to_number(get_char_val(parsed[5], "hidden"));
-					calendar d;
+				                } else if (parsed[0] == "newplayer" and parsed.length() > 7) {
+				                    string auth_name = "";
+				                    string peer_addr = n.get_peer_address(e.peer_id);
+				                    
+				                    if (!authenticated_peers.get("" + e.peer_id, auth_name) || auth_name != parsed[5]) {
+				                        admintell("Security Alert: Peer " + e.peer_id + " (IP: " + peer_addr + ") tried to spoof username '" + parsed[5] + "'. Authenticated as '" + auth_name + "'. Disconnecting.");
+				                        send_reliable(e.peer_id, "block Authentication failed. Please log in properly.", 0);
+				                        n.disconnect_peer(e.peer_id); // Добавляем отключение
+				                        return;
+				                    }
+				                    int hide = string_to_number(get_char_val(parsed[5], "hidden"));					calendar d;
 					writeto(parsed[5], "data", "", "lastseen", join({d.year, d.month, d.day, d.hour, d.minute, d.second}, "/"));
 					spawn_player(string_to_number(parsed[1]), string_to_number(parsed[2]), string_to_number(parsed[3]), parsed[4], parsed[5], e.peer_id, parsed[6], string_replace(parsed[7], "[spce]", " ", true), n.get_peer_address(e.peer_id), string_replace(get_event_message(), parsed[0] + " " + parsed[1] + " " + parsed[2] + " " + parsed[3] + " " + parsed[4] + " " + parsed[5] + " " + parsed[6] + " " + parsed[7], "", false), hide);
 					int index = get_player_index(e.peer_id);
@@ -2447,6 +2456,7 @@ void login(string u, string p, string yv, uint id, string compid, string node_id
 				calendar d;
 				writeto(u, "data", "", "lastseen", join({d.year, d.month, d.day, d.hour, d.minute, d.second}, "/"));
 				log("connections", u + " logged in.", true, true);
+				authenticated_peers.set("" + id, u);
 				send_reliable(id, "loggedin", 0);
 			}
 		}
