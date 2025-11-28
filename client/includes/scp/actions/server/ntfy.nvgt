@@ -23,7 +23,7 @@ void pntfy() {
                 continue;
             }
 
-            send_command("/notify "+text.text);
+            send_reliable(peer_id, "/notify "+text.text, 1);
             break;
         }
     }

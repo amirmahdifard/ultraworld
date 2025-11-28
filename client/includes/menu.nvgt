@@ -2588,10 +2588,10 @@ void cdmenu() {
 	m.add_item_tts("back", "back");
 	int mres = m.run("Select an option", true);
 	if (m.get_item_name(mres) == "cdopen") {
-		string open = send_command("set cdaudio door open");
+		string open = mci_send_command("set cdaudio door open");
 		if (open == "") speak("cd drive opened");
 	} else if (m.get_item_name(mres) == "cdclose") {
-		string close = send_command("set cdaudio door closed");
+		string close = mci_send_command("set cdaudio door closed");
 
 		if (close == "") speak("cd drive closed");
 	} else

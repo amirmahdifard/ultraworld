@@ -1,11 +1,11 @@
-#include "bgt_compat.nvgt"#include "bgt_compat.nvgt"//Multimedia file player for BGT using MCI (Media Control Interface)
+#include "bgt_compat.nvgt"//Multimedia file player for BGT using MCI (Media Control Interface)
 //Based on the ultrarec class
 //By Gabriel Schuck on 26 may 2017
 library dll;
-const string mci_call = "int mciSendStringA(char*, char*, int, int);";
-const string mci_result_call = "int mciGetErrorStringA(int, char*, int);";
+const string mci_call = "int mciSendStringA(string, string, int, int);";
+const string mci_result_call = "int mciGetErrorStringA(int, string, int);";
 string filename, error_mci;
-string send_command(string command) {
+string mci_send_command(string command) {
 	//Original function of ultrarec class, for sending mci commands With few modifications
 	if (!dll.active) {
 		if (!dll.load("winmm.dll"))
@@ -35,7 +35,7 @@ string send_command(string command) {
 
 bool play() {
 	//Play a file with the MCI. Can be of any format that is supported (mp3, for example)
-	string result = send_command("play soundfile");
+	string result = mci_send_command("play soundfile");
 	if (result == "1") return true;
 	else return false;
 }
@@ -45,7 +45,7 @@ bool load(string f = "") {
 	if (f.is_empty() or !file_exists(f)) return false;
 	else {
 		filename = f;
-		string result = send_command("open " + filename + " alias soundfile");
+		string result = mci_send_command("open " + filename + " alias soundfile");
 		if (result == "1") return true;
 		else return false;
 	}
@@ -53,10 +53,10 @@ bool load(string f = "") {
 
 bool play_wait() {
 	// Play the previously loaded file, without waiting for the playback to finish
-	string result = send_command("play soundfile");
-	result = send_command("status soundfile mode");
+	string result = mci_send_command("play soundfile");
+	result = mci_send_command("status soundfile mode");
 	while (result == "playing") {
-		result = send_command("status soundfile mode");
+		result = mci_send_command("status soundfile mode");
 		wait(100);
 	}
 	if (!result.is_empty()) return true;
@@ -65,14 +65,14 @@ bool play_wait() {
 
 bool is_playing() {
 	//Returns true if the file is playing or false otherwise
-	string result = send_command("status soundfile mode");
+	string result = mci_send_command("status soundfile mode");
 	if (result == "playing") return true;
 	else return false;
 }
 
 bool stop() {
 	//For file playback
-	string result = send_command("stop soundfile");
+	string result = mci_send_command("stop soundfile");
 	if (result == "1") return true;
 	else return false;
 }
