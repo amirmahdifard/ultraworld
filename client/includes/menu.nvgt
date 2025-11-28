@@ -241,13 +241,13 @@ void mainmenu(bool fromgame = false) {
 		if (fromgame) removescript_keymenu(true);
 		else removescript_keymenu();
 	} else if (result == "settings:Enable ask to exit") {
-		asktoexit = 0;
+		asktoexit = 1;
 		speak("ask to exit enabled");
 		writeprefs();
 		if (fromgame) mainmenu(true);
 		else mainmenu();
 	} else if (result == "settings:Disable ask to exit") {
-		asktoexit = 1;
+		asktoexit = 0;
 		speak("ask to exit disabled");
 		writeprefs();
 		if (fromgame) mainmenu(true);
