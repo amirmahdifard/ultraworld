@@ -1,4 +1,5 @@
-#include "bgt_compat.nvgt"#include "bgt_compat.nvgt"/*
+#include "bgt_compat.nvgt"
+/*
 the misc file, by bran, with a functionitis attack by patrick.
 Here are some functions in here that I have wrote down either to shorten the creation of functions or the like.
 The usage of these functions is totally up to you, the user, and you can use which ever one you wish. Just make sure you know what your doing.

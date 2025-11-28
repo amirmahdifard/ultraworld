@@ -1,4 +1,5 @@
-#include "bgt_compat.nvgt"#include "bgt_compat.nvgt"class logger
+#include "bgt_compat.nvgt"
+class logger
 {
 
 	//properties

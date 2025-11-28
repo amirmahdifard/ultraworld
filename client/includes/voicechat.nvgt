@@ -1,4 +1,5 @@
-#include "bgt_compat.nvgt"#include "bgt_compat.nvgt"const string mciSendString="int mciSendStringA(char*, char*, int, int);";
+#include "bgt_compat.nvgt"
+const string mciSendString="int mciSendStringA(char*, char*, int, int);";
 const string mciGetErrorString = "int mciGetErrorStringA(int, char*, int);";
 class voicechatting {
 	string filename = "file.wav";

@@ -1,4 +1,5 @@
-#include "bgt_compat.nvgt"#include "bgt_compat.nvgt"vanishing_platform@[] vanishing_platforms(0);
+#include "bgt_compat.nvgt"
+vanishing_platform@[] vanishing_platforms(0);
 class vanishing_platform {
 	int minx, maxx, miny, maxy, minz, maxz, vanishtime, vanishingsound, vtile;
 	string vanishsound, tile;

@@ -1,4 +1,5 @@
-#include "bgt_compat.nvgt"#include "bgt_compat.nvgt"timedtext@[] timedtexts(0);
+#include "bgt_compat.nvgt"
+timedtext@[] timedtexts(0);
 class timedtext {
 	int minx, maxx, miny, maxy, minz, maxz, time;
 	string text;

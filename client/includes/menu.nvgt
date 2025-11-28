@@ -244,7 +244,7 @@ void mainmenu(bool fromgame = false) {
 		asktoexit = 1;
 		speak("ask to exit enabled");
 		writeprefs();
-		if (fromgame) mainmenu(true);
+	if (fromgame)	 mainmenu(true);
 		else mainmenu();
 	} else if (result == "settings:Disable ask to exit") {
 		asktoexit = 0;
