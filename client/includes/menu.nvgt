@@ -65,23 +65,7 @@ void mainmenu(bool fromgame = false) {
 		s.add_sub_menu_item("settings", "enable buffer logging");
 	else
 		s.add_sub_menu_item("settings", "disable buffer logging");
-	//if(playlogo==0)
-	//s.add_sub_menu_item("settings","enable playing logo at startup");
-	//else if(playlogo==1)
-	//s.add_sub_menu_item("settings","disable playing logo at startup");
-	//if(checkcfu==0)
-	//s.add_sub_menu_item("settings","enable checking for updates at startup");
-	//else if(checkcfu==1)
-	//s.add_sub_menu_item("settings","disable checking for updates at startup");
-	//if(checkcmotd==0)
-	//{
-	//s.add_sub_menu_item("settings","enable checking for clientside message of the day at startup");
-	//}
-	//else if(checkcmotd==1)
-	//{
-	//s.add_sub_menu_item("settings","enable showing the new clientside message of the day "+(motdshow==1?"always":"just once")+" at startup");
-	//s.add_sub_menu_item("settings","disable checking for clientside message of the day at startup");
-	//}
+
 	s.add_sub_menu_item("settings", "Add alias");
 	s.add_sub_menu_item("settings", "Remove alias");
 	s.add_sub_menu_item("settings", "Add script key");
@@ -583,22 +567,7 @@ void mainmenu(bool fromgame = false) {
 		if (fromgame) speechratemenu(true);
 		else speechratemenu();
 	}
-	//else if(result=="settings:enable playing logo at startup")
-	//{
-	//playlogo=1;
-	//speak("playing logo at startup enabled");
-	//writeprefs();
-	//if(fromgame) mainmenu(true);
-	//else mainmenu();
-	//}
-	//else if(result=="settings:disable playing logo at startup")
-	//{
-	//playlogo=0;
-	//speak("playing logo at startup disabled");
-	//writeprefs();
-	//if(fromgame) mainmenu(true);
-	//else mainmenu();
-	//}
+
 	//else if(result=="settings:enable checking for updates at startup")
 	//{
 	//checkcfu=1;

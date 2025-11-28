@@ -2167,16 +2167,16 @@ void command(player@p, string command) {
 			//url_post("http://mahdiabedi.com/dl/mail.php","who="+parsed[1]+"&from=""&name=""&sub=""&mess=""");
 			send_reliable(p, "done. An email has been sent to " + parsed[1] + ". Sender's e-mail: none. Email name: none. Subject: none. Message: none", 2);
 		} else if (parsed.length() == 3) {
-			//url_post("http://mahdiabedi.com/dl/mail.php","who="+parsed[1]+"&from="+parsed[2]+"&name=""&sub=""&mess=""");
+
 			send_reliable(p, "done. An email has been sent to " + parsed[1] + ". Sender's e-mail: " + parsed[2] + ". Email name: none. Subject: none. Message: none", 2);
 		} else if (parsed.length() == 4) {
-			//url_post("http://mahdiabedi.com/dl/mail.php","who="+parsed[1]+"&from="+parsed[2]+"&name="+parsed[3]+"&sub=""&mess=""");
+
 			send_reliable(p, "done. An email has been sent to " + parsed[1] + ". Sender's e-mail: " + parsed[2] + ". Email name: " + parsed[3] + ". Subject: none. Message: none", 2);
 		} else if (parsed.length() == 5) {
-			//url_post("http://mahdiabedi.com/dl/mail.php","who="+parsed[1]+"&from="+parsed[2]+"&name="+parsed[3]+"&sub="+parsed[4]+"&mess=""");
+
 			send_reliable(p, "done. An email has been sent to " + parsed[1] + ". Sender's e-mail: " + parsed[2] + ". Email name: " + parsed[3] + ". Subject: " + parsed[4] + ". Message: none", 2);
 		} else if (parsed.length() == 6) {
-			//url_post("http://mahdiabedi.com/dl/mail.php","who="+parsed[1]+"&from="+parsed[2]+"&name="+parsed[3]+"&sub="+parsed[4]+"&mess="+string_replace(get_event_message(),parsed[0]+" "+parsed[1]+" "+parsed[2]+" "+parsed[3]+" "+parsed[4]+" ","",true)+"");
+
 			send_reliable(p, "done. An email has been sent to " + parsed[1] + ". Sender's e-mail: " + parsed[2] + ". Email name: " + parsed[3] + ". Subject: " + parsed[4] + ". Message: " + string_replace(get_event_message(), parsed[0] + " " + parsed[1] + " " + parsed[2] + " " + parsed[3] + " " + parsed[4] + " ", "", true) + "", 2);
 		}
 	} else if (parsed[0] == "/safe" and p.is_admin()) {

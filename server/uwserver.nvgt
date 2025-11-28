@@ -626,7 +626,7 @@ void netloop() {
 		volumechuva = -12;
 		trov2 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 			players[i].dirty -= random(1, 2);
 			players[i].wet -= random(1, 2);
 		}
@@ -637,7 +637,7 @@ void netloop() {
 		send_reliable(0, "volumechuva -10", 0);
 		trov9 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 			players[i].dirty -= random(1, 2);
 			players[i].wet -= random(1, 2);
 		}
@@ -648,7 +648,7 @@ void netloop() {
 		send_reliable(0, "volumechuva -8", 0);
 		trov10 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 			players[i].dirty -= random(1, 2);
 			players[i].wet -= random(1, 2);
 		}
@@ -658,7 +658,7 @@ void netloop() {
 		volumechuva = -6;
 		volumechuva1 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 			players[i].dirty -= random(1, 2);
 			players[i].wet -= random(1, 2);
 		}
@@ -671,7 +671,7 @@ void netloop() {
 		if (jogaronda < 10)
 			send_reliable(0, "play_s thunder" + random(1, 50) + ".ogg", 6);
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 			players[i].dirty -= random(1, 2);
 			players[i].wet -= random(1, 2);
 		}
@@ -681,7 +681,7 @@ void netloop() {
 		volumechuva = -2;
 		volumechuva3 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 			players[i].dirty -= random(1, 2);
 			players[i].wet -= random(1, 2);
 		}
@@ -691,7 +691,7 @@ void netloop() {
 		volumechuva = 1000;
 		volumechuva4 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 			players[i].dirty -= random(1, 2);
 			players[i].wet -= random(1, 2);
 		}
@@ -700,7 +700,7 @@ void netloop() {
 		jraio();
 		trov3 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 			players[i].dirty -= random(1, 2);
 			players[i].wet -= random(1, 2);
 		}
@@ -709,7 +709,7 @@ void netloop() {
 		jraio();
 		trov4 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 			players[i].dirty -= random(1, 2);
 			players[i].wet -= random(1, 2);
 		}
@@ -718,7 +718,7 @@ void netloop() {
 		jraio();
 		trov5 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 			players[i].dirty -= random(1, 2);
 			players[i].wet -= random(1, 2);
 		}
@@ -727,7 +727,7 @@ void netloop() {
 		jraio();
 		trov6 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 			players[i].dirty -= random(1, 2);
 			players[i].wet -= random(1, 2);
 		}
@@ -736,7 +736,7 @@ void netloop() {
 		jraio();
 		trov7 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 			players[i].dirty -= random(1, 2);
 			players[i].wet -= random(1, 2);
 		}
@@ -746,7 +746,7 @@ void netloop() {
 		send_reliable(0, "volumechuva -2", 0);
 		volumechuva9 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 			players[i].dirty -= random(1, 2);
 			players[i].wet -= random(1, 2);
 		}
@@ -756,7 +756,7 @@ void netloop() {
 		volumechuva = -4;
 		volumechuva8 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 			players[i].dirty -= random(1, 2);
 			players[i].wet -= random(1, 2);
 		}
@@ -766,7 +766,7 @@ void netloop() {
 		send_reliable(0, "volumechuva -6", 0);
 		volumechuva7 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 			players[i].dirty -= random(1, 2);
 			players[i].wet -= random(1, 2);
 		}
@@ -776,7 +776,7 @@ void netloop() {
 		send_reliable(0, "volumechuva -8", 0);
 		volumechuva6 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 			players[i].dirty -= random(1, 2);
 			players[i].wet -= random(1, 2);
 		}
@@ -786,7 +786,7 @@ void netloop() {
 		send_reliable(0, "volumechuva -10", 0);
 		volumechuva5 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 			players[i].dirty -= random(1, 2);
 			players[i].wet -= random(1, 2);
 		}
@@ -797,7 +797,7 @@ void netloop() {
 		send_reliable(0, "volumechuva -12", 0);
 		trov8 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 			players[i].dirty -= random(1, 2);
 			players[i].wet -= random(1, 2);
 		}
@@ -836,7 +836,7 @@ void netloop() {
 		send_reliable(0, "volumewind -12", 0);
 		windendo = 0;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 		}
 	}
 	if (windtimer.elapsed >= 1500 and windendo == 1 and wtrov2 == 0) {
@@ -844,7 +844,7 @@ void netloop() {
 		wtrov2 = 1;
 		volumewind = -12;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 		}
 	}
 	if (windtimer.elapsed >= 20000 and windendo == 1 and wtrov9 == 0) {
@@ -857,7 +857,7 @@ void netloop() {
 		send_reliable(0, "volumewind -8", 0);
 		wtrov10 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 		}
 	}
 	if (windtimer.elapsed >= 45000 and windendo == 1 and volumewind1 == 0) {
@@ -869,7 +869,7 @@ void netloop() {
 		volumewind = -4;
 		volumewind2 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 		}
 	}
 	if (windtimer.elapsed >= 48000 and windendo == 1 and volumewind3 == 0) {
@@ -877,7 +877,7 @@ void netloop() {
 		volumewind = -2;
 		volumewind3 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 		}
 	}
 	if (windtimer.elapsed >= 50000 and windendo == 1 and volumewind4 == 0) {
@@ -885,7 +885,7 @@ void netloop() {
 		volumewind = 1000;
 		volumewind4 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 		}
 	}
 	if (windtimer.elapsed >= 53000 and windendo == 1 and volumewind9 == 0) {
@@ -893,7 +893,7 @@ void netloop() {
 		send_reliable(0, "volumewind -2", 0);
 		volumewind9 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 		}
 	}
 	if (windtimer.elapsed >= 55000 and windendo == 1 and volumewind8 == 0) {
@@ -901,7 +901,7 @@ void netloop() {
 		volumewind = -4;
 		volumewind8 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 		}
 	}
 	if (windtimer.elapsed >= 59000 and windendo == 1 and volumewind7 == 0) {
@@ -909,7 +909,7 @@ void netloop() {
 		send_reliable(0, "volumewind -6", 0);
 		volumewind7 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 		}
 	}
 	if (windtimer.elapsed >= 61000 and windendo == 1 and volumewind6 == 0) {
@@ -917,7 +917,7 @@ void netloop() {
 		send_reliable(0, "volumewind -8", 0);
 		volumewind6 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 		}
 	}
 	if (windtimer.elapsed >= 64000 and windendo == 1 and volumewind5 == 0) {
@@ -925,7 +925,7 @@ void netloop() {
 		send_reliable(0, "volumewind -10", 0);
 		volumewind5 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 		}
 	}
 	if (windtimer.elapsed >= 64000 and windendo == 1 and trov8 == 0) {
@@ -933,7 +933,7 @@ void netloop() {
 		send_reliable(0, "volumewind -12", 0);
 		trov8 = 1;
 		for (uint i = 0; i < players.length(); i++) {
-			//players[i].temperaturelevel-=random(0,1);
+
 		}
 	}
 	if (gcl.elapsed >= 3600000) {

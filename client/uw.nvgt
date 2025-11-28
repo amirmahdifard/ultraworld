@@ -51,8 +51,7 @@ bool camsz = false;
 bool following = false;
 bool looking = false;
 int have_cycle_inventory = 1;
-//int checkcfu=1;
-//int checkcmotd=1;
+
 string whofollowing;
 string wholooking;
 string lookname;
@@ -122,7 +121,7 @@ int readolmsg = 1;
 int readdeathmsg = 1;
 string chatsound = "chat1", localchatsound = "localchat1", onlinesound = "online1", offlinesound = "offline1", pmsound = "pm1", jumpsound = "jump1";
 int chsound, lcsound, onsound, offsound, pmsgsound;
-//int playlogo=1;
+
 int wrap = 0;
 int first_letter_navigation = 0;
 int multi_letter_navigation = 1;
@@ -532,18 +531,7 @@ void readprefs() {
 		pitch = string_to_number(values[peramitors.find("pitch")]);
 	if (peramitors.find("have_cycle_inventory") != -1)
 		have_cycle_inventory = string_to_number(values[peramitors.find("have_cycle_inventory")]);
-	//if(peramitors.find("checkcfu")!=-1)
-	//{
-	//checkcfu=string_to_number(values[peramitors.find("checkcfu")]);
-	//}
-	//if(peramitors.find("checkcmotd")!=-1)
-	//{
-	//checkcmotd=string_to_number(values[peramitors.find("checkcmotd")]);
-	//}
-	//if(peramitors.find("motdshow")!=-1)
-	//{
-	//motdshow=string_to_number(values[peramitors.find("motdshow")]);
-	//}
+
 	if (peramitors.find("motdmotd") != -1)
 		motdmotd = string_to_number(values[peramitors.find("motdmotd")]);
 	if (peramitors.find("behind_pitch_decrease") != -1)
@@ -674,10 +662,7 @@ void readprefs() {
 		vmode = string_to_number(values[peramitors.find("vmode")]);
 	if (peramitors.find("speak_chars") != -1)
 		speak_chars = string_to_number(values[peramitors.find("speak_chars")]);
-	//if(peramitors.find("playlogo")!=-1)
-	//{
-	//playlogo=string_to_number(values[peramitors.find("playlogo")]);
-	//}
+
 	if (peramitors.find("preloader") != -1)
 		preloader = string_to_number(values[peramitors.find("preloader")]);
 	if (peramitors.find("lastruns") != -1)

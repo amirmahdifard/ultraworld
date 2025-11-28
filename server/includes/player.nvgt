@@ -602,11 +602,7 @@ class player {
 					string[] ar = string_split(r[ir], "=", false);
 					string itemname = ar[0];
 					double amount = string_to_number(ar[1]);
-					//if((itemname=="lemonade" or itemname=="lime_cordial" or itemname=="milkshake" or itemname=="orange_squash" or itemname=="squash" or itemname=="cocoa" or itemname=="coffee" or itemname=="black_coffee" or itemname=="decaffeinated_coffee" or itemname=="fruit_tea" or itemname=="green_tea" or itemname=="herbal_tea" or itemname=="hot_chocolate" or itemname=="tea" or itemname=="fruit_juice" or itemname=="grapefruit_juice" or itemname=="orange_juice" or itemname=="pineapple_juice" or itemname=="tomato_juice" or itemname=="cola" or itemname=="opened_cola" or itemname=="sos" or itemname=="cup_of_water" or itemname=="cup_of_cola" or itemname=="glass_of_water" or itemname=="cup_of_boiling_water" or itemname=="glass_of_boiling_water" or itemname=="cup_of_beer" or itemname=="glass_of_beer" or itemname=="glass_of_cola" or itemname=="water_bottle" or itemname=="beer_bottle" or itemname=="open_water_bottle" or itemname=="open_beer_bottle" or itemname=="pot_of_water") and string_contains(itemname,"heated_",1)<0)
-					//{
-					//inv_add_item(itemname,-amount);
-					//inv_add_item("heated_"+itemname,amount);
-					//}
+
 				}
 			}
 		}
@@ -619,11 +615,7 @@ class player {
 					string[] ar = string_split(r[ir], "=", false);
 					string itemname = ar[0];
 					double amount = string_to_number(ar[1]);
-					//if((itemname=="creamy_ice_cream" or itemname=="vanilla_ice_cream" or itemname=="caramel_ice_cream" or itemname=="smoothie" or itemname=="iced_tea" or itemname=="ice" or itemname=="snow") and string_contains(itemname,"heated_",1)<0)
-					//{
-					//inv_add_item(itemname,-amount);
-					//inv_add_item("heated_"+itemname,amount);
-					//}
+
 				}
 			}
 		}
@@ -636,11 +628,7 @@ class player {
 					string[] ar = string_split(r[ir], "=", false);
 					string itemname = ar[0];
 					double amount = string_to_number(ar[1]);
-					//if((string_contains(itemname,"cooked_",1)>-1 or string_contains(itemname,"gutted_",1)>-1 or string_contains(itemname,"eatable_",1)>-1 or string_contains(itemname,"skillit_with_",1)>-1 or itemname=="fish" or itemname=="hotdog" or itemname=="hamburger" or itemname=="cheeseburger" or itemname=="chicken_sandwich" or itemname=="piece_of_hotdog" or itemname=="piece_of_hamburger" or itemname=="piece_of_cheeseburger" or itemname=="piece_of_chicken_sandwich" or itemname=="hotdog_with_sos" or itemname=="hamburger_with_sos" or itemname=="cheeseburger_with_sos" or itemname=="chicken_sandwich_with_sos" or itemname=="piece_of_hotdog_with_sos" or itemname=="piece_of_hamburger_with_sos" or itemname=="piece_of_cheeseburger_with_sos" or itemname=="piece_of_chicken_sandwich_with_sos" or itemname=="piece_of_cake" or itemname=="cake" or itemname=="apple" or itemname=="watermelon" or itemname=="orange" or itemname=="pear" or itemname=="cherry" or itemname=="strawberry" or itemname=="berry" or itemname=="nectarine" or itemname=="//grape" or itemname=="mango" or itemname=="blueberry" or itemname=="pomegranate" or itemname=="carambola" or itemname=="plum" or itemname=="banana" or itemname=="raspberry" or itemname=="mandarin" or itemname=="jackfruit" or itemname=="papaya" or itemname=="kiwi" or itemname=="pineapple" or itemname=="lime" or itemname=="lemon" or itemname=="apricot" or itemname=="grapefruit" or itemname=="melon" or itemname=="coconut" or itemname=="avocado" or itemname=="peach" or itemname=="green_almond" or itemname=="tamarind" or itemname=="cornelian_cherry" or itemname=="rhubarb" or itemname=="persimmon" or itemname=="fig" or itemname=="sour_cherry" or itemname=="sour_grapes" or itemname=="sitron" or itemname=="sour_orange" or itemname=="mushroom" or itemname=="broccoli" or itemname=="cucumber" or itemname=="red_pepper" or itemname=="tomato" or itemname=="swede" or itemname=="carrot" or itemname=="brussels_sprout" or itemname=="pumpkin" or itemname=="cabbage" or itemname=="potato" or itemname=="eggplant" or itemname=="sw//eet_potato" or itemname=="turnip" or itemname=="courgette" or itemname=="green_chilli" or itemname=="onion" or itemname=="lettuce" or itemname=="radish" or itemname=="pea" or itemname=="asparagus" or itemname=="selery" or itemname=="green_pepper" or itemname=="french_beans" or itemname=="spinach" or itemname=="beetroot" or itemname=="red_chillies" or itemname=="bean" or itemname=="cilantro" or itemname=="artichoke" or itemname=="rosemary" or itemname=="bay_leaves" or itemname=="mint_leaves" or itemname=="basil" or itemname=="clove" or itemname=="olive" or itemname=="shallot" or itemname=="turmeric" or itemname=="garlic" or itemname=="ginger" or itemname=="spring_onions" or itemname=="lemongrass" or itemname=="chives" or itemname=="nut" or string_contains(itemname,"piece_of_bread",1)>-1) and string_contains(itemname,"corrupted_",1)<0)
-					//{
-					//inv_add_item(itemname,-amount);
-					//inv_add_item("corrupted_"+itemname,amount);
-					//}
+
 				}
 			}
 		}
@@ -676,8 +664,7 @@ class player {
 				write_to(name, "afkseconds.usr", afkseconds);
 				titlecheck(players[i]);
 			} else {
-				//send_packet(6,"play afktimer.ogg "+x+" "+y+" "+z, x,y,z,maps[get_map_index(map)]);
-				//send_dpacketn(6,name,"distsound afktimer "+x+" "+y+" "+z+" "+map,maps[get_map_index(map)]);
+
 				write_to(name, "afkseconds.usr", afkseconds);
 			}
 		}

@@ -575,9 +575,7 @@ void use(player@p, string message) {
 					send_packet(6, "play eatbiscuit.ogg " + p.x + " " + p.y + " " + p.z, p.x, p.y, p.z, maps[get_map_index(p.map)]);
 					p.hunger -= random(18, 23);
 					p.nhunger += random(18, 23);
-					p.inv_add_item("biscuit", -1);
-					//send_reliable(p, "hempty "+parsed[2], 0);
-				}
+									}
 			}
 		} else if (parsed[1] == "honey") {
 			if (p.waitingtimer.elapsed >= 100) {
