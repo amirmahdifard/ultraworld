@@ -1437,7 +1437,7 @@ void command(player@p, string command) {
 		}
 		if (c == "") c = "no one has voted yet";
 		send_reliable(p, "There are " + totalvotes + ", " + voteyes + " saying yes, and " + voteno + " saying no. " + c, 2);
-	} else if (parsed[0] == "/votes") {
+	} else if (parsed[0] == "/votes ") {
 		if (p.is_admin()) {
 			double total = voteyes + voteno;
 			if (voteyes == 0 or voteno == 0)
@@ -1490,6 +1490,31 @@ void command(player@p, string command) {
 			send_reliable(0, "garbage_collect", 0);
 			garbage_collect();
 		}
+	} else if( parsed[0] == "/despawnall") {
+		if (p.is_manager()) {
+			send_reliable(0, "Alert: " + p.name + " has begun a total object reset to remove some bugged objects, please wait as this can take a bit of time to complete" , 2);
+			send_reliable(0, "play_s garbage_collect.ogg", 6);
+			send_reliable(0, "stopmoving", 0);
+			send_reliable(0, "garbage_collect", 0);
+			weapons.resize(0);
+			objs.resize(0);
+			robots.resize(0);
+			time_bombs.resize(0);
+			fires.resize(0);
+fire_starters.resize(0);
+censor_bombs.resize(0);
+nuclear_bombs.resize(0);
+small_nuclear_bombs.resize(0);
+large_nuclear_bombs.resize(0);
+mines.resize(0);
+canisters.resize(0);
+		snares.resize(0);
+		rockets.resize(0);
+		rpgs.resize(0);
+		grenades.resize(0);
+		garbage_collect();
+			send_reliable(p, "startmoving", 0);
+	}
 	} else if (parsed[0] == "/stopprofile" and p.dev == true) {
 		generate_profile("profile.log");
 		p.packet(file_get_contents("profile.log"));
