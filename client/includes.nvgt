@@ -85,3 +85,4 @@
 #include "includes/servermenu.nvgt"
 #include "includes/player/*.nvgt" /**/
 #include "includes/optionsmenu.nvgt"
+#include "includes/keyhook.nvgt"

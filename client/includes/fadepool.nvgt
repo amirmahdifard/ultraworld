@@ -1,4 +1,5 @@
-#include "bgt_compat.nvgt"#include "bgt_compat.nvgt"void fade_pool(sound_pool@ handle, double time=0.25, double minvol=-40,bool destroy=false)
+#include "bgt_compat.nvgt"
+void fade_pool(sound_pool@ handle, double time=0.25, double minvol=-40,bool destroy=false)
 {
 	for (double current = 0; current > minvol; current -= time) {
 		for (uint x = 0; x < handle.items.length(); x++) {
