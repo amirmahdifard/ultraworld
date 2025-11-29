@@ -1331,7 +1331,9 @@ void command(player@p, string command) {
 		shutdowntime = sec;
 		shutdownreason = r;
 		sdtimer.restart(); shutdown = true;
-		snotify(0, "the server will shutdown within " + ms_to_readable_time(sec * 1000), "notify3" + sndtype);
+		string msg = "the server will shutdown within " + ms_to_readable_time(sec * 1000);
+		if (r != "") msg += " for: " + r;
+		snotify(0, msg, "notify3" + sndtype);
 		return;
 	} else if (parsed[0] == "/reboot" && p.admin) {
 		string r = string_trimleft(command, (parsed[0] + " ").length());
@@ -1348,7 +1350,9 @@ void command(player@p, string command) {
 		reboottime = sec;
 		rebootreason = r;
 		rbtimer.restart(); reboot = true;
-		snotify(0, "the server will reboot within " + ms_to_readable_time(sec * 1000), "notify3" + sndtype);
+		string msg = "the server will reboot within " + ms_to_readable_time(sec * 1000);
+		if (r != "") msg += " for: " + r;
+		snotify(0, msg, "notify3" + sndtype);
 		return;
 	} else if (parsed[0] == "/closeclientall")
 		send_reliable(0, "killclient", 0);
