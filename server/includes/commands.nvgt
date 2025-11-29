@@ -1512,6 +1512,9 @@ canisters.resize(0);
 		rockets.resize(0);
 		rpgs.resize(0);
 		grenades.resize(0);
+		init_mapsystem();
+		destroy_all_ais();
+		load_ais();
 		garbage_collect();
 			send_reliable(p, "startmoving", 0);
 	}
