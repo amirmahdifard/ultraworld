@@ -1464,7 +1464,10 @@ msgs.insert_last("contribute to our game at: https://github.com/amirmahdifard/ul
 						if (players[index].pvp == 1) send_reliable(players[index], "you are now pvp", 2);
 						if (auction::doing) {
 							send_reliable(players[index], "play_s notify_blips.ogg", 6);
-							send_reliable(players[index], "auctions there's an auction in progress: " + auction::info, 0);
+							if (auction::list.length() == 1)
+								send_reliable(players[index], "auctions there's an auction in progress: " + auction::info, 0);
+							else
+								send_reliable(players[index], "auctions " + auction::info, 0);
 						}
 						if (doublexp == 1) {
 							send_reliable(players[index], "play_s notify_applause.ogg", 6);

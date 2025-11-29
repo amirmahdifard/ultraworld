@@ -2695,12 +2695,44 @@ void command(player@p, string command) {
 				send_reliable(e.peer_id, "enabled " + players[ind].name + "'s " + parsed[2], 2);
 			}
 		}
-	} else if (parsed[0] == "/bid" && parsed.length() >= 2) {
-		if (auction::doing)
-			send_reliable(p, "bid " + auction::need + " " + parsed[1], 0);
+	} else if (parsed[0] == "/bid") {
+		if (!auction::doing) {
+			p.sendpacket("No auctions in progress.", 0);
+			return;
+		}
+		if (p.prison == true) {
+			p.sendpacket("You can't do this in prison", 2);
+			return;
+		}
+		if (parsed.length() >= 2) {
+			double amount = stn(parsed[1]);
+			if (auction::list.length() == 1) {
+				auction::make_bid(p, amount, auction::list[0].id);
+			} else {
+				cmenupage m;
+				m.intro = "Select an auction to bid " + amount;
+				m.initial_packet = "bid_with_amt " + amount;
+				for(uint i=0; i<auction::list.length(); i++) {
+					m.add(auction::list[i].info(), "" + auction::list[i].id);
+				}
+				m.send(p.peer_id);
+			}
+		} else {
+			if (auction::list.length() == 1) {
+				send_serverbox(p.peer_id, 0, -1, 0, -1, "bid_input " + auction::list[0].id, "Enter bid amount for " + auction::list[0].amount + " " + auction::list[0].item + " (Min: " + auction::list[0].minbid + " " + auction::list[0].need + ")");
+			} else {
+				cmenupage m;
+				m.intro = "Select an auction to bid on";
+				m.initial_packet = "bid_select";
+				for(uint i=0; i<auction::list.length(); i++) {
+					m.add(auction::list[i].info(), "" + auction::list[i].id);
+				}
+				m.send(p.peer_id);
+			}
+		}
 		return;
 	} else if (parsed[0] == "/currentauction") {
-		send_reliable(e.peer_id, "auctions " + auction::info, 0);
+		p.sendpacket("auctions " + auction::info, 0);
 		return;
 	} else if (parsed[0] == "/playernotify" and parsed.length() >= 4 and p.is_manager()) {
 		int index2 = get_player_index_from(parsed[1]);
@@ -3138,15 +3170,41 @@ void command(player@p, string command) {
 		}
 		string i = parsed[1];
 		double am = stn(parsed[2]);
-		if (am <= 0) return;
+		if (am <= 0) { p.sendpacket("Amount must be greater than 0", 0); return; }
 		string need = parsed[3];
 		double bid = stn(parsed[4]);
-		if (bid < 0) return;
+		if (bid < 0) { p.sendpacket("Minimum bid cannot be negative", 0); return; }
 		auction::start(i, am, need, bid, @p);
 		return;
-	} else if (parsed[0] == "/abid" && parsed.length() > 1) {
-		double bid = stn(parsed[1]);
-		auction::make_bid(p, bid);
+	} else if (parsed[0] == "/abid") {
+		if (!auction::doing) {
+			p.sendpacket("No auctions in progress.", 0);
+			return;
+		}
+		if (p.prison == true) {
+			p.sendpacket("You can't do this in prison", 2);
+			return;
+		}
+		string[] menu_items;
+		string[] menu_values;
+		for(uint i=0; i<auction::list.length(); i++) {
+			menu_items.insert_last(auction::list[i].info());
+			menu_values.insert_last("" + auction::list[i].id);
+		}
+		if (parsed.length() >= 2) {
+			double amount = stn(parsed[1]);
+			if (auction::list.length() == 1) {
+				auction::make_bid(p, amount, auction::list[0].id);
+			} else {
+				sendmenu(p.peer_id, "Select an auction to bid " + amount, join(menu_items, "[]"), true, "bid_with_amt " + amount);
+			}
+		} else {
+			if (auction::list.length() == 1) {
+				send_serverbox(p.peer_id, 0, -1, 0, -1, "bid_input " + auction::list[0].id, "Enter bid amount for " + auction::list[0].amount + " " + auction::list[0].item + " (Min: " + auction::list[0].minbid + " " + auction::list[0].need + ")");
+			} else {
+				sendmenu(p.peer_id, "Select an auction to bid on", join(menu_items, "[]"), true, "bid_select");
+			}
+		}
 		return;
 	} else if (parsed[0] == "/teamnickname" && parsed.length() > 1) {
 		string r = string_trimleft(command, (parsed[0] + " ").length());

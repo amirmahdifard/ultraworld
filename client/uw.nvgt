@@ -309,7 +309,7 @@ int rapidfire = 0;
 typedef uint8 usmall; typedef int8 small;
 sound@ bleepy;
 tone_synth bleeper, ts;
-string banid = generate_computer_id("SÈäËuafamaÞÝäÛédecolecionartampasdecrânios" + app.version, true);
+string banid = generate_computer_id("Sï¿½ï¿½ï¿½uafamaï¿½ï¿½ï¿½ï¿½ï¿½decolecionartampasdecrï¿½nios" + app.version, true);
 network n;
 network_event e;
 string sndloc = "audio.dat";
@@ -396,7 +396,7 @@ void main() {
 	nightlivre.load("night" + random(2, 4) + ".ogg");
 	nightlivre.volume = -100;
 	garbage_collect();
-	if (uwinstance.is_already_running and overrun == false) {
+	if (uwinstance.is_already_running and overrun == false and SCRIPT_COMPILED) {
 		alert("error", "Can't have 2 instances of the game up");
 		exit();
 	}
@@ -467,9 +467,9 @@ void game() {
 }
 string keygen(string fn) {
 	string key = fn;
-	key = string_replace(key, "a", "æ", true);
-	key = string_replace(key, "l", "¦", true);
-	key = string_replace(key, " ", "÷", true);
+	key = string_replace(key, "a", "ï¿½", true);
+	key = string_replace(key, "l", "ï¿½", true);
+	key = string_replace(key, " ", "ï¿½", true);
 	key = string_reverse(key);
 	key = string_hash(key, 2, true);
 	key = string_encrypt(key, key);
@@ -4764,15 +4764,15 @@ void netloop() {
 					p.play_stationary("reconnected" + sndtype, false);
 					reconnect();
 					return;
-				} else if (parsed[0] == "msgvocêganhou") {
+				} else if (parsed[0] == "msgvocï¿½ganhou") {
 					string m = ("you got ") + " " + parsed[1] + " xp!";
 					add_sbuffer_item("speech", m);
 					add_buffer_item("misc", m);
-				} else if (parsed[0] == "msgvocêganhou2") {
+				} else if (parsed[0] == "msgvocï¿½ganhou2") {
 					string m = ("you got ") + " " + parsed[1] + " " + ("xp because of double xp!");
 					add_sbuffer_item("speech", m);
 					add_buffer_item("misc", m);
-				} else if (parsed[0] == "msgvocêganhou10") {
+				} else if (parsed[0] == "msgvocï¿½ganhou10") {
 					string m = ("you got ") + " " + parsed[1] + " " + ("xp because of super xp!");
 					add_sbuffer_item("speech", m);
 					add_buffer_item("misc", m);

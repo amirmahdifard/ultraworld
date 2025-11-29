@@ -99,6 +99,23 @@ void player_event(player@p, string event) {
 				}
 			} else send_reliable(p, "you can't look at someone while sleeping", 2);
 		} else send_reliable(p, "that player could not be found", 2);
+	} else if (parsed[0] == "bid_with_amt" and parsed.length() >= 3) {
+		double amount = string_to_number(parsed[1]);
+		int id = string_to_number(parsed[2]);
+		auction::make_bid(p, amount, id);
+	} else if (parsed[0] == "bid_select" and parsed.length() >= 2) {
+		int id = string_to_number(parsed[1]);
+		Auction@ a = auction::get_auction(id);
+		if (@a != null) {
+			send_serverbox(p.peer_id, 0, -1, 0, -1, "bid_input " + id, "Enter bid amount for " + a.amount + " " + a.item + " (Min: " + a.minbid + " " + a.need + ")");
+		} else {
+			p.sendpacket("Auction not found.", 0);
+		}
+	} else if (parsed[0] == "bid_input" and parsed.length() >= 2) {
+		if (parsed.length() < 3) return;
+		int id = string_to_number(parsed[1]);
+		double amount = string_to_number(parsed[2]);
+		auction::make_bid(p, amount, id);
 	} else if (parsed[0] == "lookstop" and p.looking != "") {
 		int ind = get_player_index_from(p.looking);
 		if (ind > -1) {
