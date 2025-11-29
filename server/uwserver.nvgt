@@ -110,6 +110,7 @@ double voteno = 0;
 double leaveafk1 = 10;
 double minverlanguage = 1;
 double minverkeyboardlanguage = 1;
+double record_uptime = 0;
 string[] store_items;
 double[] amounts;
 string[] paid_store_items;
@@ -233,6 +234,8 @@ void loaddata() {
 		voteyes = sd.readn("voteyes");
 	if (sd.d.exists("voteno"))
 		voteno = sd.readn("voteno");
+	if (sd.d.exists("record_uptime"))
+		record_uptime = sd.readn("record_uptime");
 	if (sd.d.exists("accumulated_uptimer"))
 		accumulated_uptimer.force(sd.readn("accumulated_uptimer"));
 	//if(sd.d.exists("meteoritespawntimer"))
@@ -285,6 +288,8 @@ void writedata(string fv = "", int fvv = -55555) {
 	sd.add("peakreached", peakreached);
 	sd.add("voteyes", voteyes);
 	sd.add("voteno", voteno);
+	if (uptimer.elapsed > record_uptime) record_uptime = uptimer.elapsed;
+	sd.add("record_uptime", record_uptime);
 	sd.add("servermoney", servermoney);
 	sd.add("chatting", chatting);
 	sd.add("missiletime", missiletime);

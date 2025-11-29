@@ -2022,7 +2022,7 @@ void player_event(player@p, string event) {
 		p.inv_add_item("store", -1);
 		send_reliable(p, "Your store has been placed", 2);
 	} else if (parsed[0] == "uptime")
-		send_reliable(p, "The server has been up for " + ms_to_readable_time(uptimer.elapsed) + ". Total recorded uptime: " + ms_to_readable_time(accumulated_uptimer.elapsed) + ". VPS uptime: " + ms_to_readable_time(TIME_SYSTEM_RUNNING_MILLISECONDS) + "", 2);
+		send_reliable(p, "The server has been up for " + ms_to_readable_time(uptimer.elapsed) + ". Peak uptime: " + ms_to_readable_time(record_uptime > uptimer.elapsed ? record_uptime : uptimer.elapsed) + ". Total recorded uptime: " + ms_to_readable_time(accumulated_uptimer.elapsed) + ". VPS uptime: " + ms_to_readable_time(TIME_SYSTEM_RUNNING_MILLISECONDS) + "", 2);
 	else if (parsed[0] == "icstart" and parsed.length() > 1) {
 		string selection = parsed[1];
 		if (selection == "back" or selection == "" or selection == " ") {
