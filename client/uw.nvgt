@@ -5473,13 +5473,15 @@ void mainloop() {
 	if (sleepmode == 0 and dreaming == 1 and dreamtimer.elapsed >= dreamtime) {
 		dreamtimer.restart();
 		string[] ambs = string_split(allsounds, "\r\n", false);
-		string temp = ambs[random(0, ambs.length() - 1)];
-		dreamsound.close();
-		dreamsound.load(temp + ".ogg");
-		dreamsound.pan = random(-100, 100);
-		dreamsound.volume = random(-30, 30);
-		dreamsound.pitch = random(0, 200);
-		dreamsound.play();
+		if (ambs.length() > 0) {
+			string temp = ambs[random(0, ambs.length() - 1)];
+			dreamsound.close();
+			dreamsound.load(temp + ".ogg");
+			dreamsound.pan = random(-100, 100);
+			dreamsound.volume = random(-30, 30);
+			dreamsound.pitch = random(0, 200);
+			dreamsound.play();
+		}
 		int n1 = random(100, 5000);
 		int n2 = dreamsound.length + random(0, 1000);
 		dreamtime = random(n1, n2);
