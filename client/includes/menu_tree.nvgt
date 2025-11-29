@@ -1,4 +1,5 @@
-#include "bgt_compat.nvgt"#include "bgt_compat.nvgt"class tree_node
+#include "bgt_compat.nvgt"
+class tree_node
 {
 	tree_node@ parent;
 	tree_node@[] children;
