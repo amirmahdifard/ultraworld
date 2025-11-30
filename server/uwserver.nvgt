@@ -3,7 +3,8 @@ const string sndtype = ".ogg";
 #pragma asset "rules"
 #pragma asset "readme.txt"
 #pragma asset "rules.txt"
-#pragma asset "changes.md"
+#pragma asset "changelogs/server.md"
+#pragma asset "changelogs/client.md"
 #pragma asset "commands.md"
 #include "includes.nvgt"
 const string deflang = "English";

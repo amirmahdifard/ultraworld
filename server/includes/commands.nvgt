@@ -33,18 +33,23 @@ void command(player@p, string command) {
 			p.finishtasktimer.pause();
 		}
 	} else if (parsed[0] == "/changes") {
-		string c = file_get_contents("changes.md");
-		c = string_replace(c, "\r\n", "\n", true);
-		serverinput i;
-		i.title = "Change Log";
-		i.text = "Changes";
-		i.default_text = c;
-		i.button1 = "";
-		i.button2 = "&Close";
-		i.button2cancel = 1;
-		i.readonly = 1;
-		i.multiline = 1;
-		i.send(p.peer_id);
+		if (parsed.length() == 1) {
+			cmenupage m;
+			m.intro = "Select a change log category:";
+			m.initial_packet = "select_changelog_category";
+			m.add("Server Changes", "server");
+			m.add("Client Changes", "client");
+			m.send(p.peer_id);
+		} else if (parsed.length() >= 2) {
+			string category = string_to_lower_case(parsed[1]);
+			if (category == "server") {
+				show_changelog("server", "changelogs/server.md", @p);
+			} else if (category == "client") {
+				show_changelog("client", "changelogs/client.md", @p);
+			} else {
+				p.sendpacket("Invalid changelog category. Use 'server' or 'client'.", 0);
+			}
+		}
 		return;
 	} else if (parsed[0] == "/cmds") {
 		string c = file_get_contents("commands.md");

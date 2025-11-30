@@ -4770,7 +4770,7 @@ void netloop() {
 				} else if (parsed[0] == "serverreboot") {
 					string r = string_trimleft(get_event_message(), (parsed[0] + " ").length());
 					if (stringright(r, 1) == ".") r = string_trimright(r, 1);
-					string speak_msg = "The server is restarting" + (r != "" ? " for the following reason: " + r : "") + ". Reconnecting...";
+					string speak_msg = "The server is restarting" + (r != "" ? " for the following reason: " + r : "");
 					speak(speak_msg);
 					exitgame(false);
 					p.play_stationary("reconnected" + sndtype, false);
