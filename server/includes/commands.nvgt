@@ -32,7 +32,7 @@ void command(player@p, string command) {
 			p.finishtasktimer.force(0);
 			p.finishtasktimer.pause();
 		}
-	} else if (parsed[0] == "/changes") {
+	} else if (parsed[0] == "/changes" or parsed[0]=="/c") {
 		if (parsed.length() == 1) {
 			cmenupage m;
 			m.intro = "Select a change log category:";
@@ -1637,7 +1637,7 @@ void command(player@p, string command) {
 		string newinv = f.read();
 		f.close();
 		send_reliable(e.peer_id, newinv, 2);
-	} else if (parsed[0] == "/backupmap" and p.is_admin()) {
+	} else if (parsed[0] == "/backupmap" or parsed[0]=="/bm and p.is_admin()) {
 		send_reliable(0, "backing up all maps. please wait", 2);
 		if (!directory_exists("map_backups"))
 			directory_create("map_backups");
