@@ -6,6 +6,6 @@ class application: appinfo {
 		this.name = "Ultra World";
 		this.shortname = "UW";
 		this.status = "";
-		this.version = "2.49";
+		this.version = "2.49.1";
 	}
 }//
