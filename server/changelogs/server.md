@@ -6,6 +6,7 @@
 - Implemented connection limits per IP address to enhance security.
 - The `/changes` command now allows viewing Server or Client changes separately.
 - Server shutdown and reboot notifications now include the reason for all players.
+- Fixed a bug where players could send private messages to themselves. Thanks "LC Boy".
 - Fixed various spelling errors and cleaned up legacy code.
 
 ## Changes on Thursday, November 20, 2025
