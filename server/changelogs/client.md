@@ -1,3 +1,9 @@
+## Changes in 2.49.1
+- Server restart notifications are now non-blocking: the client announces the reason and automatically reconnects.
+- Fixed the "Ask on exit" setting logic in the options menu.
+- Fixed a client crash related to dreaming sounds. Thanks "alan".
+- Developers can now run multiple client instances for testing.
+
 ## Changes in 2.49 (Pieces of the Broken Clock)
 - Removed vehicles.
 - Redesigned player menus that open with `F5` and `Shift+F5` keys. In the menu that opens with `Shift+F5`, you can now press `Enter`, which will bring up yet another menu with contextual and possible options you can perform at the focused player. This means you do not necessarily need to remember the shortcuts. Due to this change, shortcuts within this menu are also reorganized.

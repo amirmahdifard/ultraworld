@@ -1,3 +1,13 @@
+## Changes on Sunday, November 30, 2025
+- Version 2.49.1 has been released.
+- Added support for multiple simultaneous auctions. Players can now bid on specific auctions via a menu.
+- Default auction timer increased to 2 minutes.
+- Added "Peak uptime" tracking to server status.
+- Implemented connection limits per IP address to enhance security.
+- The `/changes` command now allows viewing Server or Client changes separately.
+- Server shutdown and reboot notifications now include the reason for all players.
+- Fixed various spelling errors and cleaned up legacy code.
+
 ## Changes on Thursday, November 20, 2025
 - Version 2.49 (Pieces of the Broken Clock) has been released.
 
