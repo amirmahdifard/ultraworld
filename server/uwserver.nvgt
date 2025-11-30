@@ -185,6 +185,7 @@ void main() {
 	setupserver();
 	garbage_collect();
 	init_mapsystem();
+	init_feedback();
 	log("svr", "server started.");
 	garbage_collect();
 	#if_not linux

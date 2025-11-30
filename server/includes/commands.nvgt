@@ -1693,6 +1693,21 @@ void command(player@p, string command) {
 		i.multiline = 1;
 		i.send(p.peer_id);
 		return;
+	} else if (parsed[0] == "/feedback") {
+		if (parsed.length() > 1) {
+			string msg = string_trimleft(command, (parsed[0] + " ").length());
+			add_feedback(p, msg);
+		} else {
+			show_feedback_menu(p);
+		}
+		return;
+	} else if (parsed[0] == "/feedbacks") {
+		if (p.is_admin() || p.is_dev()) {
+			list_manage_feedbacks(p);
+		} else {
+			p.sendpacket("You do not have permission to use this command.", 0);
+		}
+		return;
 	} else if (parsed[0] == "/help" and parsed.length() >= 1) {
 		send_reliable(p, "help", 0);
 	} else if (parsed[0] == "/jail" and p.assistant and parsed.length() > 3 and p.prison == false) {

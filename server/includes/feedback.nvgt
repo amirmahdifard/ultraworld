@@ -1,0 +1,259 @@
+string feedback_file = "feedbacks.dat";
+int next_feedback_id = 1;
+
+void init_feedback() {
+	if (!file_exists(feedback_file)) return;
+	string[] lines = string_split(file_get(feedback_file), "\n", true);
+	if (lines.length() > 0) {
+		string last = lines[lines.length()-1];
+		string[] parts = string_split(last, "|");
+		if (parts.length() > 0) next_feedback_id = stn(parts[0]) + 1;
+	}
+}
+
+void add_feedback(player@ p, string message) {
+	message = string_replace(message, "|", "", true);
+	string date = get_date() + " " + get_time();
+	string line = next_feedback_id + "|" + p.name + "|" + message + "|" + date + "|open|||";
+	file_put(feedback_file, line + "\n", 255);
+	admintell("New feedback from " + p.name + ": " + message);
+	p.sendpacket("Feedback sent successfully.", 2);
+	next_feedback_id++;
+}
+
+void show_feedback_menu(player@ p) {
+	cmenupage m;
+	m.intro = "Feedback Menu";
+	m.initial_packet = "feedback_main_menu";
+	m.add("Send New Feedback", "new");
+	m.add("My Feedbacks", "my");
+	if (p.is_admin() || p.is_dev()) {
+		m.add("Manage Feedbacks", "manage");
+	}
+	m.send(p.peer_id);
+}
+
+void list_my_feedbacks(player@ p) {
+	if (!file_exists(feedback_file)) {
+		p.sendpacket("No feedbacks found.", 0);
+		return;
+	}
+	string[] lines = string_split(file_get(feedback_file), "\n", true);
+	cmenupage m;
+	m.intro = "Your Feedbacks";
+	m.initial_packet = "view_my_feedback_options";
+	bool found = false;
+	for (uint i = 0; i < lines.length(); i++) {
+		string[] parts = string_split(lines[i], "|");
+		if (parts.length() < 4) continue;
+		if (parts[1] == p.name) {
+			string status = parts[4];
+			if (status == "replied") status = "Replied";
+			if (status == "open") status = "Open";
+			if (status == "closed") status = "Closed";
+			m.add(parts[2] + " (" + status + ")", parts[0]);
+			found = true;
+		}
+	}
+	if (!found) {
+		p.sendpacket("You haven't sent any feedback.", 0);
+		return;
+	}
+	m.send(p.peer_id);
+}
+
+void show_user_feedback_options(player@ p, int id) {
+	cmenupage m;
+	m.intro = "Feedback Options (ID " + id + ")";
+	m.initial_packet = "feedback_user_action " + id;
+	m.add("View Details", "view");
+	m.add("Close", "close");
+	m.send(p.peer_id);
+}
+
+void user_close_feedback(player@ p, int id) {
+	if (!file_exists(feedback_file)) return;
+	string content = file_get(feedback_file);
+	string[] lines = string_split(content, "\n", true);
+	string new_content = "";
+	bool found = false;
+	for (uint i = 0; i < lines.length(); i++) {
+		string[] parts = string_split(lines[i], "|");
+		if (parts.length() < 4) { new_content += lines[i] + "\n"; continue; }
+		if (stn(parts[0]) == id) {
+			if (parts[1] == p.name) {
+				string new_line = parts[0] + "|" + parts[1] + "|" + parts[2] + "|" + parts[3] + "|closed|" + (parts.length() > 5 ? parts[5] : "") + "|" + (parts.length() > 6 ? parts[6] : "") + "|" + (parts.length() > 7 ? parts[7] : "");
+				new_content += new_line + "\n";
+				found = true;
+			} else {
+				new_content += lines[i] + "\n";
+			}
+		} else {
+			new_content += lines[i] + "\n";
+		}
+	}
+	if (found) {
+		file_put(feedback_file, new_content, 250);
+		p.sendpacket("Feedback closed.", 2);
+		admintell(p.name + " closed their feedback (ID " + id + ")");
+	} else {
+		p.sendpacket("Feedback not found or you are not the owner.", 0);
+	}
+}
+
+void view_feedback_details(player@ p, int id) {
+	if (!file_exists(feedback_file)) return;
+	string[] lines = string_split(file_get(feedback_file), "\n", true);
+	for (uint i = 0; i < lines.length(); i++) {
+		string[] parts = string_split(lines[i], "|");
+		if (parts.length() < 4) continue;
+		if (stn(parts[0]) == id) {
+			string text = "Date: " + parts[3] + "\r\nMessage: " + parts[2] + "\r\nStatus: " + parts[4];
+			if ((parts[4] == "replied" || parts[4] == "closed") && parts.length() >= 7 && parts[6] != "") {
+				text += "\r\n\r\nReply by " + parts[5] + " (" + parts[7] + "):\r\n" + parts[6];
+			}
+			serverinput si;
+			si.title = "Feedback Details";
+			si.text = "Details";
+			si.default_text = text;
+			si.button1 = "";
+			si.button2 = "&Close";
+			si.button2cancel = 1;
+			si.readonly = 1;
+			si.multiline = 1;
+			si.send(p.peer_id);
+			return;
+		}
+	}
+	p.sendpacket("Feedback not found.", 0);
+}
+
+void list_manage_feedbacks(player@ p) {
+	if (!file_exists(feedback_file)) {
+		p.sendpacket("No feedbacks found.", 0);
+		return;
+	}
+	string[] lines = string_split(file_get(feedback_file), "\n", true);
+	cmenupage m;
+	m.intro = "Manage Feedbacks";
+	m.initial_packet = "view_feedback_options";
+	bool found = false;
+	for (uint i = 0; i < lines.length(); i++) {
+		string[] parts = string_split(lines[i], "|");
+		if (parts.length() < 4) continue;
+		if (parts[4] == "closed") continue;
+		m.add(parts[1] + ": " + parts[2] + " (" + parts[4] + ")", parts[0]);
+		found = true;
+	}
+	if (!found) { p.sendpacket("No open feedbacks.", 0); return; }
+	m.send(p.peer_id);
+}
+
+void show_admin_feedback_options(player@ p, int id) {
+	cmenupage m;
+	m.intro = "Feedback Actions (ID " + id + ")";
+	m.initial_packet = "feedback_admin_action " + id;
+	m.add("Reply", "reply");
+	m.add("Close", "close");
+	if (p.is_dev()) m.add("Delete (Dev only)", "delete");
+	m.send(p.peer_id);
+}
+
+void close_feedback(player@ admin, int id) {
+	if (!file_exists(feedback_file)) return;
+	string content = file_get(feedback_file);
+	string[] lines = string_split(content, "\n", true);
+	string new_content = "";
+	bool found = false;
+	string target_name = "";
+	for (uint i = 0; i < lines.length(); i++) {
+		string[] parts = string_split(lines[i], "|");
+		if (parts.length() < 4) { new_content += lines[i] + "\n"; continue; }
+		if (stn(parts[0]) == id) {
+			target_name = parts[1];
+			string new_line = parts[0] + "|" + parts[1] + "|" + parts[2] + "|" + parts[3] + "|closed|" + (parts.length() > 5 ? parts[5] : "") + "|" + (parts.length() > 6 ? parts[6] : "") + "|" + (parts.length() > 7 ? parts[7] : "");
+			new_content += new_line + "\n";
+			found = true;
+		} else {
+			new_content += lines[i] + "\n";
+		}
+	}
+	if (found) {
+		file_put(feedback_file, new_content, 250);
+		admin.sendpacket("Feedback closed.", 2);
+		admintell(admin.name + " closed " + target_name + "'s feedback (ID " + id + ")");
+	} else {
+		admin.sendpacket("Feedback ID not found.", 0);
+	}
+}
+
+void delete_feedback(player@ p, int id) {
+	if (!p.is_dev()) return;
+	if (!file_exists(feedback_file)) return;
+	string content = file_get(feedback_file);
+	string[] lines = string_split(content, "\n", true);
+	string new_content = "";
+	bool found = false;
+	for (uint i = 0; i < lines.length(); i++) {
+		string[] parts = string_split(lines[i], "|");
+		if (parts.length() < 4) { new_content += lines[i] + "\n"; continue; }
+		if (stn(parts[0]) == id) {
+			found = true; // Skip this line to delete
+		} else {
+			new_content += lines[i] + "\n";
+		}
+	}
+	if (found) {
+		file_put(feedback_file, new_content, 250);
+		p.sendpacket("Feedback deleted.", 2);
+		admintell(p.name + " deleted feedback ID " + id);
+	} else {
+		p.sendpacket("Feedback ID not found.", 0);
+	}
+}
+
+void reply_feedback(player@ admin, int id, string reply) {
+	if (!file_exists(feedback_file)) return;
+	string content = file_get(feedback_file);
+	string[] lines = string_split(content, "\n", true);
+	string new_content = "";
+	string target_name = "";
+	string original_message = "";
+	bool found = false;
+
+	for (uint i = 0; i < lines.length(); i++) {
+		string[] parts = string_split(lines[i], "|");
+		if (parts.length() < 4) {
+			new_content += lines[i] + "\n";
+			continue;
+		}
+		if (stn(parts[0]) == id) {
+			target_name = parts[1];
+			original_message = parts[2];
+			string date = get_date() + " " + get_time();
+			string new_line = parts[0] + "|" + parts[1] + "|" + parts[2] + "|" + parts[3] + "|replied|" + admin.name + "|" + string_replace(reply, "|", "", true) + "|" + date;
+			new_content += new_line + "\n";
+			found = true;
+		} else {
+			new_content += lines[i] + "\n";
+		}
+	}
+
+	if (found) {
+		file_put(feedback_file, new_content, 250);
+		string msg = "Reply to your feedback (" + original_message + "): " + reply + " (by " + admin.name + ")";
+		player@ target = get_player_obj_from(target_name);
+		if (@target != null) {
+			send_reliable(target, "pm " + msg, 0);
+			target.sendpacket("play_s pm.ogg", 6);
+		} else {
+			if (directory_exists("chars/" + target_name)) {
+				file_put("chars/" + target_name + "/pms.usr", msg + "\r\n", 255);
+			}
+		}
+		admintell(admin.name + " replied to " + target_name + "'s feedback: " + reply);
+		admin.sendpacket("Reply sent.", 2);
+	} else {
+		admin.sendpacket("Feedback ID not found.", 0);
+	}
+}
