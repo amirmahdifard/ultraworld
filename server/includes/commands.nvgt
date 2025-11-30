@@ -1308,10 +1308,14 @@ void command(player@p, string command) {
 		snotify(0, "A new message of the day has been set:\n" + motd, "newmotd" + random(1, 2) + ".ogg");
 		return;
 	} else if (parsed[0] == "/pm" and parsed.length() > 2) {
+		send_reliable(p.peer_id,"You can't send messages to yourself.",2);
+		return
 		string msg = string_trimleft(command, (parsed[0] + " " + parsed[1] + " ").length());
 		pmplayer(p, parsed[1], msg);
 		return;
 	} else if (parsed[0] == "/r" and parsed.length() > 1) {
+		send_reliable(p.peer_id,"You can't send messages to yourself.",2);
+		return
 		string msg = string_trimleft(command, (parsed[0] + " ").length());
 		if (p.replyname == "") return;
 		replyplayer(p, p.replyname, msg);
