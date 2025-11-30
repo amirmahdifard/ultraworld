@@ -3,7 +3,7 @@ string netaddress = mainnetaddress;
 int netport = 6200;
 uint peer_id = 0;
 sound sr;
-void login() {
+void login(bool is_reconnecting = false) {
 	n.IPV6enabled = false;
 	if (name == "" || password == "") {
 		dlg("setup an account first");
@@ -17,7 +17,10 @@ void login() {
 	lmsg.add("compid", compid);
 	lmsg.add("node_id", system_node_id);
 	lmsg.add("yv", app.version);
-	speak("connecting... please wait");
+	if (is_reconnecting)
+		speak("reconnecting... please wait");
+	else
+		speak("connecting... please wait");
 	sr.load("roleta.ogg");
 	sr.play_looped();
 	reset_network();
@@ -307,6 +310,5 @@ void reconnect(bool frommainmenu = false) {
 	can_move = true;
 	client::destruct();
 	reset_network();
-	speak("reconnecting... please wait");
-	login();
+	login(true);
 }
