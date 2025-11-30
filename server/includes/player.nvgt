@@ -2259,10 +2259,10 @@ void pmplayer(player@ p, string who, string msg) {
 		send_reliable(p, "your chats have been disabled", 2);
 		return;
 	}
-	/*if (who == p.name) {
+	if (who == p.name) {
 		send_reliable(p, "you can't send message to yourself", 2);
 		return;
-	}*/
+	}
 	player@ w = get_player_obj_from(who);
 	if (@w == null) return;
 	if (w.pmreceiving == 0) {
