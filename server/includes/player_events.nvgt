@@ -155,6 +155,13 @@ void player_event(player@p, string event) {
 		double amount = string_to_number(parsed[1]);
 		int id = string_to_number(parsed[2]);
 		auction::make_bid(p, amount, id);
+	} else if (parsed[0] == "select_changelog_category" and parsed.length() >= 2) {
+		string category = parsed[1];
+		if (category == "server") {
+			show_changelog("server", "changelogs/server.md", @p);
+		} else if (category == "client") {
+			show_changelog("client", "changelogs/client.md", @p);
+		}
 	} else if (parsed[0] == "bid_select" and parsed.length() >= 2) {
 		int id = string_to_number(parsed[1]);
 		Auction@ a = auction::get_auction(id);
