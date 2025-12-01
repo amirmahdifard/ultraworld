@@ -33,18 +33,23 @@ void command(player@p, string command) {
 			p.finishtasktimer.pause();
 		}
 	} else if (parsed[0] == "/changes") {
-		string c = file_get_contents("changes.md");
-		c = string_replace(c, "\r\n", "\n", true);
-		serverinput i;
-		i.title = "Change Log";
-		i.text = "Changes";
-		i.default_text = c;
-		i.button1 = "";
-		i.button2 = "&Close";
-		i.button2cancel = 1;
-		i.readonly = 1;
-		i.multiline = 1;
-		i.send(p.peer_id);
+		if (parsed.length() == 1) {
+			cmenupage m;
+			m.intro = "Select a change log category:";
+			m.initial_packet = "select_changelog_category";
+			m.add("Server Changes", "server");
+			m.add("Client Changes", "client");
+			m.send(p.peer_id);
+		} else if (parsed.length() >= 2) {
+			string category = string_to_lower_case(parsed[1]);
+			if (category == "server") {
+				show_changelog("server", "changelogs/server.md", @p);
+			} else if (category == "client") {
+				show_changelog("client", "changelogs/client.md", @p);
+			} else {
+				p.sendpacket("Invalid changelog category. Use 'server' or 'client'.", 0);
+			}
+		}
 		return;
 	} else if (parsed[0] == "/cmds") {
 		string c = file_get_contents("commands.md");
@@ -1331,7 +1336,9 @@ void command(player@p, string command) {
 		shutdowntime = sec;
 		shutdownreason = r;
 		sdtimer.restart(); shutdown = true;
-		snotify(0, "the server will shutdown within " + ms_to_readable_time(sec * 1000), "notify3" + sndtype);
+		string msg = "the server will shutdown within " + ms_to_readable_time(sec * 1000);
+		if (r != "") msg += " for: " + r;
+		snotify(0, msg, "notify3" + sndtype);
 		return;
 	} else if (parsed[0] == "/reboot" && p.admin) {
 		string r = string_trimleft(command, (parsed[0] + " ").length());
@@ -1348,7 +1355,9 @@ void command(player@p, string command) {
 		reboottime = sec;
 		rebootreason = r;
 		rbtimer.restart(); reboot = true;
-		snotify(0, "the server will reboot within " + ms_to_readable_time(sec * 1000), "notify3" + sndtype);
+		string msg = "the server will reboot within " + ms_to_readable_time(sec * 1000);
+		if (r != "") msg += " for: " + r;
+		snotify(0, msg, "notify3" + sndtype);
 		return;
 	} else if (parsed[0] == "/closeclientall")
 		send_reliable(0, "killclient", 0);
@@ -1683,6 +1692,21 @@ void command(player@p, string command) {
 		i.readonly = 1;
 		i.multiline = 1;
 		i.send(p.peer_id);
+		return;
+	} else if (parsed[0] == "/feedback") {
+		if (parsed.length() > 1) {
+			string msg = string_trimleft(command, (parsed[0] + " ").length());
+			add_feedback(p, msg);
+		} else {
+			show_feedback_menu(p);
+		}
+		return;
+	} else if (parsed[0] == "/feedbacks") {
+		if (p.is_admin() || p.is_dev()) {
+			list_manage_feedbacks(p);
+		} else {
+			p.sendpacket("You do not have permission to use this command.", 0);
+		}
 		return;
 	} else if (parsed[0] == "/help" and parsed.length() >= 1) {
 		send_reliable(p, "help", 0);
@@ -2695,12 +2719,44 @@ void command(player@p, string command) {
 				send_reliable(e.peer_id, "enabled " + players[ind].name + "'s " + parsed[2], 2);
 			}
 		}
-	} else if (parsed[0] == "/bid" && parsed.length() >= 2) {
-		if (auction::doing)
-			send_reliable(p, "bid " + auction::need + " " + parsed[1], 0);
+	} else if (parsed[0] == "/bid") {
+		if (!auction::doing) {
+			p.sendpacket("No auctions in progress.", 0);
+			return;
+		}
+		if (p.prison == true) {
+			p.sendpacket("You can't do this in prison", 2);
+			return;
+		}
+		if (parsed.length() >= 2) {
+			double amount = stn(parsed[1]);
+			if (auction::list.length() == 1) {
+				auction::make_bid(p, amount, auction::list[0].id);
+			} else {
+				cmenupage m;
+				m.intro = "Select an auction to bid " + amount;
+				m.initial_packet = "bid_with_amt " + amount;
+				for(uint i=0; i<auction::list.length(); i++) {
+					m.add(auction::list[i].info(), "" + auction::list[i].id);
+				}
+				m.send(p.peer_id);
+			}
+		} else {
+			if (auction::list.length() == 1) {
+				send_serverbox(p.peer_id, 0, -1, 0, -1, "bid_input " + auction::list[0].id, "Enter bid amount for " + auction::list[0].amount + " " + auction::list[0].item + " (Min: " + auction::list[0].minbid + " " + auction::list[0].need + ")");
+			} else {
+				cmenupage m;
+				m.intro = "Select an auction to bid on";
+				m.initial_packet = "bid_select";
+				for(uint i=0; i<auction::list.length(); i++) {
+					m.add(auction::list[i].info(), "" + auction::list[i].id);
+				}
+				m.send(p.peer_id);
+			}
+		}
 		return;
 	} else if (parsed[0] == "/currentauction") {
-		send_reliable(e.peer_id, "auctions " + auction::info, 0);
+		p.sendpacket("auctions " + auction::info, 0);
 		return;
 	} else if (parsed[0] == "/playernotify" and parsed.length() >= 4 and p.is_manager()) {
 		int index2 = get_player_index_from(parsed[1]);
@@ -3138,15 +3194,41 @@ void command(player@p, string command) {
 		}
 		string i = parsed[1];
 		double am = stn(parsed[2]);
-		if (am <= 0) return;
+		if (am <= 0) { p.sendpacket("Amount must be greater than 0", 0); return; }
 		string need = parsed[3];
 		double bid = stn(parsed[4]);
-		if (bid < 0) return;
+		if (bid < 0) { p.sendpacket("Minimum bid cannot be negative", 0); return; }
 		auction::start(i, am, need, bid, @p);
 		return;
-	} else if (parsed[0] == "/abid" && parsed.length() > 1) {
-		double bid = stn(parsed[1]);
-		auction::make_bid(p, bid);
+	} else if (parsed[0] == "/abid") {
+		if (!auction::doing) {
+			p.sendpacket("No auctions in progress.", 0);
+			return;
+		}
+		if (p.prison == true) {
+			p.sendpacket("You can't do this in prison", 2);
+			return;
+		}
+		string[] menu_items;
+		string[] menu_values;
+		for(uint i=0; i<auction::list.length(); i++) {
+			menu_items.insert_last(auction::list[i].info());
+			menu_values.insert_last("" + auction::list[i].id);
+		}
+		if (parsed.length() >= 2) {
+			double amount = stn(parsed[1]);
+			if (auction::list.length() == 1) {
+				auction::make_bid(p, amount, auction::list[0].id);
+			} else {
+				sendmenu(p.peer_id, "Select an auction to bid " + amount, join(menu_items, "[]"), true, "bid_with_amt " + amount);
+			}
+		} else {
+			if (auction::list.length() == 1) {
+				send_serverbox(p.peer_id, 0, -1, 0, -1, "bid_input " + auction::list[0].id, "Enter bid amount for " + auction::list[0].amount + " " + auction::list[0].item + " (Min: " + auction::list[0].minbid + " " + auction::list[0].need + ")");
+			} else {
+				sendmenu(p.peer_id, "Select an auction to bid on", join(menu_items, "[]"), true, "bid_select");
+			}
+		}
 		return;
 	} else if (parsed[0] == "/teamnickname" && parsed.length() > 1) {
 		string r = string_trimleft(command, (parsed[0] + " ").length());
@@ -3380,5 +3462,9 @@ void command(player@p, string command) {
 		if (file_delete("chars/" + parsed[1] + "/" + t)) p.sendpacket("Deleted " + t + " of " + parsed[1], 2);
 		else p.sendpacket("Failed to delete this", 0);
 		return;
+	} else if (parsed[0] == "/debug_stores" && p.dev) {
+		send_reliable(p.peer_id, "Memory stores: " + playerstores.length(), 0);
+		string[] files = find_files("playerstores/*.playerstore");
+		send_reliable(p.peer_id, "Disk files (" + files.length() + "): " + join(files, ", "), 0);
 	}
 }

@@ -7,6 +7,8 @@
 #include "includes/chartime.nvgt"
 #include "includes/staff.nvgt"
 #include "includes/staffevent.nvgt"
+#include "includes/servermenu.nvgt"
+#include "includes/feedback.nvgt"
 #include"includes/ai.nvgt"
 #include"includes/air_conditioner.nvgt"
 #include"includes/arena.nvgt"
@@ -21,6 +23,7 @@
 #include"includes/canister.nvgt"
 #include"includes/char_data.nvgt"
 #include"includes/char_spam.nvgt"
+#include"includes/changelog_viewer.nvgt"
 #include"includes/clock.nvgt"
 #include"includes/combine.nvgt"
 #include"includes/commands.nvgt"
@@ -106,6 +109,5 @@
 #include "includes/ntm/*.nvgt"
 #include "includes/sound.nvgt"
 #include "includes/multiversion.nvgt"
-#include "includes/servermenu.nvgt"
 #include "includes/spam/*.nvgt" /**/
 #include "includes/ratelimit.nvgt"

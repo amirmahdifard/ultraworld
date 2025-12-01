@@ -2,6 +2,14 @@
 {
 	string[] parsed = string_split(message, " ", true);
 	if (parsed[0] == "draw" and parsed.length() >= 2) {
+		string[] social_sounds = {"help2.ogg", "male_laugh1.ogg", "male_laugh2.ogg", "male_laugh3.ogg", "male_clear_throat.ogg", "cackle.ogg", "evil_laugh.ogg", "burp4.ogg", "cough3.ogg", "yawn1.ogg", "sigh3.ogg", "social1.ogg", "social2.ogg", "social3.ogg", "vomit2.ogg", "help.ogg", "female_laugh1.ogg", "female_laugh2.ogg", "female_laugh3.ogg", "female_clear_throat.ogg", "female_gasp1.ogg", "evil_laugh2.ogg", "cough2.ogg", "female_yawn1.ogg", "vomit.ogg"};
+		if (social_sounds.find(parsed[1]) > -1) {
+			if (p.social_ratelimit_timer.elapsed < 10000) {
+				send_reliable(p.peer_id, "Wait " + ((10000 - p.social_ratelimit_timer.elapsed) / 1000) + " seconds.", 2);
+				return;
+			}
+			p.social_ratelimit_timer.restart();
+		}
 		if (p.looking == "") {
 			string msg = "draw " + p.name + " " + parsed[1] + " " + p.x + " " + p.y + " " + p.z;
 			send_packet(6, msg, p.x, p.y, p.z, maps[get_map_index(p.map)]);

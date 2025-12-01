@@ -3,7 +3,8 @@ const string sndtype = ".ogg";
 #pragma asset "rules"
 #pragma asset "readme.txt"
 #pragma asset "rules.txt"
-#pragma asset "changes.md"
+#pragma asset "changelogs/server.md"
+#pragma asset "changelogs/client.md"
 #pragma asset "commands.md"
 #include "includes.nvgt"
 const string deflang = "English";
@@ -110,6 +111,7 @@ double voteno = 0;
 double leaveafk1 = 10;
 double minverlanguage = 1;
 double minverkeyboardlanguage = 1;
+double record_uptime = 0;
 string[] store_items;
 double[] amounts;
 string[] paid_store_items;
@@ -183,6 +185,7 @@ void main() {
 	setupserver();
 	garbage_collect();
 	init_mapsystem();
+	init_feedback();
 	log("svr", "server started.");
 	garbage_collect();
 	#if_not linux
@@ -233,6 +236,8 @@ void loaddata() {
 		voteyes = sd.readn("voteyes");
 	if (sd.d.exists("voteno"))
 		voteno = sd.readn("voteno");
+	if (sd.d.exists("record_uptime"))
+		record_uptime = sd.readn("record_uptime");
 	if (sd.d.exists("accumulated_uptimer"))
 		accumulated_uptimer.force(sd.readn("accumulated_uptimer"));
 	//if(sd.d.exists("meteoritespawntimer"))
@@ -285,6 +290,8 @@ void writedata(string fv = "", int fvv = -55555) {
 	sd.add("peakreached", peakreached);
 	sd.add("voteyes", voteyes);
 	sd.add("voteno", voteno);
+	if (uptimer.elapsed > record_uptime) record_uptime = uptimer.elapsed;
+	sd.add("record_uptime", record_uptime);
 	sd.add("servermoney", servermoney);
 	sd.add("chatting", chatting);
 	sd.add("missiletime", missiletime);
@@ -1464,7 +1471,10 @@ msgs.insert_last("contribute to our game at: https://github.com/amirmahdifard/ul
 						if (players[index].pvp == 1) send_reliable(players[index], "you are now pvp", 2);
 						if (auction::doing) {
 							send_reliable(players[index], "play_s notify_blips.ogg", 6);
-							send_reliable(players[index], "auctions there's an auction in progress: " + auction::info, 0);
+							if (auction::list.length() == 1)
+								send_reliable(players[index], "auctions there's an auction in progress: " + auction::info, 0);
+							else
+								send_reliable(players[index], "auctions " + auction::info, 0);
 						}
 						if (doublexp == 1) {
 							send_reliable(players[index], "play_s notify_applause.ogg", 6);
@@ -2193,6 +2203,8 @@ void setupserver() {
 	add_to_paid_store("teleporter", 2000, "paid_store");
 	add_to_paid_store("telehouse", 550, "paid_store");
 	add_to_paid_store("pvp_escapator", 1000, "paid_store");
+	add_to_paid_store("amirmahdifards_coffee", 60000, "paid_store");
+	add_to_paid_store("patricus_coffee", 1000, "paid_store");
 	add_to_paid_store("patricus_potion", 3333, "paid_store");
 	add_to_paid_store("paid_gift", 1000, "paid_store");
 	add_to_paid_store("xp_potion", 3500, "paid_store");
@@ -2251,7 +2263,7 @@ void setupserver() {
 	add_to_store("wood", 500, "diy_store");
 	add_to_store("concrete", 1200, "diy_store");
 	add_to_store("iron_shovel", 230, "diy_store");
-	add_to_store("bottle_of_cleanwater", 1841, "survival_store");
+	add_to_store("shower_in_a_can", 1841, "survival_store");
 	add_to_store("net", 500, "survival_store");
 	add_to_store("string", 150, "survival_store");
 	add_to_store("gas_mask", 550, "survival_store");
@@ -3548,6 +3560,10 @@ void send_store(int playerindex) {
 	}
 }
 void purchase(string name, double amount, player@p) {
+	if (amount < 1 and amount > -1) {
+		send_reliable(p, "Invalid amount.", 2);
+		return;
+	}
 	int itemindex = get_item_index(name);
 	if (itemindex > -1) {
 		int[] a = get_amounts();
@@ -3598,6 +3614,10 @@ void purchase(string name, double amount, player@p) {
 	}
 }
 void pspurchase(string name, double amount, player@p) {
+	if (amount < 1 and amount > -1) {
+		send_reliable(p, "Invalid amount.", 2);
+		return;
+	}
 	int ps = in_playerstore(p);
 	if (ps > -1) {
 		int psowner = get_player_index_from(playerstores[ps].owner);

@@ -822,6 +822,32 @@ void use(player@p, string message) {
 					send_reliable(p, "hempty " + parsed[2], 0);
 				}
 			}
+		} else if (parsed[1] == "amirmahdifards_coffee") {
+			send_packet(6, "play drinkcup.ogg " + p.x + " " + p.y + " " + p.z, p.x, p.y, p.z, maps[get_map_index(p.map)]);
+			send_packet(6, "play bonefix.ogg " + p.x + " " + p.y + " " + p.z, p.x, p.y, p.z, maps[get_map_index(p.map)]);
+			p.thirst = 0;
+			p.hunger = 0;
+			p.nthirst = 0;
+			p.nhunger = 0;
+			p.sick = 0;
+			p.dirty = 0;
+			p.wet = 0;
+			p.drunkstage = 0;
+			p.health = p.maxhealth;
+			p.energy += 40000;
+			p.level += 100;
+			p.bone_level = 0;
+			p.bone_break = false;
+			p.inv_add_item("amirmahdifards_coffee", -1);
+			p.inv_add_item("cup", 1);
+			send_reliable(p, "hempty " + parsed[2], 0);
+		} else if (parsed[1] == "patricus_coffee") {
+			send_packet(6, "play drinkcup.ogg " + p.x + " " + p.y + " " + p.z, p.x, p.y, p.z, maps[get_map_index(p.map)]);
+			p.thirst = 0;
+			p.energy += 30000;
+			p.inv_add_item("patricus_coffee", -1);
+			p.inv_add_item("cup", 1);
+			send_reliable(p, "hempty " + parsed[2], 0);
 		} else if (parsed[1] == "uncooked_loaf") {
 			if (p.waitingtimer.elapsed >= 100) {
 				p.waitingtimer.restart();

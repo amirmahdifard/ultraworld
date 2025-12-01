@@ -10,6 +10,7 @@ namespace scp::menus {
 			c.add("start the game", "gstart");
 			c.add("stop the game", "gstop");
 			c.add("Destroy player properties", "psd");
+			c.add("Destroy Player Store", "dps");
 			c.add("Backup data", "backup");
 			c.add("Toggle XP features", "xp");
 			c.add("Reboot all AI's", "reai");
@@ -62,6 +63,9 @@ namespace scp::menus {
 				break;
 			} else if (r == "psd") {
 				scp::actions::server::psd();
+				break;
+			} else if (r == "dps") {
+				scp::actions::server::destroy_player_store();
 				break;
 			} else if (r == "backup") {
 				scp::actions::server::backup();

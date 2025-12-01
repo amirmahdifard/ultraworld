@@ -1,0 +1,14 @@
+void show_changelog(string type, string file_path, player@ p) {
+	string c = file_get_contents(file_path);
+	c = string_replace(c, "\r\n", "\n", true);
+	serverinput i;
+	i.title = "Change Log: " + string_capitalize(type);
+	i.text = string_capitalize(type) + " Changes";
+	i.default_text = c;
+	i.button1 = "";
+	i.button2 = "&Close";
+	i.button2cancel = 1;
+	i.readonly = 1;
+	i.multiline = 1;
+	i.send(p.peer_id);
+}

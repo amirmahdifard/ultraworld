@@ -22,6 +22,7 @@ To use a command, you can either press `Slash`, type `/` 1 more time, or press t
 - `omutelist`: Displays players that have muted you.
 - `setonlinemsg <message>`: Sets your online message. Supports message variables.
 - `setofflinemsg <message>`: Sets your offline message. Supports message variables.
+- `feedback`: open feedback menu where you can create and manage your feedback.
 
 ## Team Related Commands
 - `jointeam <ID> <password>: Joins a team using its ID.

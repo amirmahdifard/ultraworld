@@ -1,0 +1,77 @@
+namespace scp::actions::server {
+	void destroy_player_store() {
+		received_store_owners = false;
+		send_reliable(peer_id, "request_store_owners", 0);
+		
+		int timeout = 0;
+		while(!received_store_owners && timeout < 100) {
+			wait(50);
+			mainloop();
+			timeout++;
+		}
+		
+		if(!received_store_owners) return;
+		if(store_owners_list.length() == 0) {
+			speak("No player stores found.");
+			return;
+		}
+		
+		custom_menu m;
+		setupmenu(m);
+		m.add("Destroy ALL Stores (GLOBAL)", "all");
+		for(uint i=0; i<store_owners_list.length(); i++) {
+			if(store_owners_list[i] != "") m.add(store_owners_list[i], store_owners_list[i]);
+		}
+		
+		if(m.get_item_length() == 0) return;
+		
+		m.create("Select Store Owner", true);
+		string owner = "";
+		while(m.running) {
+			wait(5);
+			m.monitor();
+			mainloop();
+			if(m.click != "") {
+				if(m.click == "all") {
+					send_reliable(peer_id, "destroy_player_store all", 0);
+					break;
+				}
+				owner = m.click;
+				break;
+			}
+		}
+		
+		if(owner == "" && m.click != "all") return;
+		
+		received_player_stores = false;
+		send_reliable(peer_id, "request_stores_of " + owner, 0);
+		
+		timeout = 0;
+		while(!received_player_stores && timeout < 100) {
+			wait(50);
+			mainloop();
+			timeout++;
+		}
+		
+		if(!received_player_stores) return;
+		
+		custom_menu m2;
+		setupmenu(m2);
+		m2.add("Destroy All Stores for " + owner, owner);
+		for(uint i=0; i<player_stores_list.length(); i++) {
+			if(player_stores_list[i] != "") m2.add("Store: " + player_stores_list[i], player_stores_list[i]);
+		}
+		
+		m2.create("Select Store to Destroy", true);
+		while(m2.running) {
+			wait(5);
+			m2.monitor();
+			mainloop();
+			string target = m2.click;
+			if(target != "") {
+				send_reliable(peer_id, "destroy_player_store " + target, 0);
+				break;
+			}
+		}
+	}
+}

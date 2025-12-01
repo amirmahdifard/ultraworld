@@ -268,7 +268,7 @@ class player {
 	int smartphonecharge = 100;
 	int smartphonechargetime = 300000;
 	int smartphoneon = 0;
-	timer persisttimer, falltimer, activitytimer, spamtimer, playtimer, gettimer, healtimer, timeouttimer, chattimer, maptraveltimer, strtimer, usetimer, statchangetimer, tmchuva, tgripe, stunagaintimer, unstuntrytimer, stunthrowtimer, stuntimer, tvarinha, atpacifistatempo, waitingtimer, tlptimer, eattimer, foodtimer, healthtimer, energytimer, thirsttimer, hungertimer, factortimer, thack, turrettimer, buildtimer, grenadetimer, rltm, firetime, boattimer, tminvs, airwarntimer, airlifetimer, airtimer, burntimer, tasertimer, poisontimer, invisibilitytimer, itemgrabtimer, emergency_itemgrabtimer, tsvida, tsitem, tsugando, speedboosttime, drunkacttimer, drinktimer, drunktimer, whiledrunktimer, coolofftimer, sleeptimer, sitsleeptimer, snaretimer, hurttimer, ffiretimer, gastimer, nuclearbombtimer, watertimer, cbombtimer, tppeixe, tenter, nicktimer, afksecondtimer, safetimer, supersafetimer, idle, tcaverna, newbtimer, tmaquina, biketimer, warptimer, pvptimer, cigarrettetimer, liquidstimer, foodeattimer, invchecktimer, ktimer, tutimer, ewtimer, missiletimer, icptimer, stptimer, smartphonechargetimer, shieldtimer, cheatertimer, lockerplacetimer, fridgeplacetimer, beacontimer, xppotiontimer, finishtasktimer, bonehealtimer, temperaturetime, coldtimer;
+	timer persisttimer, falltimer, activitytimer, spamtimer, social_ratelimit_timer, playtimer, gettimer, healtimer, timeouttimer, chattimer, maptraveltimer, strtimer, usetimer, statchangetimer, tmchuva, tgripe, stunagaintimer, unstuntrytimer, stunthrowtimer, stuntimer, tvarinha, atpacifistatempo, waitingtimer, tlptimer, eattimer, foodtimer, healthtimer, energytimer, thirsttimer, hungertimer, factortimer, thack, turrettimer, buildtimer, grenadetimer, rltm, firetime, boattimer, tminvs, airwarntimer, airlifetimer, airtimer, burntimer, tasertimer, poisontimer, invisibilitytimer, itemgrabtimer, emergency_itemgrabtimer, tsvida, tsitem, tsugando, speedboosttime, drunkacttimer, drinktimer, drunktimer, whiledrunktimer, coolofftimer, sleeptimer, sitsleeptimer, snaretimer, hurttimer, ffiretimer, gastimer, nuclearbombtimer, watertimer, cbombtimer, tppeixe, tenter, nicktimer, afksecondtimer, safetimer, supersafetimer, idle, tcaverna, newbtimer, tmaquina, biketimer, warptimer, pvptimer, cigarrettetimer, liquidstimer, foodeattimer, invchecktimer, ktimer, tutimer, ewtimer, missiletimer, icptimer, stptimer, smartphonechargetimer, shieldtimer, cheatertimer, lockerplacetimer, fridgeplacetimer, beacontimer, xppotiontimer, finishtasktimer, bonehealtimer, temperaturetime, coldtimer;
 	//int temperaturelevel=25;
 	string temperature;
 	string firesound, reloadsound, distsound, emptysound;
@@ -2259,10 +2259,10 @@ void pmplayer(player@ p, string who, string msg) {
 		send_reliable(p, "your chats have been disabled", 2);
 		return;
 	}
-	/*if (who == p.name) {
+	if (who == p.name) {
 		send_reliable(p, "you can't send message to yourself", 2);
 		return;
-	}*/
+	}
 	player@ w = get_player_obj_from(who);
 	if (@w == null) return;
 	if (w.pmreceiving == 0) {
