@@ -3366,7 +3366,7 @@ void combine(player@p, string message) {
 					} else if (tile == "water" or tile == "water2" or tile == "water3" or tile == "water4" or tile == "water5" or tile == "water6" or tile == "water7" or tile == "water8" or tile == "water9" or tile == "water10" or tile == "puddle" or tile == "deepwater" or tile == "swim" or tile == "swimming" or tile == "swimming2" or tile == "spring" or tile == "spring2" or tile == "wallboat" or tile == "air" or tile == "") {
 						send_reliable(p, "You can't use this here", 2);
 						send_reliable(p, "hempty " + parsed[2], 0);
-					} else if (is_safe(p.x, p.y, p.z, maps[get_map_index(p.map)]) == false) {
+					} else if (is_safe(p.x, p.y, p.z, maps[get_map_index(p.map)]) == true) {
 						send_reliable(p, "didn't you know that you shouldn't start fire in safe places, then now you do!", 2);
 						send_reliable(p, "hempty " + parsed[2], 0);
 					} else {
