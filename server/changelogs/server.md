@@ -1,5 +1,6 @@
 ## Changes on Sunday, November 30, 2025
 - Version 2.49.1 has been released.
+- Fixed the full system. Now it correctly shows the values, and now you can see the diffrences between 2 types of them because in real life you do.
 - Added support for multiple simultaneous auctions. Players can now bid on specific auctions via a menu.
 - Default auction timer increased to 2 minutes.
 - Added "Peak uptime" tracking to server status.

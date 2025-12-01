@@ -9805,9 +9805,9 @@ void player_event(player@p, string event) {
 	} else if (parsed[0] == "fullcheck") {
 		int ind = get_player_index_from(p.looking);
 		if (ind > -1)
-			send_reliable(p, "" + players[ind].name + " is " + (round(percent(players[ind].nthirst, players[ind].nthirst + players[ind].nhunger), 0) == 0 ? "not" : "" + round(percent(players[ind].nthirst, players[ind].nthirst + players[ind].nhunger), 0) + "%") + " full", 2);
+			send_reliable(p, "" + players[ind].name + " has " + players[ind].nthirst + "% pee, and " + players[ind].nhunger + "% poo", 2);
 		else
-			send_reliable(p, "you are " + (round(percent(p.nthirst, p.nthirst + p.nhunger), 0) == 0 ? "not" : "" + round(percent(p.nthirst, p.nthirst + p.nhunger), 0) + "%") + " full", 2);
+			send_reliable(p, "you have " + p.nthirst + "% pee, and " + p.nhunger + "% poo", 2);
 	} else if (parsed[0] == "sickcheck") {
 		int ind = get_player_index_from(p.looking);
 		if (ind > -1)
