@@ -162,6 +162,46 @@ void player_event(player@p, string event) {
 		} else if (category == "client") {
 			show_changelog("client", "changelogs/client.md", @p);
 		}
+	} else if (parsed[0] == "feedback_main_menu" && parsed.length() > 1) {
+		string selection = parsed[1];
+		if (selection == "new") {
+			send_serverbox(p.peer_id, 0, -1, 0, -1, "feedback_input", "Enter your feedback");
+		} else if (selection == "my") {
+			list_my_feedbacks(p);
+		} else if (selection == "manage") {
+			list_manage_feedbacks(p);
+		}
+	} else if (parsed[0] == "feedback_input" and parsed.length() > 1) {
+		string msg = string_trimleft(event, 15);
+		if (msg != "") add_feedback(p, msg);
+	} else if (parsed[0] == "view_my_feedback_options" && parsed.length() > 1) {
+		int id = string_to_number(parsed[1]);
+		show_user_feedback_options(p, id);
+	} else if (parsed[0] == "feedback_user_action" && parsed.length() > 2) {
+		int id = string_to_number(parsed[1]);
+		string action = parsed[2];
+		if (action == "view") {
+			view_feedback_details(p, id);
+		} else if (action == "close") {
+			user_close_feedback(p, id);
+		}
+	} else if (parsed[0] == "view_feedback_options" && parsed.length() > 1) {
+		int id = string_to_number(parsed[1]);
+		show_admin_feedback_options(p, id);
+	} else if (parsed[0] == "feedback_admin_action" && parsed.length() > 2) {
+		int id = string_to_number(parsed[1]);
+		string action = parsed[2];
+		if (action == "reply") {
+			send_serverbox(p.peer_id, 0, -1, 0, -1, "reply_feedback_input " + id, "Enter reply for feedback ID " + id);
+		} else if (action == "close") {
+			close_feedback(p, id);
+		} else if (action == "delete") {
+			delete_feedback(p, id);
+		}
+	} else if (parsed[0] == "reply_feedback_input" and parsed.length() > 2) {
+		int id = string_to_number(parsed[1]);
+		string reply = string_trimleft(event, (parsed[0] + " " + parsed[1] + " ").length());
+		if (reply != "") reply_feedback(p, id, reply);
 	} else if (parsed[0] == "bid_select" and parsed.length() >= 2) {
 		int id = string_to_number(parsed[1]);
 		Auction@ a = auction::get_auction(id);
@@ -175,6 +215,7 @@ void player_event(player@p, string event) {
 		int id = string_to_number(parsed[1]);
 		double amount = string_to_number(parsed[2]);
 		auction::make_bid(p, amount, id);
+
 	} else if (parsed[0] == "lookstop" and p.looking != "") {
 		int ind = get_player_index_from(p.looking);
 		if (ind > -1) {
