@@ -3363,8 +3363,8 @@ void combine(player@p, string message) {
 							send_reliable(p, "hempty 1", 0);
 						else
 							send_reliable(p, "hempty 2", 0);
-					} else if (tile == "water" or tile == "water2" or tile == "water3" or tile == "water4" or tile == "water5" or tile == "water6" or tile == "water7" or tile == "water8" or tile == "water9" or tile == "water10" or tile == "puddle" or tile == "deepwater" or tile == "swim" or tile == "swimming" or tile == "swimming2" or tile == "spring" or tile == "spring2" or tile == "wallboat" or tile == "air" or tile == "") {
-						send_reliable(p, "You can't use this here", 2);
+					} else if (tile == "water" or tile == "water2" or tile == "carpet" or tile == "carpet" or tile == "carpet2" or tile == "carpet3" or tile == "carpet4" or tile == "carpet5" or tile == "carpet6" or tile == "carpet7" or tile == "carpet8" or tile == "carpet9" or tile == "carpet10" or tile == "carpet11" or tile == "carpet12" or tile == "tile" or tile == "tile2" or tile == "tile3" or tile == "tile4" or tile == "tile5" or tile == "tile6" or tile == "tile7" or tile == "tile8" or tile == "wood" or tile == "wood2" or tile == "wood3" or tile == "wood4" or tile == "wood5" or tile == "wood6" or tile == "wood7" or tile == "wood8" or tile == "wood9" or tile == "wood10" or tile == "branch" or tile == "branch2" or tile == "water3" or tile == "water4" or tile == "water5" or tile == "water6" or tile == "water7" or tile == "water8" or tile == "water9" or tile == "water10" or tile == "puddle" or tile == "deepwater" or tile == "swim" or tile == "swimming" or tile == "swimming2" or tile == "spring" or tile == "spring2" or tile == "wallboat" or tile == "air" or tile == "") {
+						send_reliable(p, "Didn't you know that you shouldn't abuse?", 2);
 						send_reliable(p, "hempty " + parsed[2], 0);
 					} else if (is_safe(p.x, p.y, p.z, maps[get_map_index(p.map)]) == true) {
 						send_reliable(p, "didn't you know that you shouldn't start fire in safe places, then now you do!", 2);
