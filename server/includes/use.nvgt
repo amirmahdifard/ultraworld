@@ -2658,7 +2658,7 @@ void use(player@p, string message) {
 					send_reliable(p, "hempty " + parsed[2], 0);
 				}
 			}
-} else if (parsed[1] == "grenade") {
+		} else if (parsed[1] == "grenade") {
 		if(p.grenadetimer.elapsed>=5000) {
 		p.grenadetimer.restart();
 			if (p.safe == false and is_safe(p.x, p.y, p.z, maps[get_map_index(p.map)]) == false and p.afk == false) {
