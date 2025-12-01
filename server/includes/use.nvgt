@@ -2658,7 +2658,9 @@ void use(player@p, string message) {
 					send_reliable(p, "hempty " + parsed[2], 0);
 				}
 			}
-		} else if (parsed[1] == "grenade") {
+} else if (parsed[1] == "grenade") {
+		if(p.grenadetimer.elapsed>=5000) {
+		p.grenadetimer.restart();
 			if (p.safe == false and is_safe(p.x, p.y, p.z, maps[get_map_index(p.map)]) == false and p.afk == false) {
 				send_packet(6, "play fraggrenadethrow.ogg " + p.x + " " + p.y + " " + p.z, p.x, p.y, p.z, maps[get_map_index(p.map)]);
 				string wname = parsed[1];
@@ -2667,6 +2669,10 @@ void use(player@p, string message) {
 				p.inv_add_item("grenade", -1);
 				send_reliable(p, "hempty " + parsed[2], 0);
 			}
+			}
+		else {
+		send_reliable(p, "you can't use grenades too fast",2);
+		}
 		} else if (parsed[1] == "animal_revitalizer") {
 			if (is_safe(p.x, p.y, p.z, maps[get_map_index(p.map)])) {
 				send_reliable(p, "sorry, you can't use this item in safe places", 2);
