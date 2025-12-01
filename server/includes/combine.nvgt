@@ -3340,46 +3340,6 @@ void combine(player@p, string message) {
 					send_reliable(p, "" + p.partner + " is offline at the moment", 2);
 			} else
 				send_reliable(p, "wear the ring first", 2);
-		} else if (lefthand == "opened_match_box" and righthand == "match" or lefthand == "match" and righthand == "opened_match_box") {
-			int c = get_candle_at(p.x, p.y, p.z, maps[get_map_index(p.map)]);
-			if (c > -1) {
-				if (p.map == candles[c].map.name and get_3d_distance(p.x, p.y, p.z, candles[c].x, candles[c].y, candles[c].z) <= 1) {
-					send_packet(6, "play match_light.ogg " + p.x + " " + p.y + " " + p.z, p.x, p.y, p.z, maps[get_map_index(p.map)]);
-					candles[c].on = 1;
-					p.inv_add_item("match", -1);
-					if (lefthand == "match")
-						send_reliable(p, "hempty 1", 0);
-					else
-						send_reliable(p, "hempty 2", 0);
-				}
-			} else {
-				if (starter_exist_on(p.x, p.y, p.z, maps[get_map_index(p.map)]) == false) {
-					string tile = get_tile_at(p.x, p.y, p.z, maps[get_map_index(p.map)]);
-					if (tile == "wood" or tile == "wood2" or tile == "wood3" or tile == "wood4" or tile == "wood5" or tile == "wood6" or tile == "wood7" or tile == "wood8" or tile == "wood9" or tile == "wood10" or tile == "branch" or tile == "branch2" or tile == "carpet" or tile == "carpet2" or tile == "carpet3" or tile == "carpet4" or tile == "carpet5" or tile == "carpet6" or tile == "carpet7" or tile == "carpet8" or tile == "carpet9" or tile == "tile" or tile == "tile2" or tile == "tile3" or tile == "tile4" or tile == "tile5" or tile == "tile6") {
-						send_packet(6, "play match_light.ogg " + p.x + " " + p.y + " " + p.z, p.x, p.y, p.z, maps[get_map_index(p.map)]);
-						spawn_fire(p.x, p.y, p.z, maps[get_map_index(p.map)], random(30, 50));
-						p.inv_add_item("match", -1);
-						if (lefthand == "match")
-							send_reliable(p, "hempty 1", 0);
-						else
-							send_reliable(p, "hempty 2", 0);
-					} else if (tile == "water" or tile == "water2" or tile == "water3" or tile == "water4" or tile == "water5" or tile == "water6" or tile == "water7" or tile == "water8" or tile == "water9" or tile == "water10" or tile == "puddle" or tile == "deepwater" or tile == "swim" or tile == "swimming" or tile == "swimming2" or tile == "spring" or tile == "spring2" or tile == "wallboat" or tile == "air" or tile == "") {
-						send_reliable(p, "You can't use this here", 2);
-						send_reliable(p, "hempty " + parsed[2], 0);
-					} else {
-						spawn_fire_starter(p.x, p.y, p.z, maps[get_map_index(p.map)], random(15, 25));
-						send_reliable(p, "spawn_fire " + p.x + " " + p.y + " " + p.z + " " + p.map, 0);
-						p.inv_add_item("match", -1);
-						if (lefthand == "match")
-							send_reliable(p, "hempty 1", 0);
-						else
-							send_reliable(p, "hempty 2", 0);
-					}
-				} else {
-					send_reliable(p, "there is already a fire here", 2);
-					send_reliable(p, "hempty " + parsed[2], 0);
-				}
-			}
 		} else if (lefthand == "black_bra" or lefthand == "white_bra" or lefthand == "green_bra" or lefthand == "lemon_bra" or lefthand == "blue_bra" or lefthand == "black_spongy_bra" or lefthand == "white_spongy_bra" or lefthand == "green_spongy_bra" or lefthand == "lemon_spongy_bra" or lefthand == "blue_spongy_bra" or lefthand == "lacy_bra" and righthand == "knife" or lefthand == "knife" and righthand == "black_bra" or righthand == "white_bra" or righthand == "green_bra" or righthand == "lemon_bra" or righthand == "blue_bra" or righthand == "black_spongy_bra" or righthand == "white_spongy_bra" or righthand == "green_spongy_bra" or righthand == "lemon_spongy_bra" or righthand == "blue_spongy_bra" or righthand == "lacy_bra") {
 			if (p.waitingtimer.elapsed >= 919) {
 				p.waitingtimer.restart();

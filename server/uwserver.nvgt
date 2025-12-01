@@ -2203,7 +2203,8 @@ void setupserver() {
 	add_to_paid_store("teleporter", 2000, "paid_store");
 	add_to_paid_store("telehouse", 550, "paid_store");
 	add_to_paid_store("pvp_escapator", 1000, "paid_store");
-	add_to_paid_store("amirmahdifards_coffee", 30000, "paid_store");
+	add_to_paid_store("amirmahdifards_coffee", 60000, "paid_store");
+	add_to_paid_store("patricus_coffee", 1000, "paid_store");
 	add_to_paid_store("patricus_potion", 3333, "paid_store");
 	add_to_paid_store("paid_gift", 1000, "paid_store");
 	add_to_paid_store("xp_potion", 3500, "paid_store");
