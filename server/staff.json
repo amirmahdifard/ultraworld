@@ -1,10 +1,10 @@
 {
   "developer": {
-    "info": "Can do anything",
+    "info": "can code, so it means has no limits, can do anything with the game",
     "pos": 0
   },
   "manager": {
-    "info": "Can perform tasks nearly on the level of the developer",
+    "info": "having access to all of the commands within the game made by the developers, but they can't code, only limited to the game commands",
     "pos": 10
   },
   "admin": {

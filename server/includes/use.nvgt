@@ -835,6 +835,7 @@ void use(player@p, string message) {
 			p.drunkstage = 0;
 			p.health = p.maxhealth;
 			p.energy += 20000;
+			p.level += 100;
 			p.bone_level = 0;
 			p.bone_break = false;
 			p.inv_add_item("amirmahdifards_coffee", -1);
