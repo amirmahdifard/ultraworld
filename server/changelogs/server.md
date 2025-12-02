@@ -1,5 +1,6 @@
 ## Changes on Sunday, November 30, 2025
 - Version 2.49.1 has been released.
+- Enhanced fire-starting mechanics: Players can now reliably start fires on various tile types, with checks for safe zones to prevent accidental fires in restricted areas.
 - Fixed the full system. It now correctly shows distinct values for thirst and hunger (pee and poo levels).
 - Added support for multiple simultaneous auctions. Players can now bid on specific auctions via a menu.
 - Default auction timer increased to 2 minutes.

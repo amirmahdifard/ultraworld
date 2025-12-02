@@ -2492,6 +2492,45 @@ void command(player@p, string command) {
 		int index2 = get_player_index_from(parsed[1]);
 		if (index2 > -1)
 			send_reliable(e.peer_id, "The player " + players[index2].name + "'s IP address is " + n.get_peer_address(players[index2].peer_id), 2);
+	} else if (parsed[0] == "/ping") {
+		if (!p.is_admin() && !p.is_dev()) return;
+		if (parsed.length() < 2) {
+			p.sendpacket("/ping <player> [player2...], /ping all", 0);
+			return;
+		}
+		if (parsed[1] == "all") {
+			uint min = 999999, max = 0;
+			double total = 0;
+			string min_p, max_p;
+			string list;
+			uint count = 0;
+			for (uint i = 0; i < players.length(); i++) {
+				uint png = n.get_peer_average_round_trip_time(players[i].peer_id);
+				if (png < min) { min = png; min_p = players[i].name; }
+				if (png > max) { max = png; max_p = players[i].name; }
+				total += png;
+				count++;
+				list += players[i].name + ": " + png + "ms, ";
+			}
+			if (count > 0) {
+				string stats = "Ping Stats: Min: " + min + "ms (" + min_p + "), Max: " + max + "ms (" + max_p + "), Avg: " + round(total / count, 0) + "ms.";
+				send_reliable(p, stats, 2);
+				send_reliable(p, "Pings: " + list, 2);
+				admintell(p.name + " checked all pings. " + stats);
+			} else send_reliable(p, "No players online.", 0);
+		} else {
+			string results;
+			for (uint i = 1; i < parsed.length(); i++) {
+				int idx = get_player_index_from(parsed[i]);
+				if (idx > -1) {
+					uint png = n.get_peer_average_round_trip_time(players[idx].peer_id);
+					string res = players[idx].name + ": " + png + "ms";
+					send_reliable(p, res, 0);
+					results += res + ", ";
+				} else send_reliable(p, "Player " + parsed[i] + " not found.", 0);
+			}
+			if (results != "") admintell(p.name + " checked ping of: " + results);
+		}
 	} else if (parsed[0] == "/compid" and p.dev and parsed.length() > 1) {
 		int index2 = get_player_index_from(parsed[1]);
 		if (index2 > -1)
