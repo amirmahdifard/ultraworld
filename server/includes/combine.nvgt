@@ -905,6 +905,45 @@ void combine(player@p, string message) {
 			else
 				send_reliable(p, "hempty 2", 0);
 			return;
+		} else if (lefthand == "opened_match_box" and righthand == "match" or lefthand == "match" and righthand == "opened_match_box") {
+			int c = get_candle_at(p.x, p.y, p.z, maps[get_map_index(p.map)]);
+			if (c > -1) {
+				if (p.map == candles[c].map.name and get_3d_distance(p.x, p.y, p.z, candles[c].x, candles[c].y, candles[c].z) <= 1) {
+					send_packet(6, "play match_light.ogg " + p.x + " " + p.y + " " + p.z, p.x, p.y, p.z, maps[get_map_index(p.map)]);
+					candles[c].on = 1;
+					p.inv_add_item("match", -1);
+					send_reliable(p, "hempty " + (lefthand == "match" ? "1" : "2"), 0);
+				}
+				return;
+			}
+			if (starter_exist_on(p.x, p.y, p.z, maps[get_map_index(p.map)])) {
+				send_reliable(p, "there is already a fire here", 2);
+				send_reliable(p, "hempty " + parsed[2], 0);
+				return;
+			}
+			if (is_safe(p.x, p.y, p.z, maps[get_map_index(p.map)])) {
+				send_reliable(p, "didn't you know that you shouldn't start fire in safe places, then now you do!", 2);
+				send_reliable(p, "hempty " + parsed[2], 0);
+				return;
+			}
+			string tile = get_tile_at(p.x, p.y, p.z, maps[get_map_index(p.map)]);
+			string[] flammables = {"wood", "branch", "carpet", "tile"};
+			bool big_fire = false;
+			for(uint i=0; i<flammables.length(); i++) {
+				if (string_contains(tile, flammables[i], 1) > -1) {
+					big_fire = true;
+					break;
+				}
+			}
+			if (big_fire) {
+				send_packet(6, "play match_light.ogg " + p.x + " " + p.y + " " + p.z, p.x, p.y, p.z, maps[get_map_index(p.map)]);
+				spawn_fire(p.x, p.y, p.z, maps[get_map_index(p.map)], random(30, 50));
+			} else {
+				spawn_fire_starter(p.x, p.y, p.z, maps[get_map_index(p.map)], random(15, 25));
+				send_reliable(p, "spawn_fire " + p.x + " " + p.y + " " + p.z + " " + p.map, 0);
+			}
+			p.inv_add_item("match", -1);
+			send_reliable(p, "hempty " + (lefthand == "match" ? "1" : "2"), 0);
 		} else if (lefthand == "glue" and righthand == "glass" or lefthand == "glass" and righthand == "glue") {
 			send_packet(6, "play glue.ogg " + p.x + " " + p.y + " " + p.z, p.x, p.y, p.z, maps[get_map_index(p.map)]);
 			p.inv_add_item("sticky_glass", 1);
