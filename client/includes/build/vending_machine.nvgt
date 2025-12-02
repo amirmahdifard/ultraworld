@@ -1,0 +1,71 @@
+void buildvending_machine() {
+    if (d2dsupport == 0) {
+        form.reset();
+        string nums = "1234567890-";
+        string vx, vy, vz;
+        form.create_window("vending machine", false);
+        int a = form.create_input_box("enter the &x coordinate");
+        int b = form.create_input_box("enter the &y coordinate");
+        int c = form.create_input_box("enter the &z coordinate");
+        form.set_disallowed_chars(a, nums, true);
+        form.set_disallowed_chars(b, nums, true);
+        form.set_disallowed_chars(c, nums, true);
+        int ok = form.create_button("finish", false);
+        int can = form.create_button("cancel", false, true);
+        form.focus(a);
+
+        while (true) {
+            wait(5);
+            form.monitor(); mainloop();
+            vx = form.get_text(a);
+            vy = form.get_text(b);
+            vz = form.get_text(c);
+            if (form.is_pressed(ok)) {
+                form.reset();
+                break;
+            } else if (form.is_pressed(can)) {
+                form.reset();
+                return;
+            }
+        }
+
+        if (vx == "" || vy == "" || vz == "") {
+            speak("canceled");
+            return;
+        }
+        send_reliable(peer_id, "addvending_machine vending_machine:" + vx + ":" + vy + ":" + vz, 0);
+    }
+    else {
+        form.reset();
+        string nums = "1234567890-";
+        string vx, vy;
+        form.create_window("vending machine", false);
+        int a = form.create_input_box("enter the &x coordinate");
+        int b = form.create_input_box("enter the &y coordinate");
+        form.set_disallowed_chars(a, nums, true);
+        form.set_disallowed_chars(b, nums, true);
+        int ok = form.create_button("finish", false);
+        int can = form.create_button("cancel", false, true);
+        form.focus(a);
+
+        while (true) {
+            wait(5);
+            form.monitor(); mainloop();
+            vx = form.get_text(a);
+            vy = form.get_text(b);
+            if (form.is_pressed(ok)) {
+                form.reset();
+                break;
+            } else if (form.is_pressed(can)) {
+                form.reset();
+                return;
+            }
+        }
+
+        if (vx == "" || vy == "") {
+            speak("canceled");
+            return;
+        }
+        send_reliable(peer_id, "addvending_machine vending_machine:" + vx + ":0:" + vy, 0);
+    }
+}

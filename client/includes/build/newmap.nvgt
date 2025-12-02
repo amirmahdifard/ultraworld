@@ -1,0 +1,93 @@
+void buildnewmap() {
+    setupmenu(false, true);
+    m.add_item_tts("2d", "2d");
+    m.add_item_tts("3d", "3d");
+    m.add_item_tts("go back", "back");
+    m.set_callback(netclb, "");
+    int mres = m.run("select your map type", true);
+
+    if (mres == 1) { // 2D map
+        form.reset();
+        string nums = "1234567890-";
+        string mapname, mx, mmx, my, mmy;
+        form.create_window("2D map", false);
+        int a = form.create_input_box("enter the &map name", "", "", 0, false, false);
+        int b = form.create_input_box("enter the minimum &x");
+        int c = form.create_input_box("enter the maximum &x");
+        int d = form.create_input_box("enter the minimum &y");
+        int e = form.create_input_box("enter the maximum &y");
+        form.set_disallowed_chars(b, nums, true);
+        form.set_disallowed_chars(c, nums, true);
+        form.set_disallowed_chars(d, nums, true);
+        form.set_disallowed_chars(e, nums, true);
+        int ok = form.create_button("finish", false);
+        int can = form.create_button("cancel", false, true);
+        form.focus(a);
+
+        while (true) {
+            wait(5);
+            form.monitor(); mainloop();
+            mapname = form.get_text(a);
+            mx      = form.get_text(b);
+            mmx     = form.get_text(c);
+            my      = form.get_text(d);
+            mmy     = form.get_text(e);
+            if (form.is_pressed(ok)) { form.reset(); break; }
+            else if (form.is_pressed(can)) { form.reset(); return; }
+        }
+
+        if (mapname == "" || mx == "" || mmx == "" || my == "" || mmy == "") {
+            speak("canceled"); return;
+        }
+
+        string platform = plattypemenu();
+        if (platform == "") return;
+
+        send_reliable(peer_id, "2dnewmap " + mapname + " " + mx + " " + mmx + " 0 0 " + my + " " + mmy + " " + platform, 0);
+    }
+    else if (mres == 2) { // 3D map
+        form.reset();
+        string nums = "1234567890-";
+        string mapname, mx, mmx, my, mmy, mz, mmz;
+        form.create_window("3D map", false);
+        int a = form.create_input_box("enter the &map name", "", "", 0, false, false);
+        int b = form.create_input_box("enter the minimum &x");
+        int c = form.create_input_box("enter the maximum &x");
+        int d = form.create_input_box("enter the minimum &y");
+        int e = form.create_input_box("enter the maximum &y");
+        int f = form.create_input_box("enter the minimum &z");
+        int g = form.create_input_box("enter the maximum &z");
+        form.set_disallowed_chars(b, nums, true);
+        form.set_disallowed_chars(c, nums, true);
+        form.set_disallowed_chars(d, nums, true);
+        form.set_disallowed_chars(e, nums, true);
+        form.set_disallowed_chars(f, nums, true);
+        form.set_disallowed_chars(g, nums, true);
+        int ok = form.create_button("finish", false);
+        int can = form.create_button("cancel", false, true);
+        form.focus(a);
+
+        while (true) {
+            wait(5);
+            form.monitor(); mainloop();
+            mapname = form.get_text(a);
+            mx      = form.get_text(b);
+            mmx     = form.get_text(c);
+            my      = form.get_text(d);
+            mmy     = form.get_text(e);
+            mz      = form.get_text(f);
+            mmz     = form.get_text(g);
+            if (form.is_pressed(ok)) { form.reset(); break; }
+            else if (form.is_pressed(can)) { form.reset(); return; }
+        }
+
+        if (mapname == "" || mx == "" || mmx == "" || my == "" || mmy == "" || mz == "" || mmz == "") {
+            speak("canceled"); return;
+        }
+
+        string platform = plattypemenu();
+        if (platform == "") return;
+
+        send_reliable(peer_id, "newmap " + mapname + " " + mx + " " + mmx + " " + my + " " + mmy + " " + mz + " " + mmz + " " + platform, 0);
+    }
+}

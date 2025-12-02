@@ -1,0 +1,116 @@
+void builditem() {
+    if (d2dsupport == 0) {
+        form.reset();
+        string nums = "1234567890-";
+        string mx, mmx, my, mmy, mz, mmz, itemt, itemm, itemo;
+        form.create_window("item spawner", false);
+        int a = form.create_input_box("type the minimum &x of the item area");
+        int b = form.create_input_box("type the maximum &x of the item area");
+        int c = form.create_input_box("type the minimum &y of the item area");
+        int d = form.create_input_box("type the maximum &y of the item area");
+        int e = form.create_input_box("type the minimum &z of the item area");
+        int f = form.create_input_box("type the maximum &z of the item area");
+        int g = form.create_input_box("how many milliseconds should be waited for next item spawning?");
+        int h = form.create_input_box("maximum amount of items");
+        int i = form.create_input_box("item names. Use : to add new ones (e.g. coins : wood : metal)", "", "", 0, false, false);
+        form.set_disallowed_chars(a, nums, true);
+        form.set_disallowed_chars(b, nums, true);
+        form.set_disallowed_chars(c, nums, true);
+        form.set_disallowed_chars(d, nums, true);
+        form.set_disallowed_chars(e, nums, true);
+        form.set_disallowed_chars(f, nums, true);
+        form.set_disallowed_chars(g, nums, true);
+        form.set_disallowed_chars(h, nums, true);
+        int ok = form.create_button("finish", false);
+        int can = form.create_button("cancel", false, true);
+        form.focus(a);
+        while (true) {
+            wait(5);
+            form.monitor(); mainloop();
+            mx     = form.get_text(a);
+            mmx    = form.get_text(b);
+            my     = form.get_text(c);
+            mmy    = form.get_text(d);
+            mz     = form.get_text(e);
+            mmz    = form.get_text(f);
+            itemt  = form.get_text(g);
+            itemm  = form.get_text(h);
+            itemo  = form.get_text(i);
+            if (form.is_pressed(ok)) {
+                form.reset();
+                break;
+            } else if (form.is_pressed(can)) {
+                form.reset();
+                return;
+            }
+        }
+        if (mx == "" || mmx == "" || my == "" || mmy == "" || mz == "" || mmz == "" || itemt == "" || itemm == "" || itemo == "") {
+            speak("canceled");
+            return;
+        }
+        if (mx  < min.x || mx  > max.x ||
+            mmx < min.x || mmx > max.x ||
+            my  < min.y || my  > max.y ||
+            mmy < min.y || mmy > max.y ||
+            mz  < min.z || mz  > max.z ||
+            mmz < min.z || mmz > max.z)
+        {
+            speak("error. Given coordinates are out of range");
+            return;
+        }
+        send_reliable(peer_id, "additem item:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + ":" + itemt + ":" + itemm + ":" + itemo, 0);
+    }
+    else {
+        form.reset();
+        string nums = "1234567890-";
+        string mx, mmx, my, mmy, itemt, itemm, itemo;
+        form.create_window("item spawner", false);
+        int a = form.create_input_box("type the minimum &x of the item area");
+        int b = form.create_input_box("type the maximum &x of the item area");
+        int c = form.create_input_box("type the minimum &y of the item area");
+        int d = form.create_input_box("type the maximum &y of the item area");
+        int e = form.create_input_box("how many milliseconds should be waited for next item spawning?");
+        int f = form.create_input_box("maximum amount of items");
+        int g = form.create_input_box("item names. Use : to add new ones (e.g. coins : wood : metal)", "", "", 0, false, false);
+        form.set_disallowed_chars(a, nums, true);
+        form.set_disallowed_chars(b, nums, true);
+        form.set_disallowed_chars(c, nums, true);
+        form.set_disallowed_chars(d, nums, true);
+        form.set_disallowed_chars(e, nums, true);
+        form.set_disallowed_chars(f, nums, true);
+        int ok = form.create_button("finish", false);
+        int can = form.create_button("cancel", false, true);
+        form.focus(a);
+        while (true) {
+            wait(5);
+            form.monitor(); mainloop();
+            mx     = form.get_text(a);
+            mmx    = form.get_text(b);
+            my     = form.get_text(c);
+            mmy    = form.get_text(d);
+            itemt  = form.get_text(e);
+            itemm  = form.get_text(f);
+            itemo  = form.get_text(g);
+            if (form.is_pressed(ok)) {
+                form.reset();
+                break;
+            } else if (form.is_pressed(can)) {
+                form.reset();
+                return;
+            }
+        }
+        if (mx == "" || mmx == "" || my == "" || mmy == "" || itemt == "" || itemm == "" || itemo == "") {
+            speak("canceled");
+            return;
+        }
+        if (mx  < min.x || mx  > max.x ||
+            mmx < min.x || mmx > max.x ||
+            my  < min.y || my  > max.y ||
+            mmy < min.y || mmy > max.y)
+        {
+            speak("error. Given coordinates are out of range");
+            return;
+        }
+        send_reliable(peer_id, "additem item:" + mx + ":" + mmx + ":0:0:" + my + ":" + mmy + ":" + itemt + ":" + itemm + ":" + itemo, 0);
+    }
+}

@@ -1,0 +1,108 @@
+void buildtxt() {
+    if (d2dsupport == 0) {
+        form.reset();
+        string nums = "1234567890-";
+        string mx, mmx, my, mmy, mz, mmz, t;
+        form.create_window("text", false);
+        int a = form.create_input_box("type the minimum &x of the text area");
+        int b = form.create_input_box("type the maximum &x of the text area");
+        int c = form.create_input_box("type the minimum &y of the text area");
+        int d = form.create_input_box("type the maximum &y of the text area");
+        int e = form.create_input_box("type the minimum &z of the text area");
+        int f = form.create_input_box("type the maximum &z of the text area");
+        int g = form.create_input_box("type the &text", "", "", 0, false, false);
+        form.set_disallowed_chars(a, nums, true);
+        form.set_disallowed_chars(b, nums, true);
+        form.set_disallowed_chars(c, nums, true);
+        form.set_disallowed_chars(d, nums, true);
+        form.set_disallowed_chars(e, nums, true);
+        form.set_disallowed_chars(f, nums, true);
+        int ok = form.create_button("finish", false);
+        int can = form.create_button("cancel", false, true);
+        form.focus(a);
+        while (true) {
+            wait(5);
+            form.monitor(); mainloop();
+            mx  = form.get_text(a);
+            mmx = form.get_text(b);
+            my  = form.get_text(c);
+            mmy = form.get_text(d);
+            mz  = form.get_text(e);
+            mmz = form.get_text(f);
+            t   = form.get_text(g);
+            if (form.is_pressed(ok)) {
+                form.reset();
+                break;
+            } else if (form.is_pressed(can)) {
+                form.reset();
+                return;
+            }
+        }
+        if (mx == "" || mmx == "" || my == "" || mmy == "" || mz == "" || mmz == "" || t == "") {
+            speak("canceled");
+            return;
+        }
+        if (mx  < min.x || mx  > max.x ||
+            mmx < min.x || mmx > max.x ||
+            my  < min.y || my  > max.y ||
+            mmy < min.y || mmy > max.y ||
+            mz  < min.z || mz  > max.z ||
+            mmz < min.z || mmz > max.z)
+        {
+            speak("error. Given coordinates are out of range");
+            return;
+        }
+        string ha = "";
+        if (t != "") ha = ":" + t;
+        send_reliable(peer_id, "addtxt txt:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + ha, 0);
+    }
+    else {
+        form.reset();
+        string nums = "1234567890-";
+        string mx, mmx, my, mmy, t;
+        form.create_window("text", false);
+        int a = form.create_input_box("type the minimum &x of the text area");
+        int b = form.create_input_box("type the maximum &x of the text area");
+        int c = form.create_input_box("type the minimum &y of the text area");
+        int d = form.create_input_box("type the maximum &y of the text area");
+        int e = form.create_input_box("type the &text", "", "", 0, false, false);
+        form.set_disallowed_chars(a, nums, true);
+        form.set_disallowed_chars(b, nums, true);
+        form.set_disallowed_chars(c, nums, true);
+        form.set_disallowed_chars(d, nums, true);
+        int ok = form.create_button("finish", false);
+        int can = form.create_button("cancel", false, true);
+        form.focus(a);
+        while (true) {
+            wait(5);
+            form.monitor(); mainloop();
+            mx  = form.get_text(a);
+            mmx = form.get_text(b);
+            my  = form.get_text(c);
+            mmy = form.get_text(d);
+            t   = form.get_text(e);
+            if (form.is_pressed(ok)) {
+                form.reset();
+                break;
+            } else if (form.is_pressed(can)) {
+                form.reset();
+                return;
+            }
+        }
+        if (mx == "" || mmx == "" || my == "" || mmy == "" || t == "") {
+            speak("canceled");
+            return;
+        }
+        if (mx  < min.x || mx  > max.x ||
+            mmx < min.x || mmx > max.x ||
+            my  < min.y || my  > max.y ||
+            mmy < min.y || mmy > max.y)
+        {
+            speak("error. Given coordinates are out of range");
+            return;
+        }
+        string ha = "";
+        if (t != "") ha = ":" + t;
+        send_reliable(peer_id, "addtxt txt:" + mx + ":" + mmx + ":0:0:" + my + ":" + mmy + ha, 0);
+    }
+}

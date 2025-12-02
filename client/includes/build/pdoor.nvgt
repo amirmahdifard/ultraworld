@@ -1,0 +1,152 @@
+void buildpdoor() {
+    if (d2dsupport == 0) {
+        form.reset();
+        string nums = "1234567890-";
+        string mx, mmx, my, mmy, mz, mmz, fx, fy, fz, text, password, dtime;
+        form.create_window("password door", false);
+        int a = form.create_input_box("type the minimum &x of the door area");
+        int b = form.create_input_box("type the maximum &x of the door area");
+        int c = form.create_input_box("type the minimum &y of the door area");
+        int d = form.create_input_box("type the maximum &y of the door area");
+        int e = form.create_input_box("type the minimum &z of the door area");
+        int f = form.create_input_box("type the maximum &z of the door area");
+        int g = form.create_input_box("enter the destination &x");
+        int h = form.create_input_box("enter the destination &y");
+        int i = form.create_input_box("enter the destination &z");
+        int j = form.create_input_box("enter the &text shown when player presses enter to input password", "", "", 0, false, false);
+        int k = form.create_input_box("enter the &password", "", "", 0, false, false);
+        int l = form.create_input_box("enter the &speed");
+        form.set_disallowed_chars(a, nums, true);
+        form.set_disallowed_chars(b, nums, true);
+        form.set_disallowed_chars(c, nums, true);
+        form.set_disallowed_chars(d, nums, true);
+        form.set_disallowed_chars(e, nums, true);
+        form.set_disallowed_chars(f, nums, true);
+        form.set_disallowed_chars(g, nums, true);
+        form.set_disallowed_chars(h, nums, true);
+        form.set_disallowed_chars(i, nums, true);
+        form.set_disallowed_chars(l, nums, true);
+        int ok = form.create_button("continue and select the door sounds", false);
+        int can = form.create_button("cancel", false, true);
+        form.focus(a);
+
+        while (true) {
+            wait(5);
+            form.monitor(); mainloop();
+            mx       = form.get_text(a);
+            mmx      = form.get_text(b);
+            my       = form.get_text(c);
+            mmy      = form.get_text(d);
+            mz       = form.get_text(e);
+            mmz      = form.get_text(f);
+            fx       = form.get_text(g);
+            fy       = form.get_text(h);
+            fz       = form.get_text(i);
+            text     = form.get_text(j);
+            password = form.get_text(k);
+            dtime    = form.get_text(l);
+            if (form.is_pressed(ok)) {
+                form.reset();
+                break;
+            } else if (form.is_pressed(can)) {
+                form.reset();
+                return;
+            }
+        }
+
+        if (mx == "" || mmx == "" || my == "" || mmy == "" || mz == "" || mmz == "" || fx == "" || fy == "" || fz == "" || text == "" || password == "" || dtime == "") {
+            speak("canceled");
+            return;
+        }
+
+        string ds1 = list_ds1s(); if (ds1 == "") return;
+        string ds2 = list_ds2s(); if (ds2 == "") return;
+        string ds3 = list_ds3s(); if (ds3 == "") return;
+        string ds4 = list_ds4s(); if (ds4 == "") return;
+
+        if (mx  < min.x || mx  > max.x ||
+            mmx < min.x || mmx > max.x ||
+            my  < min.y || my  > max.y ||
+            mmy < min.y || mmy > max.y ||
+            mz  < min.z || mz  > max.z ||
+            mmz < min.z || mmz > max.z ||
+            fx  < min.x || fx  > max.x ||
+            fy  < min.y || fy  > max.y ||
+            fz  < min.z || fz  > max.z)
+        {
+            speak("error. Given coordinates are out of range");
+            return;
+        }
+
+        send_reliable(peer_id, "addpdoor pdoor:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + ":" + fx + ":" + fy + ":" + fz + ":" + text + ":" + password + ":" + dtime + ":" + ds1 + ".ogg:" + ds2 + ".ogg:" + ds3 + ".ogg:" + ds4 + ".ogg", 0);
+    }
+    else {
+        form.reset();
+        string nums = "1234567890-";
+        string mx, mmx, mz, mmz, fx, fz, text, password, dtime;
+        form.create_window("password door", false);
+        int a = form.create_input_box("type the minimum &x of the door area");
+        int b = form.create_input_box("type the maximum &x of the door area");
+        int c = form.create_input_box("type the minimum &y of the door area");
+        int d = form.create_input_box("type the maximum &y of the door area");
+        int e = form.create_input_box("enter the destination &x");
+        int f = form.create_input_box("enter the destination &y");
+        int g = form.create_input_box("enter the &text shown when player presses enter to input password", "", "", 0, false, false);
+        int h = form.create_input_box("enter the &password", "", "", 0, false, false);
+        int i = form.create_input_box("enter the &speed");
+        form.set_disallowed_chars(a, nums, true);
+        form.set_disallowed_chars(b, nums, true);
+        form.set_disallowed_chars(c, nums, true);
+        form.set_disallowed_chars(d, nums, true);
+        form.set_disallowed_chars(e, nums, true);
+        form.set_disallowed_chars(f, nums, true);
+        form.set_disallowed_chars(i, nums, true);
+        int ok = form.create_button("continue and select the door sounds", false);
+        int can = form.create_button("cancel", false, true);
+        form.focus(a);
+
+        while (true) {
+            wait(5);
+            form.monitor(); mainloop();
+            mx       = form.get_text(a);
+            mmx      = form.get_text(b);
+            mz       = form.get_text(c);
+            mmz      = form.get_text(d);
+            fx       = form.get_text(e);
+            fz       = form.get_text(f);
+            text     = form.get_text(g);
+            password = form.get_text(h);
+            dtime    = form.get_text(i);
+            if (form.is_pressed(ok)) {
+                form.reset();
+                break;
+            } else if (form.is_pressed(can)) {
+                form.reset();
+                return;
+            }
+        }
+
+        if (mx == "" || mmx == "" || mz == "" || mmz == "" || fx == "" || fz == "" || text == "" || password == "" || dtime == "") {
+            speak("canceled");
+            return;
+        }
+
+        string ds1 = list_ds1s(); if (ds1 == "") return;
+        string ds2 = list_ds2s(); if (ds2 == "") return;
+        string ds3 = list_ds3s(); if (ds3 == "") return;
+        string ds4 = list_ds4s(); if (ds4 == "") return;
+
+        if (mx  < min.x || mx  > max.x ||
+            mmx < min.x || mmx > max.x ||
+            mz  < min.z || mz  > max.z ||
+            mmz < min.z || mmz > max.z ||
+            fx  < min.x || fx  > max.x ||
+            fz  < min.z || fz  > max.z)
+        {
+            speak("error. Given coordinates are out of range");
+            return;
+        }
+
+        send_reliable(peer_id, "addpdoor pdoor:" + mx + ":" + mmx + ":0:0:" + mz + ":" + mmz + ":" + fx + ":0:" + fz + ":" + text + ":" + password + ":" + dtime + ":" + ds1 + ".ogg:" + ds2 + ".ogg:" + ds3 + ".ogg:" + ds4 + ".ogg", 0);
+    }
+}

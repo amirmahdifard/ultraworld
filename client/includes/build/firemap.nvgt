@@ -1,0 +1,102 @@
+void buildfiremap() {
+    if (d2dsupport == 0) {
+        form.reset();
+        string nums = "1234567890-";
+        string mx, mmx, my, mmy, mz, mmz, fdam, fhurttime;
+        form.create_window("firemap", false);
+        int a = form.create_input_box("enter the minimum &x of the fire area");
+        int b = form.create_input_box("enter the maximum &x of the fire area");
+        int c = form.create_input_box("enter the minimum &y of the fire area");
+        int d = form.create_input_box("enter the maximum &y of the fire area");
+        int e = form.create_input_box("enter the minimum &z of the fire area");
+        int f = form.create_input_box("enter the maximum &z of the fire area");
+        int g = form.create_input_box("enter the fire &damage");
+        int h = form.create_input_box("enter the fire &hurt time (ms)");
+        form.set_disallowed_chars(a, nums, true);
+        form.set_disallowed_chars(b, nums, true);
+        form.set_disallowed_chars(c, nums, true);
+        form.set_disallowed_chars(d, nums, true);
+        form.set_disallowed_chars(e, nums, true);
+        form.set_disallowed_chars(f, nums, true);
+        form.set_disallowed_chars(g, nums, true);
+        form.set_disallowed_chars(h, nums, true);
+        int ok = form.create_button("finish", false);
+        int can = form.create_button("cancel", false, true);
+        form.focus(a);
+
+        while (true) {
+            wait(5);
+            form.monitor(); mainloop();
+            mx        = form.get_text(a);
+            mmx       = form.get_text(b);
+            my        = form.get_text(c);
+            mmy       = form.get_text(d);
+            mz        = form.get_text(e);
+            mmz       = form.get_text(f);
+            fdam      = form.get_text(g);
+            fhurttime = form.get_text(h);
+            if (form.is_pressed(ok)) {
+                form.reset();
+                break;
+            } else if (form.is_pressed(can)) {
+                form.reset();
+                return;
+            }
+        }
+
+        if (mx == "" || mmx == "" || my == "" || mmy == "" || mz == "" || mmz == "" || fdam == "" || fhurttime == "") {
+            speak("canceled");
+            return;
+        }
+
+
+        send_reliable(peer_id, "addfiremap fire:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + ":" + fdam + ":" + fhurttime, 0);
+    }
+    else {
+        form.reset();
+        string nums = "1234567890-";
+        string mx, mmx, my, mmy, fdam, fhurttime;
+        form.create_window("firemap", false);
+        int a = form.create_input_box("enter the minimum &x of the fire area");
+        int b = form.create_input_box("enter the maximum &x of the fire area");
+        int c = form.create_input_box("enter the minimum &y of the fire area");
+        int d = form.create_input_box("enter the maximum &y of the fire area");
+        int e = form.create_input_box("enter the fire &damage");
+        int f = form.create_input_box("enter the fire &hurt time (ms)");
+        form.set_disallowed_chars(a, nums, true);
+        form.set_disallowed_chars(b, nums, true);
+        form.set_disallowed_chars(c, nums, true);
+        form.set_disallowed_chars(d, nums, true);
+        form.set_disallowed_chars(e, nums, true);
+        form.set_disallowed_chars(f, nums, true);
+        int ok = form.create_button("finish", false);
+        int can = form.create_button("cancel", false, true);
+        form.focus(a);
+
+        while (true) {
+            wait(5);
+            form.monitor(); mainloop();
+            mx        = form.get_text(a);
+            mmx       = form.get_text(b);
+            my        = form.get_text(c);
+            mmy       = form.get_text(d);
+            fdam      = form.get_text(e);
+            fhurttime = form.get_text(f);
+            if (form.is_pressed(ok)) {
+                form.reset();
+                break;
+            } else if (form.is_pressed(can)) {
+                form.reset();
+                return;
+            }
+        }
+
+        if (mx == "" || mmx == "" || my == "" || mmy == "" || fdam == "" || fhurttime == "") {
+            speak("canceled");
+            return;
+        }
+
+
+        send_reliable(peer_id, "addfiremap fire:" + mx + ":" + mmx + ":0:0:" + my + ":" + mmy + ":" + fdam + ":" + fhurttime, 0);
+    }
+}

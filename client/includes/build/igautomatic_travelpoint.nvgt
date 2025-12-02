@@ -1,0 +1,149 @@
+void buildigautomatic_travelpoint() {
+    if (d2dsupport == 0) {
+        form.reset();
+        string nums = "1234567890-";
+        string mx, mmx, my, mmy, mz, mmz, map, fx, fy, fz, text, item, amount;
+        form.create_window("item-giving automatic travelpoint", false);
+        int a = form.create_input_box("type the minimum &x of the travelpoint area");
+        int b = form.create_input_box("type the maximum &x of the travelpoint area");
+        int c = form.create_input_box("type the minimum &y of the travelpoint area");
+        int d = form.create_input_box("type the maximum &y of the travelpoint area");
+        int e = form.create_input_box("type the minimum &z of the travelpoint area");
+        int f = form.create_input_box("type the maximum &z of the travelpoint area");
+        int g = form.create_input_box("enter the &map destination", "", "", 0, false, false);
+        int h = form.create_input_box("enter the destination &x");
+        int i = form.create_input_box("enter the destination &y");
+        int j = form.create_input_box("enter the destination &z");
+        int k = form.create_input_box("enter the &text shown when player presses enter to get the item", "", "", 0, false, false);
+        int l = form.create_input_box("enter the &item name", "", "", 0, false, false);
+        int m = form.create_input_box("enter the item &amount");
+        form.set_disallowed_chars(a, nums, true);
+        form.set_disallowed_chars(b, nums, true);
+        form.set_disallowed_chars(c, nums, true);
+        form.set_disallowed_chars(d, nums, true);
+        form.set_disallowed_chars(e, nums, true);
+        form.set_disallowed_chars(f, nums, true);
+        form.set_disallowed_chars(h, nums, true);
+        form.set_disallowed_chars(i, nums, true);
+        form.set_disallowed_chars(j, nums, true);
+        form.set_disallowed_chars(m, nums, true);
+        int ok = form.create_button("continue and select the travelpoint sounds", false);
+        int can = form.create_button("cancel", false, true);
+        form.focus(a);
+
+        while (true) {
+            wait(5);
+            form.monitor(); mainloop();
+            mx    = form.get_text(a);
+            mmx   = form.get_text(b);
+            my    = form.get_text(c);
+            mmy   = form.get_text(d);
+            mz    = form.get_text(e);
+            mmz   = form.get_text(f);
+            map   = form.get_text(g);
+            fx    = form.get_text(h);
+            fy    = form.get_text(i);
+            fz    = form.get_text(j);
+            text  = form.get_text(k);
+            item  = form.get_text(l);
+            amount= form.get_text(m);
+            if (form.is_pressed(ok)) {
+                form.reset();
+                break;
+            } else if (form.is_pressed(can)) {
+                form.reset();
+                return;
+            }
+        }
+
+        if (mx == "" || mmx == "" || my == "" || mmy == "" || mz == "" || mmz == "" || map == "" || fx == "" || fy == "" || fz == "" || text == "" || item == "" || amount == "") {
+            speak("canceled");
+            return;
+        }
+
+        string ds1 = list_ds1s(); if (ds1 == "") return;
+        string ds2 = list_ds3s(); if (ds2 == "") return;
+        string ds3 = list_ds4s(); if (ds3 == "") return;
+
+        if (mx  < min.x || mx  > max.x ||
+            mmx < min.x || mmx > max.x ||
+            my  < min.y || my  > max.y ||
+            mmy < min.y || mmy > max.y ||
+            mz  < min.z || mz  > max.z ||
+            mmz < min.z || mmz > max.z)
+        {
+            speak("error. Given coordinates are out of range");
+            return;
+        }
+
+        send_reliable(peer_id, "addigautomatic_travelpoint igautomatic_travelpoint:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + ":" + map + ":" + fx + ":" + fy + ":" + fz + ":" + text + ":" + item + ":" + amount + ":" + ds1 + ".ogg:" + ds2 + ".ogg:" + ds3 + ".ogg", 0);
+    }
+    else {
+        form.reset();
+        string nums = "1234567890-";
+        string mx, mmx, my, mmy, map, fx, fy, text, item, amount;
+        form.create_window("item-giving automatic travelpoint", false);
+        int a = form.create_input_box("type the minimum &x of the travelpoint area");
+        int b = form.create_input_box("type the maximum &x of the travelpoint area");
+        int c = form.create_input_box("type the minimum &y of the travelpoint area");
+        int d = form.create_input_box("type the maximum &y of the travelpoint area");
+        int e = form.create_input_box("enter the &map destination", "", "", 0, false, false);
+        int f = form.create_input_box("enter the destination &x");
+        int g = form.create_input_box("enter the destination &y");
+        int h = form.create_input_box("enter the &text shown when player presses enter to get the item", "", "", 0, false, false);
+        int i = form.create_input_box("enter the &item name", "", "", 0, false, false);
+        int j = form.create_input_box("enter the item &amount");
+        form.set_disallowed_chars(a, nums, true);
+        form.set_disallowed_chars(b, nums, true);
+        form.set_disallowed_chars(c, nums, true);
+        form.set_disallowed_chars(d, nums, true);
+        form.set_disallowed_chars(f, nums, true);
+        form.set_disallowed_chars(g, nums, true);
+        form.set_disallowed_chars(j, nums, true);
+        int ok = form.create_button("continue and select the travelpoint sounds", false);
+        int can = form.create_button("cancel", false, true);
+        form.focus(a);
+
+        while (true) {
+            wait(5);
+            form.monitor(); mainloop();
+            mx    = form.get_text(a);
+            mmx   = form.get_text(b);
+            my    = form.get_text(c);
+            mmy   = form.get_text(d);
+            map   = form.get_text(e);
+            fx    = form.get_text(f);
+            fy    = form.get_text(g);
+            text  = form.get_text(h);
+            item  = form.get_text(i);
+            amount= form.get_text(j);
+            if (form.is_pressed(ok)) {
+                form.reset();
+                break;
+            } else if (form.is_pressed(can)) {
+                form.reset();
+                return;
+            }
+        }
+
+        if (mx == "" || mmx == "" || my == "" || mmy == "" || map == "" || fx == "" || fy == "" || text == "" || item == "" || amount == "") {
+            speak("canceled");
+            return;
+        }
+
+        string ds1 = list_ds1s(); if (ds1 == "") return;
+        string ds2 = list_ds3s(); if (ds2 == "") return;
+        string ds3 = list_ds4s(); if (ds3 == "") return;
+
+        if (mx  < min.x || mx  > max.x ||
+            mmx < min.x || mmx > max.x ||
+            my  < min.z || my  > max.z ||
+            mmy < min.z || mmy > max.z)
+        {
+            speak("error. Given coordinates are out of range");
+            return;
+        }
+
+        send_reliable(peer_id, "addigautomatic_travelpoint igautomatic_travelpoint:" + mx + ":" + mmx + ":0:0:" + my + ":" + mmy + ":" + map + ":" + fx + ":0:" + fy + ":" + text + ":" + item + ":" + amount + ":" + ds1 + ".ogg:" + ds2 + ".ogg:" + ds3 + ".ogg", 0);
+    }
+}
