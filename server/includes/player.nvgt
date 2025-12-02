@@ -2253,77 +2253,67 @@ double player_last_sec(string who) {
 	if (l.length() < 6) return 0;
 	return difftime("second", stn(l[0]), stn(l[1]), stn(l[2]), stn(l[3]), stn(l[4]), stn(l[5]));
 }
-void pmplayer(player@ p, string who, string msg) {
-	if (msg.length() < 1) return;
+bool handle_pm(player@ p, string target_name, string msg, bool is_reply = false) {
+	if (msg.length() < 1) return false;
 	if (p.ds.find("chat") > -1) {
 		send_reliable(p, "your chats have been disabled", 2);
-		return;
+		return false;
 	}
-	if (who == p.name) {
+	if (target_name == p.name) {
 		send_reliable(p, "you can't send message to yourself", 2);
-		return;
+		return false;
 	}
-	player@ w = get_player_obj_from(who);
-	if (@w == null) return;
-	if (w.pmreceiving == 0) {
-		send_reliable(p, "Error: " + w.name + " has turned private messages off", 0);
-		return;
+	player@ w = get_player_obj_from(target_name);
+	if (@w != null) {
+		if (w.pmreceiving == 0) {
+			send_reliable(p, "Error: " + w.name + " has turned private messages off", 0);
+			return false;
+		}
+		if (w.is_muted(p.name)) {
+			send_reliable(p, "Error: " + w.name + " muted you", 2);
+			return false;
+		}
+		messager a;
+		a.add("message", "pm");
+		a.add("name", p.name);
+		a.add("dname", p.nickname);
+		a.add("msg", msg);
+		if (is_reply) a.add("reply", "1");
+		send(w.peer_id, a, 0);
+		log(p.name + "_pm", "To " + w.name + " (" + w.nickname + "): " + msg);
+		messager@ b = a;
+		b.add("name", w.name);
+		b.add("dname", w.nickname);
+		b.add("yreply", "1");
+		p.sendpacket(b, 0);
+		log(w.name + "_pm", "From " + p.name + " (" + p.nickname + "): " + msg);
+		w.replyname = p.name;
+		return true;
+	} else {
+		string pn = verify_charname_case(target_name);
+		if (pn != "" && directory_exists("chars/" + pn)) {
+			file f;
+			if (f.open("chars/" + pn + "/pms.usr", "ab")) {
+				f.write(p.name + ";" + p.nickname + ";" + (is_reply ? "1" : "0") + ";" + msg + "\r\n");
+				f.close();
+				bsend(p.peer_id, "private messages", "pm.ogg", "Your message to " + pn + " (offline) was sent: " + msg);
+				log(p.name + "_pm", "To " + pn + " (offline): " + msg);
+				return true;
+			} else {
+				send_reliable(p, "Error sending message.", 0);
+				return false;
+			}
+		} else {
+			send_reliable(p, "Player not found.", 2);
+			return false;
+		}
 	}
-	if (w.is_muted(p.name)) {
-		send_reliable(p, "Error: " + w.name + " muted you", 2);
-		return;
-	}
-	messager a;
-	a.add("message", "pm");
-	a.add("name", p.name);
-	a.add("dname", p.nickname);
-	a.add("msg", msg);
-	send(w.peer_id, a, 0);
-	log(p.name + "_pm", "To " + w.name + " (" + w.nickname + "): " + msg);
-	messager@ b = a;
-	b.add("name", w.name);
-	b.add("dname", w.nickname);
-	b.add("yreply", "1");
-	p.sendpacket(b, 0);
-	log(w.name + "_pm", "From " + p.name + " (" + p.nickname + "): " + msg);
-	w.replyname = p.name;
+}
+void pmplayer(player@ p, string who, string msg) {
+	handle_pm(p, who, msg, false);
 }
 void replyplayer(player@ p, string who, string msg) {
-	player@ w = get_player_obj_from(who);
-	if (@w == null) return;
-	if (msg.length() < 1) return;
-	if (p.ds.find("chat") > -1) {
-		send_reliable(p, "your chats have been disabled", 2);
-		return;
-	}
-	/*if (who == p.name) {
-		send_reliable(p, "you can't send message to yourself", 2);
-		return;
-	}*/
-	if (w.pmreceiving == 0) {
-		send_reliable(p, "Error: " + w.name + " has turned private messages off", 0);
-		return;
-	}
-	if (w.is_muted(p.name)) {
-		send_reliable(p, "Error: " + w.name + " muted you", 2);
-		return;
-	}
-	messager a;
-	a.add("message", "pm");
-	a.add("name", p.name);
-	a.add("dname", p.nickname);
-	a.add("reply", "1");
-	a.add("msg", msg);
-	send(w.peer_id, a, 0);
-	log(p.name + "_pm", "To " + w.name + " (" + w.nickname + "): " + msg);
-	messager@ b = a;
-	b.add("name", w.name);
-	b.add("dname", w.nickname);
-	b.add("reply", "1");
-	b.add("yreply", "1");
-	p.sendpacket(b, 0);
-	log(w.name + "_pm", "From " + p.name + " (" + p.nickname + "): " + msg);
-	w.replyname = p.name;
+	handle_pm(p, who, msg, true);
 }
 void deletechar(string c, string reason = "Spam kill", bool alsoonline = true) {
 	if (alsoonline) remove_player(c, true);

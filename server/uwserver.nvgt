@@ -1504,8 +1504,52 @@ msgs.insert_last("contribute to our game at: https://github.com/amirmahdifard/ul
 						f.close();
 						if (fread != "") {
 							string[] pms = string_split(fread, "\r\n", false);
-							for (uint i = 0; i < pms.length(); i++)
-								send_reliable(players[index], "pm " + pms[i], 0);
+							dictionary sender_counts;
+							for (uint i = 0; i < pms.length(); i++) {
+								int pos1 = string_contains(pms[i], ";", 1);
+								int pos2 = string_contains(pms[i], ";", 2);
+								int pos3 = string_contains(pms[i], ";", 3);
+								if (pos1 > -1 && pos2 > -1 && pos3 > -1) {
+									string sName = pms[i].substr(0, pos1);
+									string sNick = pms[i].substr(pos1 + 1, pos2 - (pos1 + 1));
+									string sReply = pms[i].substr(pos2 + 1, pos3 - (pos2 + 1));
+									string sMsg = pms[i].substr(pos3 + 1);
+									messager a;
+									a.add("message", "pm");
+									a.add("name", sName);
+									a.add("dname", sNick);
+									a.add("msg", sMsg);
+									if (sReply == "1") a.add("reply", "1");
+									send(players[index].peer_id, a, 0);
+									double count = 0;
+									if (sender_counts.exists(sName)) sender_counts.get(sName, count);
+									sender_counts.set(sName, count + 1);
+								} else if (pos1 > -1 && pos2 > -1) {
+									string sName = pms[i].substr(0, pos1);
+									string sNick = pms[i].substr(pos1 + 1, pos2 - (pos1 + 1));
+									string sMsg = pms[i].substr(pos2 + 1);
+									messager a;
+									a.add("message", "pm");
+									a.add("name", sName);
+									a.add("dname", sNick);
+									a.add("msg", sMsg);
+									send(players[index].peer_id, a, 0);
+									double count = 0;
+									if (sender_counts.exists(sName)) sender_counts.get(sName, count);
+									sender_counts.set(sName, count + 1);
+								} else {
+									send_reliable(players[index], "pm " + pms[i], 0);
+								}
+							}
+							string[] senders = sender_counts.get_keys();
+							for(uint i=0; i<senders.length(); i++) {
+								player@ s = get_player_obj_from(senders[i]);
+								if (@s != null) {
+									double count = 0;
+									sender_counts.get(senders[i], count);
+									bsend(s.peer_id, "notifications", "pm.ogg", players[index].name + " read your " + count + " offline message" + (count > 1 ? "s" : "") + ".");
+								}
+							}
 							f.open(pfolder + "pms.usr", "wb");
 							f.write("");
 							f.close();
