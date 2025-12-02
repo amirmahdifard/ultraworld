@@ -1,0 +1,33 @@
+void buildlevel() {
+    form.reset();
+    string nums = "1234567890";
+    string minlevel, maxlevel;
+    form.create_window("level restriction", false);
+    int a = form.create_input_box("enter the minimum &level");
+    int b = form.create_input_box("enter the maximum &level");
+    form.set_disallowed_chars(a, nums, true);
+    form.set_disallowed_chars(b, nums, true);
+    int ok = form.create_button("finish", false);
+    int can = form.create_button("cancel", false, true);
+    form.focus(a);
+
+    while (true) {
+        wait(5);
+        form.monitor(); mainloop();
+        minlevel = form.get_text(a);
+        maxlevel = form.get_text(b);
+        if (form.is_pressed(ok)) {
+            form.reset();
+            break;
+        } else if (form.is_pressed(can)) {
+            form.reset();
+            return;
+        }
+    }
+
+    if (minlevel == "" || maxlevel == "") {
+        speak("canceled");
+        return;
+    }
+    send_reliable(peer_id, "addlevel level:" + minlevel + ":" + maxlevel, 0);
+}

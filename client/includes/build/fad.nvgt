@@ -1,0 +1,41 @@
+void buildfad() {
+    form.reset();
+    form.create_window("fad (food/addiction effect)", false);
+    int a = form.create_input_box("Enter &name");
+    int b = form.create_input_box("Enter &type (thirst, yesthirst, hunger, yeshunger, energy, noenergy, health, nohealth, sick, nosick, dirty, nodirty, wet, nowet, hot, cold, drunk, nodrunk)");
+    int c = form.create_input_box("Enter &amount (how much should it increase / decrease?)");
+    int ok = form.create_button("continue and select the sound file", false);
+    int can = form.create_button("cancel", false, true);
+    form.focus(a);
+
+    string name, type;
+    string amount;
+
+    while (true) {
+        wait(5);
+        form.monitor(); mainloop();
+        name   = form.get_text(a);
+        type   = form.get_text(b);
+        amount = form.get_text(c);
+
+        if (form.is_pressed(ok)) {
+            form.reset();
+            break;
+        } else if (form.is_pressed(can)) {
+            form.reset();
+            return;
+        }
+    }
+
+    if (name == "" || type == "" || amount == "") {
+        speak("canceled");
+        return;
+    }
+    string soundfile = list_allsounds();
+    if (soundfile == "") {
+        speak("canceled");
+        return;
+    }
+    allsoundsvp(soundfile);
+    send_reliable(peer_id, "createfad " + name + ":" + type + ":" + amount + ":" + allsoundsvolume + ":" + allsoundspitch + ":" + soundfile + ".ogg", 0);
+}

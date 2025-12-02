@@ -1,0 +1,71 @@
+void buildcheckpoint() {
+    if (d2dsupport == 0) {
+        form.reset();
+        string nums = "1234567890-";
+        string cx, cy, cz;
+        form.create_window("checkpoint", false);
+        int a = form.create_input_box("enter the &x coordinate");
+        int b = form.create_input_box("enter the &y coordinate");
+        int c = form.create_input_box("enter the &z coordinate");
+        form.set_disallowed_chars(a, nums, true);
+        form.set_disallowed_chars(b, nums, true);
+        form.set_disallowed_chars(c, nums, true);
+        int ok = form.create_button("finish", false);
+        int can = form.create_button("cancel", false, true);
+        form.focus(a);
+
+        while (true) {
+            wait(5);
+            form.monitor(); mainloop();
+            cx = form.get_text(a);
+            cy = form.get_text(b);
+            cz = form.get_text(c);
+            if (form.is_pressed(ok)) {
+                form.reset();
+                break;
+            } else if (form.is_pressed(can)) {
+                form.reset();
+                return;
+            }
+        }
+
+        if (cx == "" || cy == "" || cz == "") {
+            speak("canceled");
+            return;
+        }
+        send_reliable(peer_id, "addcheckpoint checkpoint:" + cx + ":" + cy + ":" + cz, 0);
+    }
+    else {
+        form.reset();
+        string nums = "1234567890-";
+        string cx, cy;
+        form.create_window("checkpoint", false);
+        int a = form.create_input_box("enter the &x coordinate");
+        int b = form.create_input_box("enter the &y coordinate");
+        form.set_disallowed_chars(a, nums, true);
+        form.set_disallowed_chars(b, nums, true);
+        int ok = form.create_button("finish", false);
+        int can = form.create_button("cancel", false, true);
+        form.focus(a);
+
+        while (true) {
+            wait(5);
+            form.monitor(); mainloop();
+            cx = form.get_text(a);
+            cy = form.get_text(b);
+            if (form.is_pressed(ok)) {
+                form.reset();
+                break;
+            } else if (form.is_pressed(can)) {
+                form.reset();
+                return;
+            }
+        }
+
+        if (cx == "" || cy == "") {
+            speak("canceled");
+            return;
+        }
+        send_reliable(peer_id, "addcheckpoint checkpoint:" + cx + ":0:" + cy, 0);
+    }
+}

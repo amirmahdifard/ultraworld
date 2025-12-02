@@ -1,0 +1,42 @@
+void add_item_desc() {
+    form.reset();
+    string item_name, desc;
+    string nums = ""; // allow all chars except crash words
+    form.create_window("item description", false);
+    int a = form.create_input_box("Enter the item name");
+    int b = form.create_input_box("Enter the description for this item");
+    int ok = form.create_button("finish", false);
+    int can = form.create_button("cancel", false, true);
+    form.focus(a);
+
+    while (true) {
+        wait(5);
+        form.monitor(); mainloop();
+        item_name = form.get_text(a);
+        desc      = form.get_text(b);
+        if (form.is_pressed(ok)) {
+            form.reset();
+            break;
+        } else if (form.is_pressed(can)) {
+            form.reset();
+            return;
+        }
+    }
+
+    if (item_name == "" || desc == "") {
+        speak("canceled");
+        return;
+    }
+
+    if (is_eloquence_crash_word(item_name) || get_sequence(item_name, true) > 3) {
+        speak("Invalid item name!");
+        return;
+    }
+
+    if (is_eloquence_crash_word(desc) || get_sequence(desc, true) > 3) {
+        speak("Invalid description input!");
+        return;
+    }
+
+    send_reliable(peer_id, "add_item_desc " + item_name + " " + desc, 0);
+}

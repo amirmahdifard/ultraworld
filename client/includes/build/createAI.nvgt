@@ -1,0 +1,115 @@
+void createAI() {
+    form.reset();
+    form.create_window("AI creation", false);
+    int a = form.create_input_box("Enter AI &name");
+    int b = form.create_input_box("Enter &health (comma-separated for randomisation)");
+    int c = form.create_input_box("Enter &range (comma-separated for randomisation)");
+    int d = form.create_input_box("Enter &damage (comma-separated for randomisation)");
+    int e = form.create_input_box("Enter &shoottime (comma-separated for randomisation)");
+    int f = form.create_input_box("Enter &speed (-1 to disable, comma-separated for randomisation)");
+    int g = form.create_input_box("Enter &xp (comma-separated for randomisation)");
+    int h = form.create_input_box("Enter &stepsound (none, gt, or comma-separated list)");
+    int i = form.create_input_box("Enter &painsound (none or comma-separated list)");
+    int j = form.create_input_box("Enter &killsound (none or comma-separated list)");
+    int k = form.create_input_box("Enter &shootsound (none or comma-separated list)");
+    int l = form.create_input_box("Enter &hitsound (none or comma-separated list)");
+    int m = form.create_input_box("Enter &voice (none or comma-separated list)");
+    int n = form.create_input_box("Enter &voicetime (-1 to disable, comma-separated for randomisation)");
+    int o = form.create_input_box("Enter &item (none or comma-separated list)");
+    int p = form.create_input_box("Enter item &amount (-1 to disable, comma-separated for randomisation)");
+    int q = form.create_input_box("Rapid voice? (0 = no, 1 = yes)");
+    int r = form.create_input_box("Tree climb? (0 = no, 1 = yes)");
+    int s = form.create_input_box("Maddable? (0 = no, 1 = yes)");
+    int t = form.create_input_box("Need water? (0 = no, 1 = yes)");
+    int u = form.create_input_box("Enter &fallsound (none, gt, or comma-separated list)");
+    int v = form.create_input_box("Nuclear bomb death? (0 = no, 1 = yes)");
+    int w = form.create_input_box("Mine death? (0 = no, 1 = yes)");
+    int x = form.create_input_box("Gender (0 = male, 1 = female, -1/random = other)");
+    int ok = form.create_button("finish", false);
+    int can = form.create_button("cancel", false, true);
+    form.focus(a);
+    string name, health, range, damage, shoottime, speed, xp, stepsound, painsound, killsound, shootsound, hitsound, voice, voicetime, item, amount, rapidvoice, treeclimb, maddable, needwater, fallsound, nuclearbomb, mine, gender;
+    while (true) {
+        wait(5);
+        form.monitor(); mainloop();
+        name        = form.get_text(a);
+        health      = form.get_text(b);
+        range       = form.get_text(c);
+        damage      = form.get_text(d);
+        shoottime   = form.get_text(e);
+        speed       = form.get_text(f);
+        xp          = form.get_text(g);
+        stepsound   = form.get_text(h);
+        painsound   = form.get_text(i);
+        killsound   = form.get_text(j);
+        shootsound  = form.get_text(k);
+        hitsound    = form.get_text(l);
+        voice       = form.get_text(m);
+        voicetime   = form.get_text(n);
+        item        = form.get_text(o);
+        amount      = form.get_text(p);
+        rapidvoice  = form.get_text(q);
+        treeclimb   = form.get_text(r);
+        maddable    = form.get_text(s);
+        needwater   = form.get_text(t);
+        fallsound   = form.get_text(u);
+        nuclearbomb = form.get_text(v);
+        mine        = form.get_text(w);
+        gender      = form.get_text(x);
+        if (form.is_pressed(ok)) {
+            form.reset();
+            break;
+        } else if (form.is_pressed(can)) {
+            form.reset();
+            return;
+        }
+    }
+    if (name == "" || health == "" || range == "" || damage == "" || shoottime == "" || speed == "" || xp == "" || stepsound == "" || painsound == "" || killsound == "" || shootsound == "" || hitsound == "" || voice == "" || voicetime == "" || item == "" || amount == "" || rapidvoice == "" || treeclimb == "" || maddable == "" || needwater == "" || fallsound == "" || nuclearbomb == "" || mine == "" || gender == "") {
+        speak("canceled");
+        return;
+    }
+    if (stepsound != "none") {
+        if (stepsound == "gt")
+            aistepsoundsrcv(get_tile_at(me.x, me.y, me.z) + "step" + random(1, 5) + ".ogg");
+        else {
+            string[] split = string_split(stepsound, ",", true);
+            string temp = split[random(0, split.length() - 1)];
+            aistepsoundsrcv(temp);
+        }
+    }
+    if (painsound != "none") {
+        string[] split = string_split(painsound, ",", true);
+        string temp = split[random(0, split.length() - 1)];
+        aipainsoundsrcv(temp);
+    }
+    if (killsound != "none") {
+        string[] split = string_split(killsound, ",", true);
+        string temp = split[random(0, split.length() - 1)];
+        aikillsoundsrcv(temp);
+    }
+    if (shootsound != "none") {
+        string[] split = string_split(shootsound, ",", true);
+        string temp = split[random(0, split.length() - 1)];
+        aishootsoundsrcv(temp);
+    }
+    if (hitsound != "none") {
+        string[] split = string_split(hitsound, ",", true);
+        string temp = split[random(0, split.length() - 1)];
+        aihitsoundsrcv(temp);
+    }
+    if (voice != "none" && rapidvoice == "0") {
+        string[] split = string_split(voice, ",", true);
+        string temp = split[random(0, split.length() - 1)];
+        aivoicesrcv(temp);
+    }
+    if (fallsound != "none") {
+        if (fallsound == "gt")
+            aifallsoundsrcv(get_tile_at(me.x, me.y, me.z) + "fall" + random(1, 5) + ".ogg");
+        else {
+            string[] split = string_split(fallsound, ",", true);
+            string temp = split[random(0, split.length() - 1)];
+            aifallsoundsrcv(temp);
+        }
+    }
+    send_reliable(peer_id, "createAI " + name + ":" + health + ":" + range + ":" + damage + ":" + shoottime + ":" + speed + ":" + xp + ":" + stepsound + ":" + stepsoundpitch + ":" + stepsoundvolume + ":" + painsound + ":" + painsoundpitch + ":" + painsoundvolume + ":" + killsound + ":" + killsoundpitch + ":" + killsoundvolume + ":" + shootsound + ":" + shootsoundpitch + ":" + shootsoundvolume + ":" + hitsound + ":" + hitsoundpitch + ":" + hitsoundvolume + ":" + voice + ":" + voicepitch + ":" + voicevolume + ":" + voicetime + ":" + item + ":" + amount + ":" + rapidvoice + ":" + treeclimb + ":" + maddable + ":" + needwater + ":" + fallsound + ":" + fallsoundpitch + ":" + fallsoundvolume + ":" + nuclearbomb + ":" + mine + ":" + gender, 0);
+}

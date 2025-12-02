@@ -1,0 +1,32 @@
+void buildopening_hours() {
+    form.reset();
+    string nums = "1234567890";
+    string minhour, maxhour;
+    form.create_window("opening hours", false);
+    int a = form.create_input_box("enter a number between 0 and 24 as minimum opening &hour");
+    int b = form.create_input_box("enter a number between 0 and 24 as maximum opening &hour");
+    form.set_disallowed_chars(a, nums, true);
+    form.set_disallowed_chars(b, nums, true);
+    int ok = form.create_button("finish", false);
+    int can = form.create_button("cancel", false, true);
+    form.focus(a);
+
+    while (true) {
+        wait(5);
+        form.monitor(); mainloop();
+        minhour = form.get_text(a);
+        maxhour = form.get_text(b);
+        if (form.is_pressed(ok)) {
+            form.reset();
+            break;
+        } else if (form.is_pressed(can)) {
+            form.reset();
+            return;
+        }
+    }
+    if (minhour == "" || maxhour == "") {
+        speak("canceled");
+        return;
+    }
+    send_reliable(peer_id, "addopening_hours opening_hours:" + minhour + ":" + maxhour, 0);
+}
