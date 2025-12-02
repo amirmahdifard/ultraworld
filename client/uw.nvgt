@@ -318,6 +318,23 @@ network n;
 network_event e;
 string sndloc = "audio.dat";
 pack@ sndpack = null;
+void restart() {
+if (!SCRIPT_COMPILED) {
+speak("Restarting.");
+wait(50);
+writeprefs();
+run("C:/nvgt/nvgtw.exe","uw.nvgt",false, false);
+exit();
+}
+else
+{
+speak("Restarting.");
+wait(50);
+writeprefs();
+run("uw.exe","",false, false);
+exit();
+}
+}
 void main() {
 	if (!directory_exists("logs")) directory_create("logs");
 	@sndpack = pack();
