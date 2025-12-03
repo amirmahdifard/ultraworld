@@ -112,6 +112,9 @@ double leaveafk1 = 10;
 double minverlanguage = 1;
 double minverkeyboardlanguage = 1;
 double record_uptime = 0;
+bool auto_xp = false;
+int[] xp_schedule = {5, 1, 1, 2, 2, 3, 4};
+timer xp_check_timer;
 string[] store_items;
 double[] amounts;
 string[] paid_store_items;
@@ -180,6 +183,7 @@ void main() {
 		exit();
 	}
 	svd::load();
+	load_xp_schedule();
 	rli();
 	garbage_collect();
 	setupserver();
@@ -458,6 +462,10 @@ void netloop() {
 	if (grenades.length() > 0) {
 		for (uint i = 0; i < grenades.length(); i++)
 			grenades[i].loop(i);
+	}
+	if (xp_check_timer.elapsed >= 60000) {
+		xp_check_timer.restart();
+		check_auto_xp();
 	}
 	if (savetimer.elapsed >= 50000 and writeprefs == 1) {
 		savetimer.restart();

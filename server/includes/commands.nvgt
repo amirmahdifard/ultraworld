@@ -65,19 +65,39 @@ void command(player@p, string command) {
 		i.multiline = 1;
 		i.send(p.peer_id);
 		return;
-	} else if (parsed[0] == "/xpstatus") {
-		if (doublexp == 1)
-			send_reliable(p, "Double xp is enabled", 2);
-		else if (superxp == 1)
-			send_reliable(p, "Super xp is enabled", 2);
-		else if (megaxp == 1)
-			send_reliable(p, "mega xp is enabled", 2);
-		else if (gigaxp == 1)
-			send_reliable(p, "giga xp is enabled", 2);
-		else if (masterxp == 1)
-			send_reliable(p, "master xp is enabled", 2);
-		else
-			send_reliable(p, "special xp is not enabled", 2);
+	} else if (parsed[0] == "/xp") {
+		if (parsed.length() == 1 || parsed[1] == "status") {
+			p.sendpacket(get_xp_status_message(), 2);
+		} else if (p.is_dev() || p.is_manager() || p.is_admin()) {
+			if (parsed[1] == "start") {
+				auto_xp = true;
+				save_xp_schedule();
+				check_auto_xp();
+				p.sendpacket("Auto XP System ENABLED.", 2);
+				admintell(p.name + " ENABLED Auto XP System.");
+				send_reliable(0, "play_s notify_news2.ogg", 6);
+				send_reliable(0, "XP System Update: Auto XP is now ENABLED!", 2);
+			} else if (parsed[1] == "stop") {
+				auto_xp = false;
+				save_xp_schedule();
+				p.sendpacket("Auto XP System DISABLED.", 2);
+				admintell(p.name + " DISABLED Auto XP System.");
+				send_reliable(0, "play_s notify_news2.ogg", 6);
+				send_reliable(0, "XP System Update: Auto XP is now DISABLED!", 2);
+			} else if (parsed[1] == "edit") {
+				cmenupage m;
+				m.intro = "Select a day to edit schedule:";
+				m.initial_packet = "xp_edit_day";
+				for(int i=0; i<7; i++) {
+					m.add(get_day_name(i) + ": " + get_xp_name(xp_schedule[i]), "" + i);
+				}
+				m.send(p.peer_id);
+			} else {
+				p.sendpacket("/xp <start|stop|edit|status>", 0);
+			}
+		} else {
+			p.sendpacket(get_xp_status_message(), 2);
+		}
 	} else if (parsed[0] == "/xppotion") {
 		if (p.xppotion == 1)
 			send_reliable(p, "xp potion remaining time: " + ms_to_readable_time(p.xppotiontime - p.xppotiontimer.elapsed) + "", 2);

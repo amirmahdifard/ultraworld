@@ -24,6 +24,7 @@
 #include"includes/char_data.nvgt"
 #include"includes/char_spam.nvgt"
 #include"includes/changelog_viewer.nvgt"
+#include"includes/xp_system.nvgt"
 #include"includes/clock.nvgt"
 #include"includes/combine.nvgt"
 #include"includes/commands.nvgt"

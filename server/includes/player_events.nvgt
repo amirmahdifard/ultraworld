@@ -210,6 +210,33 @@ void player_event(player@p, string event) {
 		} else {
 			p.sendpacket("Auction not found.", 0);
 		}
+	} else if (parsed[0] == "xp_edit_day") {
+		if (!p.is_admin() && !p.is_manager() && !p.is_dev()) return;
+		int day = string_to_number(parsed[1]);
+		cmenupage m;
+		m.intro = "Select XP Mode for " + get_day_name(day) + ":";
+		m.initial_packet = "xp_set_mode " + day;
+		for(int i=0; i<=5; i++) {
+			m.add(get_xp_name(i), "" + i);
+		}
+		m.send(p.peer_id);
+	} else if (parsed[0] == "xp_set_mode") {
+		if (!p.is_admin() && !p.is_manager() && !p.is_dev()) return;
+		if (parsed.length() < 3) return;
+		int day = string_to_number(parsed[1]);
+		int mode = string_to_number(parsed[2]);
+		int old_mode = xp_schedule[day];
+		xp_schedule[day] = mode;
+		string msg = p.name + " changed " + get_day_name(day) + " schedule from " + get_xp_name(old_mode) + " to " + get_xp_name(mode) + ".";
+		p.sendpacket(msg, 2);
+		admintell(msg);
+		save_xp_schedule();
+		if (auto_xp) {
+			datetime d;
+			if (d.weekday == day) {
+				check_auto_xp();
+			}
+		}
 	} else if (parsed[0] == "bid_input" and parsed.length() >= 2) {
 		if (parsed.length() < 3) return;
 		int id = string_to_number(parsed[1]);
