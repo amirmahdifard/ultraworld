@@ -386,14 +386,22 @@ void command(player@p, string command) {
 	} else if (parsed[0] == "/t" and parsed.length() > 1) {
 		teamchat(p, string_trim_left(get_event_message(), 3));
 		return;
-	} else if (parsed[0] == "/teams") {
-		string mess;
-		team@[] ts = find_best_teams();
-		mess += "There are " + ts.length() + " teams:\n";
-		foreach (team@ l: ts)
-			mess += l.id + " (known as " + l.teamname + ") with " + (l.players.length()) + " members, " + l.teamkills + " kills, and " + l.points + " points, leader " + cn2n(l.teamleader) + ".\n";
-		send_reliable(p, "clip " + mess, 0);
-		p.sendpacket("Teams list copied to clipboard", 0);
+	} else if(parsed[0] == "/teams"){
+team@[] ts = find_best_teams();
+if(ts.length() == 0) {
+send_reliable(p, "There are currently no teams", 0);
+return;
+}
+cmenupage menu;
+menu.initial_packet = "teams";
+menu.intro = "There are " + ts.length() + " teams";
+menu.maxitem = 500;
+for(uint i = 0; i < ts.length(); i++){
+team@ t = ts[i];
+string item = t.id + " (known as " + t.teamname + ") with " + (t.players.length()) + " members, " + t.teamkills + " kills, and " + t.points + " points, leader is " + cn2n(t.teamleader);
+menu.add(item, "");
+}
+menu.send(p.peer_id);
 	} else if (parsed[0] == "/teammembers") {
 		int ist = is_in_team(p.name);
 		if (ist > -1)

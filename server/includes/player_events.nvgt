@@ -164,6 +164,7 @@ void player_event(player@p, string event) {
 		}
 	} else if (parsed[0] == "feedback_main_menu" && parsed.length() > 1) {
 		string selection = parsed[1];
+		if (parsed[1] == "[cncel]") return;
 		if (selection == "new") {
 			send_serverbox(p.peer_id, 0, -1, 0, -1, "feedback_input", "Enter your feedback");
 		} else if (selection == "my") {
@@ -177,10 +178,12 @@ void player_event(player@p, string event) {
 		if (msg != "") add_feedback(p, msg);
 	} else if (parsed[0] == "view_my_feedback_options" && parsed.length() > 1) {
 		int id = string_to_number(parsed[1]);
+		if (parsed[1] == "[cncel]") return;
 		show_user_feedback_options(p, id);
 	} else if (parsed[0] == "feedback_user_action" && parsed.length() > 2) {
 		int id = string_to_number(parsed[1]);
 		string action = parsed[2];
+		if (parsed[2] == "[cncel]") return;
 		if (action == "view") {
 			view_feedback_details(p, id);
 		} else if (action == "close") {
@@ -188,10 +191,12 @@ void player_event(player@p, string event) {
 		}
 	} else if (parsed[0] == "view_feedback_options" && parsed.length() > 1) {
 		int id = string_to_number(parsed[1]);
+		if (parsed[1] == "[cncel]") return;
 		show_admin_feedback_options(p, id);
 	} else if (parsed[0] == "feedback_admin_action" && parsed.length() > 2) {
 		int id = string_to_number(parsed[1]);
 		string action = parsed[2];
+		if (parsed[2] == "[cncel]") return;
 		if (action == "reply") {
 			send_serverbox(p.peer_id, 0, -1, 0, -1, "reply_feedback_input " + id, "Enter reply for feedback ID " + id);
 		} else if (action == "close") {
@@ -245,7 +250,6 @@ void player_event(player@p, string event) {
 		double amount = string_to_number(parsed[2]);
 		if (parsed[2] == "[cncel]") return;
 		auction::make_bid(p, amount, id);
-
 	} else if (parsed[0] == "lookstop" and p.looking != "") {
 		int ind = get_player_index_from(p.looking);
 		if (ind > -1) {
