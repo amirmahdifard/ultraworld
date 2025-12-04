@@ -1,4 +1,5 @@
-#include "bgt_compat.nvgt"#include "bgt_compat.nvgt"pack_file soundspack;
+#include "bgt_compat.nvgt"
+pack_file soundspack;
 void sound_init() {
 	speak("loading sounds...this might take a while");
 	sound bar;

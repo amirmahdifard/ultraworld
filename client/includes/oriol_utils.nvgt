@@ -1,4 +1,5 @@
-#include "bgt_compat.nvgt"#include "bgt_compat.nvgt"sound utilsplayer;
+#include "bgt_compat.nvgt"
+sound utilsplayer;
 file logou;
 bool is_in_array(string value, string[]@ arr) {
 	for (uint i = 0; i < arr.length(); i++) {

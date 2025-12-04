@@ -1,4 +1,5 @@
-#include "bgt_compat.nvgt"#include "bgt_compat.nvgt"//Stream.nvgt
+#include "bgt_compat.nvgt"
+//Stream.nvgt
 //Functions for playing an audio stream using Bass in BGT
 library bass;
 //init bass
