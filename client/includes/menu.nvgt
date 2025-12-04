@@ -172,6 +172,7 @@ void mainmenu(bool fromgame = false) {
 	s.add_sub_menu_item("settings", "reset settings to factory defaults");
 	if (fromgame) s.add_sub_menu_item("settings", "go back");
 		s.add_sub_menu_item("misc","Restart the game");
+	s.add_sub_menu_item("misc","donate");
 	s.add_sub_menu_item("misc","open website");
 	s.add_sub_menu_item("misc","Check for updates");
 	if (!SCRIPT_COMPILED) s.add_sub_menu_item("misc", "Alternate between main and local host");
@@ -855,6 +856,10 @@ void mainmenu(bool fromgame = false) {
 		writeprefs();
 		if (fromgame) mainmenu(true);
 		else mainmenu();
+	}
+	else if(result=="misc:donate") {
+		urlopen(app.donate);
+		mainmenu();
 	}
 	else if(result=="misc:open website") {
 		urlopen(app.website);
