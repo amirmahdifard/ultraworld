@@ -605,6 +605,9 @@ void gameloop() {
 	}
 	if (sleepmode != 0 and looking == false) {
 		if ((key_down(KEY_LMENU) or key_down(KEY_RMENU)) and key_pressed(KEY_I) and inbox == false and !frozen) {
+int inv_q=yesno("Do you want to drop your inventory on the ground? This will make you lose your inventory because another player will pick it up. Are you sure?");
+if(inv_q==1)
+{
 			if (inv.items.length() < 1)
 				speak("you cannot drop your empty inventory");
 			else if (get_tile_at(me.x, me.y, me.z) == "" or get_tile_at(me.x, me.y, me.z) == "air")
@@ -616,6 +619,7 @@ void gameloop() {
 				speak("Inventory dropped");
 			}
 		}
+}
 		if (get_tile_at(me.x, me.y, me.z) != "underwater") {
 			if (key_up(KEY_LMENU) and key_up(KEY_RMENU) and key_up(KEY_LSHIFT) and key_up(KEY_RSHIFT) and key_pressed(KEY_I) and inbox == false and !frozen) {
 				if (inv.items.length() < 1)
