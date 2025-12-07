@@ -68,18 +68,6 @@ speak("you can't send an empty chat");
 form.reset();
 break;
 }
-else if(is_eloquence_crash_word(form.get_text(chat)))
-{
-speak("you can't send crash codes");
-form.reset();
-break;
-}
-else if(get_sequence(form.get_text(chat),true)>3)
-{
-speak("you can't send sequence letters");
-form.reset();
-break;
-}
 else if(form.get_list_position(chattype)==-1)
 {
 speak("You didn't set where you want "+form.get_text(chat)+" to be sent to");
@@ -102,11 +90,6 @@ else if(form.get_list_item(chattype, form.get_list_position(chattype))=="command
 else if(form.get_list_item(chattype, form.get_list_position(chattype))=="team chat") send_reliable(peer_id,"/t "+sendmsg,1);
 else if(form.get_list_item(chattype, form.get_list_position(chattype))=="tts chat")
 {
-if(form.get_text(chat).length()>256)
-{
-speak("limit is 256 characters");
-break;
-}
 string msg = ttsv.speak_to_memory(form.get_text(chat));
 send_reliable(peer_id, "tts " + form.get_text(chat).length() + " " + try_memset(msg), 3);
 }

@@ -877,6 +877,18 @@ void gameloop() {
 			send_reliable(peer_id, "combine (" + lefthand + ") (" + righthand + ")", 5);
 			return;
 		}
+		if (alt_is_down() and key_up(KEY_LSHIFT) and key_up(KEY_RSHIFT) and key_pressed(KEY_T) and key_up(KEY_G)) {
+			if (lefthand == "" and righthand == "") {
+					if (get_tile_at(me.x, me.y, me.z) == "underwater") {
+						rvp.play_stationary("underwaterclap.ogg", false);
+						send_reliable(peer_id, "draw underwaterclap.ogg", 7);
+					} else {
+						rvp.play_stationary("snap.ogg", false);
+						send_reliable(peer_id, "draw snap.ogg", 7);
+					}
+				}
+			}
+	
 	}
 	if (key_pressed(KEY_J) and key_up(KEY_LSHIFT) and key_up(KEY_RSHIFT) and key_up(KEY_LMENU) and key_up(KEY_RMENU))
 		send_reliable(peer_id, "energycheck", 0);

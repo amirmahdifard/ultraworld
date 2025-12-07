@@ -46,7 +46,7 @@ void buildtimedtext() {
             return;
         }
 
-        send_reliable(peer_id, "addtimedtext timedtext:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + ":" + texttimer + t, 0);
+        send_reliable(peer_id, "addtimedtext timedtext:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + ":" + texttimer + ":" + t, 0);
     }
     else {
         form.reset();
@@ -89,6 +89,6 @@ void buildtimedtext() {
             return;
         }
 
-        send_reliable(peer_id, "addtimedtext timedtext:" + mx + ":" + mmx + ":0:0:" + my + ":" + mmy + ":" + texttimer + t, 0);
+        send_reliable(peer_id, "addtimedtext timedtext:" + mx + ":" + mmx + ":0:0:" + my + ":" + mmy + ":" + texttimer + ":" + t, 0);
     }
 }

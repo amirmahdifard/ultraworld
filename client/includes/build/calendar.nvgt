@@ -43,7 +43,7 @@ void buildcalendar() {
             return;
         }
 
-        send_reliable(peer_id, "addcalendar calendar:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + t, 0);
+        send_reliable(peer_id, "addcalendar calendar:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + ":" + t, 0);
     }
     else {
         form.reset();
@@ -83,6 +83,6 @@ void buildcalendar() {
             return;
         }
 
-        send_reliable(peer_id, "addcalendar calendar:" + mx + ":" + mmx + ":0:0:" + my + ":" + mmy + t, 0);
+        send_reliable(peer_id, "addcalendar calendar:" + mx + ":" + mmx + ":0:0:" + my + ":" + mmy + ":" + t, 0);
     }
 }
