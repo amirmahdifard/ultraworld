@@ -3628,6 +3628,7 @@ void player_event(player@p, string event) {
 			else s2 = " " + maps[mi].owners.length() + " owner: ";
 			move_player(p, parsed[1], random(maps[mi].spminx, maps[mi].spmaxx), random(maps[mi].spminy, maps[mi].spmaxy), random(maps[mi].spminz, maps[mi].spmaxz), true);
 			bsend(0, "maps", "", p.nickname + " is now visiting the public map " + maps[mi].name + ", created by " + s2 + " " + s);
+			p.finishing_task = false;
 			p.finishtasktimer.restart();
 		}
 	} else if (parsed[0] == "taskgo" and parsed.length() > 1) {
@@ -3703,6 +3704,7 @@ void player_event(player@p, string event) {
 			else s2 = " " + maps[mi].owners.length() + " owner: ";
 			move_player(p, parsed[1], random(maps[mi].spminx, maps[mi].spmaxx), random(maps[mi].spminy, maps[mi].spmaxy), random(maps[mi].spminz, maps[mi].spmaxz), true);
 			bsend(0, "maps", "", p.nickname + " is now trying to complete task " + maps[mi].name + ". Reward: " + maps[mi].finishamount + " " + maps[mi].finishitem + ". Created by " + s2 + " " + s);
+			p.finishing_task = false;
 			p.finishtasktimer.restart();
 		}
 	} else if (parsed[0] == "mapgo" and parsed.length() > 1) {
@@ -3765,6 +3767,7 @@ void player_event(player@p, string event) {
 				}
 			}
 			move_player(p, parsed[1], random(maps[mi].spminx, maps[mi].spmaxx), random(maps[mi].spminy, maps[mi].spmaxy), random(maps[mi].spminz, maps[mi].spmaxz), true);
+			p.finishing_task = false;
 			p.finishtasktimer.restart();
 		}
 	} else if (parsed[0] == "fists") {
@@ -9309,6 +9312,8 @@ void player_event(player@p, string event) {
 			int pmapind = get_map_index(p.map);
 			if (pmapind > -1) {
 				if (maps[pmapind].chminx <= p.x and maps[pmapind].chmaxx >= p.x and maps[pmapind].chminy <= p.y and maps[pmapind].chmaxy >= p.y and maps[pmapind].chminz <= p.z and maps[pmapind].chmaxz >= p.z and maps[pmapind].finishitem != "" and maps[pmapind].finishamount > 0) {
+					if (p.finishing_task) return;
+					p.finishing_task = true;
 					if (maps[pmapind].finishitem == "coins" or maps[pmapind].finishitem == "credit") {
 						p.inv_add_item(maps[pmapind].finishitem, round(maps[pmapind].finishamount - (p.finishtasktimer.elapsed / 1000), 0));
 						send_reliable(p, "as a reward, you've recieved " + round(maps[pmapind].finishamount - (p.finishtasktimer.elapsed / 1000), 0) + " " + maps[pmapind].finishitem + "", 2);

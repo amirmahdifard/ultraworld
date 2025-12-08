@@ -840,12 +840,15 @@ void load_char_data(player@p, bool forced = false) {
 		int something = a.find(p.map);
 		int something2 = a2.find(p.map);
 		int something3 = a3.find(p.map);
-		if (something > -1 or something2 > -1 or something3 > -1)
-			p.finishtasktimer.force(string_to_number(read_from(p.name, "p.finishtasktimer.usr")));
+		if (something > -1 or something2 > -1 or something3 > -1) {
+			if(file_exists("chars/" + p.name + "/finishtasktime.usr"))
+				p.finishtasktimer.force(string_to_number(file_get_contents("chars/" + p.name + "/finishtasktime.usr")));
+		}
 	}
 	if (file_exists(charfolder + "/warning.usr")) p.warning = file_get_contents(charfolder + "/warning.usr");
 	if (file_exists(charfolder + "/warnlevel.usr")) p.warnlevel = string_to_number(file_get_contents(charfolder + "/warnlevel.usr"));
 	if (forced) p.send_negated_inv();
+	p.finishing_task = false;
 	p.send_inv();
 }
 string get_char_val(string name, string value) {

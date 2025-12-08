@@ -215,6 +215,7 @@ class player {
 	bool burned = false;
 	int burnlosses = 0;
 	string burnowner = "";
+	bool finishing_task = false;
 	double air;
 	int voted = 0;
 	bool wandlocked = false;

@@ -29,6 +29,7 @@ void command(player@p, string command) {
 			}
 			bsend(0, "maps", "", p.nickname + " has just committed suicide on " + p.map + " after being there for " + ms_to_readable_time(p.finishtasktimer.elapsed) + "", name = p.name);
 			move_player(p, "main_map", 5, 0, 0, true);
+			p.finishing_task = false;
 			p.finishtasktimer.force(0);
 			p.finishtasktimer.pause();
 		}
