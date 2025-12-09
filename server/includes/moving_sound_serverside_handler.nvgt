@@ -69,8 +69,8 @@ void destroy_moving_sound(string id) {
 	for (uint i = 0; i < msounds.length(); i++) {
 		if (msounds[i].id == id) {
 			send_reliable(0, "destroymsound " + id, 4);
-			@msounds[i] = null;
 			msounds.remove_at(i);
+			return;
 		}
 	}
 }
