@@ -1,0 +1,132 @@
+void mainloop() {
+	revfxloop(me, camera);
+	evloop();
+	handscheck();
+	if (winsound == 0) checarjanela();
+	if (vanishing_platforms.length() > 0) vanishing_platformloop();
+	if (forcefields.length() > 0) forcefieldloop();
+	if (doors.length() > 0) doorcheckloop();
+	if (pdoors.length() > 0) pdoorcheckloop();
+	if (icdoors.length() > 0) icdoorcheckloop();
+	if (itdoors.length() > 0) itdoorcheckloop();
+	if (igdoors.length() > 0) igdoorcheckloop();
+	if (automovers.length() > 0) automovercheckloop();
+	if (pautomovers.length() > 0) pautomovercheckloop();
+	if (icautomovers.length() > 0) icautomovercheckloop();
+	if (itautomovers.length() > 0) itautomovercheckloop();
+	if (igautomovers.length() > 0) igautomovercheckloop();
+	checkloc();
+	if (msounds.length() > 0) msoundcheckloop();
+	if (timedsounds.length() > 0) timedsoundloop();
+	if (timedmusics.length() > 0) timedmusicloop();
+	if (timedtexts.length() > 0) timedtextloop();
+	if (cppoints.length() > 0) checkpointloop();
+	if (fire_starters.length() > 0) fire_starterloop();
+	if (sources.length() > 0) sourcecheckloop();
+	if (musics.length() > 0) musiccheckloop();
+	if (urls.length() > 0) urlcheckloop();
+	if (mapitems.length() > 0) mapitemloop();
+	if (tpool1.elapsed >= npool1) {
+		tpool1.restart();
+		npool1 = random(30, 300);
+		mpool.update_listener_3d(me.x, me.y, me.z, calculate_theta(facing));
+		p.update_listener_3d(me.x, me.y, me.z, calculate_theta(facing));
+		rvp.update_listener_3d(me.x, me.y, me.z, calculate_theta(facing));
+		sourcepool.update_listener_3d(me.x, me.y, me.z, calculate_theta(facing));
+		musicpool.update_listener_3d(me.x, me.y, me.z, calculate_theta(facing));
+	}
+	if (tpool2.elapsed >= npool2) {
+		tpool2.restart();
+		npool2 = random(30, 300);
+		distpool.update_listener_3d(me.x, me.y, me.z, calculate_theta(facing));
+		placedistpool.update_listener_3d(me.x, me.y, me.z, calculate_theta(facing));
+		signpool.update_listener_3d(me.x, me.y, me.z, calculate_theta(facing));
+		itempool.update_listener_3d(me.x, me.y, me.z, calculate_theta(facing));
+	}
+	if (voicechat == 1 and recording == true and rectimer.elapsed >= rectime) {
+		p.play_stationary("voff.ogg", false);
+		vc.stop(true, DIRECTORY_TEMP + "\\convert.ogg");
+		file f;
+		f.open(DIRECTORY_TEMP + "\\convert.ogg", "rb");
+		send_reliable(peer_id, "voice " + spamtimer.elapsed + " " + f.read(), 3);
+		f.close();
+		file_delete(DIRECTORY_TEMP + "\\convert.ogg");
+		recording = false;
+		spamtimer.restart();
+	}
+	if (trackx != -1 and tracky != -1 and trackz != -1 and tracking != "") {
+		if (trackingmode == 0 and trackingtimer.elapsed > 700) {
+			trackingtimer.restart();
+			p.play_3d("loctrack.ogg", me.x, me.y, me.z, trackx, tracky, trackz, calculate_theta(facing), false);
+		} else if (trackingmode == 1 and trackingtimer.elapsed > 50 + get_3d_distance(me.x, me.y, me.z, trackx, tracky, trackz) * 5) {
+			trackingtimer.restart();
+			p.play_stationary("loctrack.ogg", false);
+		}
+		if (currentloc == tracking) {
+			p.play_stationary("loctracked.ogg", false);
+			trackx = -1; tracky = -1; trackz = -1; tracking = "";
+		}
+	}
+	if (ttrackx != -1 and ttracky != -1 and ttrackz != -1 and ttracking != "") {
+		if (trackingmode == 0 and trackingtimer.elapsed > 700) {
+			trackingtimer.restart();
+			p.play_3d("loctrack.ogg", me.x, me.y, me.z, ttrackx, ttracky, ttrackz, calculate_theta(facing), false);
+		} else if (trackingmode == 1 and trackingtimer.elapsed > 50 + get_3d_distance(me.x, me.y, me.z, ttrackx, ttracky, ttrackz) * 5) {
+			trackingtimer.restart();
+			p.play_stationary("loctrack.ogg", false);
+		}
+		if (me.x == ttrackx and me.y == ttracky and me.z == ttrackz) {
+			p.play_stationary("loctracked.ogg", false);
+			ttrackx = -1; ttracky = -1; ttrackz = -1; ttracking = "";
+		}
+	}
+if (ztrackx != -1 and ztracky != -1 and ztrackz != -1 and ztracking != "") {
+		if (trackingmode == 0 and trackingtimer.elapsed > 700) {
+			trackingtimer.restart();
+			p.play_3d("loctrack.ogg", me.x, me.y, me.z, ztrackx, ztracky, ztrackz, calculate_theta(facing), false);
+		} else if (trackingmode == 1 and trackingtimer.elapsed > 50 + get_3d_distance(me.x, me.y, me.z, ztrackx, ztracky, ztrackz) * 5) {
+			trackingtimer.restart();
+			p.play_stationary("loctrack.ogg", false);
+		}
+		if (me.x == ztrackx and me.y == ztracky and me.z == ztrackz) {
+			p.play_stationary("loctracked.ogg", false);
+			ztrackx = -1; ztracky = -1; ztrackz = -1; ztracking = "";
+		}
+	}
+	if (sleepmode == 1 and sleeptimer.elapsed >= 1000) {
+		sleeptimer.restart();
+		sleepmode = 0;
+		sleeping.load("sleeping.ogg");
+		sleeping.play_looped();
+	}
+	if (sleepmode == 0 and snoretimer.elapsed >= 5241) {
+		snoretimer.restart();
+		send_reliable(peer_id, "draw snore.ogg", 7);
+	}
+	if (sleepmode == 0 and dreaming == 1 and dreamtimer.elapsed >= dreamtime) {
+		dreamtimer.restart();
+		string[] ambs = string_split(allsounds, "\r\n", false);
+		if (ambs.length() > 0) {
+			string temp = ambs[random(0, ambs.length() - 1)];
+			dreamsound.close();
+			dreamsound.load(temp + ".ogg");
+			dreamsound.pan = random(-100, 100);
+			dreamsound.volume = random(-30, 30);
+			dreamsound.pitch = random(0, 200);
+			dreamsound.play();
+		}
+		int n1 = random(100, 5000);
+		int n2 = dreamsound.length + random(0, 1000);
+		dreamtime = random(n1, n2);
+	}
+	if (jumping == true)
+		movetime = airtime;
+	else
+		movetime = walktime;
+	if (in_map && !following && !looking && !frozen && playing) {
+		fallloop();
+		fallcheck();
+		fallingloop();
+	}
+	if (connected) netloop();
+}

@@ -1,0 +1,380 @@
+void playermapmenu(string[] users) {
+	get_characters();
+	string cl, char, multichar, test;
+	speak("users menu");
+	int counter = 0;
+	while (true) {
+		wait(5);
+		mainloop();
+		if (navtime.elapsed > 1000 and multichar != "")
+			multichar = "";
+		string c = get_characters().lower();
+		if (c != "" and multichar != c) {
+			navtime.restart();
+			multichar += c;
+		}
+		if (multichar != "" and c != "" and multichar != " " and c != " ") {
+			multichar = multichar.lower();
+			bool found = false;
+			for (uint i = counter; i < users.length(); i++) {
+				if (i == counter) continue;
+				test = users[i];
+				test = test.lower();
+				if (stringleft(test, multichar.length()) == multichar) {
+					if (stringleft(users[counter], multichar.length()).lower() == multichar and multichar.length() > 1) {
+						found = true;
+						break;
+					}
+					if (counter < i)
+						counter = i;
+					else if (counter > i)
+						counter = i;
+					speak(users[counter]);
+					found = true;
+					break;
+				} else continue;
+			}
+			if (found == false) {
+				multichar = multichar.lower();
+				for (uint i = 0; i < users.length(); i++) {
+					test = users[i];
+					test = test.lower();
+					if (stringleft(test, multichar.length()) == multichar) {
+						if (stringleft(users[counter], multichar.length()).lower() == multichar and multichar.length() > 1) {
+							found = true;
+							break;
+						}
+						if (counter < i)
+							counter = i;
+						else if (counter > i)
+							counter = i;
+						speak(users[counter]);
+						found = true;
+						break;
+					} else continue;
+				}
+			}
+			if (!found)
+				speak("No such player exists");
+		}
+		if (key_pressed(KEY_UP)) {
+			if (users.length() == 1) {
+				speak(users[0]);
+				counter = 0;
+			} else if (counter > 0) {
+				counter--;
+				speak(users[counter]);
+			}
+		}
+		if (key_pressed(KEY_DOWN)) {
+			if (users.length() == 1) {
+				speak(users[0]);
+				counter = 0;
+			} else if (counter < users.length() - 1) {
+				counter++;
+				speak(users[counter]);
+			}
+		}
+		if (counter > 0) {
+			if (key_pressed(KEY_F1) and users[counter] != "" and counter <= users.length() - 1) {
+				speak(users[counter] + " copyed to clipboard");
+				clipboard_copy_text(users[counter]);
+			}
+			if (key_pressed(KEY_F2) and users[counter] != "" and counter <= users.length() - 1) {
+				string message = input("Message", "enter the message that you want to send to " + users[counter], multiline = true);
+				if (message != "" and !is_eloquence_crash_word(message) and get_sequence(message, true) <= 3) send_reliable(peer_id, "/pm " + users[counter] + " " + message, 1);
+			}
+			if (key_pressed(KEY_F3))send_reliable(peer_id, "j1 " + users[counter], 0);
+			if (key_pressed(KEY_F4))send_reliable(peer_id, "j2 " + users[counter], 0);
+			if (key_pressed(KEY_F5) and users[counter] != "" and counter <= users.length() - 1) send_reliable(peer_id, "stats " + users[counter], 0);
+			if (key_pressed(KEY_F6))send_reliable(peer_id, "j3 " + users[counter], 0);
+			if (key_pressed(KEY_F7))send_reliable(peer_id, "look " + users[counter], 0);
+			if (key_pressed(KEY_F8))send_reliable(peer_id, "status " + users[counter], 0);
+			if (shift_is_down()) {
+				if (key_pressed(KEY_F9)) {
+					string stuff = v.input("Enter your tts message");
+					if (stuff != "") {
+						if (stuff.length() > 256)
+							speak("limit is 256 characters");
+						else {
+							string msg = ttsv.speak_to_memory(stuff);
+							send_reliable(peer_id, "ptts " + stuff.length() + " " + users[counter] + " " + try_memset(msg), 3);
+							//if (savettschats == 1)
+								//file_copy(DIRECTORY_TEMP + "\\ttsmsg.ogg", "voices/tts message " + DATE_WEEKDAY_NAME + ", " + DATE_MONTH_NAME + "-" + DATE_DAY + "-" + DATE_YEAR + ", " + TIME_HOUR + " " + TIME_MINUTE + " " + TIME_SECOND + ".ogg", true);
+							//file_delete(DIRECTORY_TEMP + "/ttsmsg.ogg");
+						}
+					}
+				}
+			}
+			if (key_up(KEY_LSHIFT) and key_up(KEY_RSHIFT)) {
+				if (key_pressed(KEY_F9) and spamtimer.elapsed >= spamtime and voicechat == 1) {
+					if (recording == false) {
+						urc = users[counter];
+						spamtimer.restart();
+						vc.record();
+						p.play_stationary("von.ogg", false);
+						recording = true;
+						rectimer.restart();
+					} else if (recording == true and holdv == 0) {
+						p.play_stationary("voff.ogg", false);
+						vc.stop(true, DIRECTORY_TEMP + "\\convert.ogg");
+						file f;
+						f.open(DIRECTORY_TEMP + "\\convert.ogg", "rb");
+						send_reliable(peer_id, "pvoice " + spamtimer.elapsed + " " + urc + " " + f.read(), 3);
+						f.close();
+						file_delete(DIRECTORY_TEMP + "\\convert.ogg");
+						recording = false;
+						spamtimer.restart();
+					}
+				}
+				if (recording == true and rectimer.elapsed >= rectime) {
+					p.play_stationary("voff.ogg", false);
+					vc.stop(true, DIRECTORY_TEMP + "\\convert.ogg");
+					file f;
+					f.open(DIRECTORY_TEMP + "\\convert.ogg", "rb");
+					send_reliable(peer_id, "pvoice " + spamtimer.elapsed + " " + urc + " " + f.read(), 3);
+					f.close();
+					file_delete(DIRECTORY_TEMP + "\\convert.ogg");
+					recording = false;
+					spamtimer.restart();
+				}
+				if (key_released(KEY_F9) and recording == true and voicechat == 1 and holdv == 1) {
+					p.play_stationary("voff.ogg", false);
+					vc.stop(true, DIRECTORY_TEMP + "\\convert.ogg");
+					file f;
+					f.open(DIRECTORY_TEMP + "\\convert.ogg", "rb");
+					send_reliable(peer_id, "pvoice " + spamtimer.elapsed + " " + urc + " " + f.read(), 3);
+					f.close();
+					file_delete(DIRECTORY_TEMP + "\\convert.ogg");
+					recording = false;
+					spamtimer.restart();
+				}
+			}
+		}
+		if (key_pressed(KEY_RETURN) and counter <= users.length() - 1 and users[counter] != "") {
+			if (counter > 0) {
+				p.play_stationary("tracked.ogg", false);
+				speak("tracking " + users[counter]);
+				tracking = users[counter];
+				return;
+			} else {
+				speak("tracking stopped");
+				tracking = "";
+				return;
+			}
+		}
+		if (key_pressed(KEY_ESCAPE)) {
+			speak("canceled");
+			return;
+		}
+	}
+	return;
+}
+void playermenu(string[] users) {
+	get_characters();
+	string cl, char, multichar, test;
+	speak("players menu");
+	int counter = 0;
+	while (true) {
+		wait(5);
+		mainloop();
+		if (navtime.elapsed > 1000 and multichar != "")
+			multichar = "";
+		string c = get_characters().lower();
+		if (c != "" and multichar != c) {
+			navtime.restart();
+			multichar += c;
+		}
+		if (multichar != "" and c != "" and multichar != " " and c != " ") {
+			multichar = multichar.lower();
+			bool found = false;
+			for (uint i = counter; i < users.length(); i++) {
+				if (i == counter) continue;
+				test = users[i];
+				test = test.lower();
+				if (stringleft(test, multichar.length()) == multichar) {
+					if (stringleft(users[counter], multichar.length()).lower() == multichar and multichar.length() > 1) {
+						found = true;
+						break;
+					}
+					if (counter < i)
+						counter = i;
+					else if (counter > i)
+						counter = i;
+					speak(users[counter]);
+					found = true;
+					break;
+				} else continue;
+			}
+			if (found == false) {
+				multichar = multichar.lower();
+				for (uint i = 0; i < users.length(); i++) {
+					test = users[i];
+					test = test.lower();
+					if (stringleft(test, multichar.length()) == multichar) {
+						if (stringleft(users[counter], multichar.length()).lower() == multichar and multichar.length() > 1) {
+							found = true;
+							break;
+						}
+						if (counter < i)
+							counter = i;
+						else if (counter > i)
+							counter = i;
+						speak(users[counter]);
+						found = true;
+						break;
+					} else continue;
+				}
+			}
+			if (!found)
+				speak("No such player exists");
+		}
+		if (key_pressed(KEY_UP)) {
+			if (users.length() == 1) {
+				speak(users[0]);
+				counter = 0;
+			} else if (counter > 0) {
+				counter--;
+				speak(users[counter]);
+			}
+		}
+		if (key_pressed(KEY_DOWN)) {
+			if (users.length() == 1) {
+				speak(users[0]);
+				counter = 0;
+			} else if (counter < users.length() - 1) {
+				counter++;
+				speak(users[counter]);
+			}
+		}
+		if (key_pressed(KEY_F1) and counter <= users.length() - 1 and users[counter] != "") {
+			string[] u = string_split(users[counter], " ", true);
+			if (shift_down && assistant) {
+				string rr = input("Respond", "Type the message to respond to " + u[0], multiline = true);
+				if (rr == "") continue;
+				sendcommand("/respond " + u[0] + " " + rr);
+				continue;
+			}
+			speak(u[0] + " copyed to clipboard");
+			clipboard_copy_text(u[0]);
+		}
+		if (key_pressed(KEY_F2) and users[counter] != "" and counter <= users.length() - 1) {
+			string[] u = string_split(users[counter], " ", true);
+			string message = input("PM", "enter the message that you want to send to " + u[0], multiline = true);
+			if (message != "" and !is_eloquence_crash_word(message) and get_sequence(message, true) <= 3) send_reliable(peer_id, "/pm " + u[0] + " " + message, 1);
+		}
+		if (key_pressed(KEY_F3)) {
+			string[] u = string_split(users[counter], " ", true);
+			send_reliable(peer_id, "j1 " + u[0], 0);
+		}
+		if (key_pressed(KEY_F4)) {
+			string[] u = string_split(users[counter], " ", true);
+			send_reliable(peer_id, "j2 " + u[0], 0);
+		}
+		if (key_pressed(KEY_F5) and users[counter] != "" and counter <= users.length() - 1) {
+			string[] u = string_split(users[counter], " ", true);
+			send_reliable(peer_id, "stats " + u[0], 0);
+		}
+		if (key_pressed(KEY_F6)) {
+			string[] u = string_split(users[counter], " ", true);
+			send_reliable(peer_id, "j3 " + u[0], 0);
+		}
+		if (key_pressed(KEY_F7)) {
+			string[] u = string_split(users[counter], " ", true);
+			send_reliable(peer_id, "look " + u[0], 0);
+		}
+		if (key_pressed(KEY_F8)) {
+			string[] u = string_split(users[counter], " ", true);
+			send_reliable(peer_id, "status " + u[0], 0);
+		}
+		if (shift_is_down()) {
+			if (key_pressed(KEY_F9)) {
+				string stuff = v.input("Enter your tts message");
+				if (stuff != "") {
+					if (stuff.length() > 256)
+						speak("limit is 256 characters");
+					else {
+						string msg = ttsv.speak_to_memory(stuff);
+						string[] u = string_split(users[counter], " ", true);
+						send_reliable(peer_id, "ptts " + stuff.length() + " " + u[0] + " " + try_memset(msg), 3);
+						//if (savettschats == 1)
+							//file_copy(DIRECTORY_TEMP + "\\ttsmsg.ogg", "voices/tts message " + DATE_WEEKDAY_NAME + ", " + DATE_MONTH_NAME + "-" + DATE_DAY + "-" + DATE_YEAR + ", " + TIME_HOUR + " " + TIME_MINUTE + " " + TIME_SECOND + ".ogg", true);
+						//file_delete(DIRECTORY_TEMP + "/ttsmsg.ogg");
+					}
+				}
+			}
+		}
+		if (key_up(KEY_LSHIFT) and key_up(KEY_RSHIFT)) {
+			if (key_pressed(KEY_F9) and spamtimer.elapsed >= spamtime and voicechat == 1) {
+				if (recording == false) {
+					string[] u = string_split(users[counter], " ", true);
+					urc = u[0];
+					spamtimer.restart();
+					vc.record();
+					p.play_stationary("von.ogg", false);
+					recording = true;
+					rectimer.restart();
+				} else if (recording == true and holdv == 0) {
+					p.play_stationary("voff.ogg", false);
+					vc.stop(true, DIRECTORY_TEMP + "\\convert.ogg");
+					file f;
+					f.open(DIRECTORY_TEMP + "\\convert.ogg", "rb");
+					send_reliable(peer_id, "pvoice " + spamtimer.elapsed + " " + urc + " " + f.read(), 3);
+					f.close();
+					file_delete(DIRECTORY_TEMP + "\\convert.ogg");
+					recording = false;
+					spamtimer.restart();
+				}
+			}
+			if (recording == true and rectimer.elapsed >= rectime) {
+				p.play_stationary("voff.ogg", false);
+				vc.stop(true, DIRECTORY_TEMP + "\\convert.ogg");
+				file f;
+				f.open(DIRECTORY_TEMP + "\\convert.ogg", "rb");
+				send_reliable(peer_id, "pvoice " + spamtimer.elapsed + " " + urc + " " + f.read(), 3);
+				f.close();
+				file_delete(DIRECTORY_TEMP + "\\convert.ogg");
+				recording = false;
+				spamtimer.restart();
+			}
+			if (key_released(KEY_F9) and recording == true and voicechat == 1 and holdv == 1) {
+				p.play_stationary("voff.ogg", false);
+				vc.stop(true, DIRECTORY_TEMP + "\\convert.ogg");
+				file f;
+				f.open(DIRECTORY_TEMP + "\\convert.ogg", "rb");
+				send_reliable(peer_id, "pvoice " + spamtimer.elapsed + " " + urc + " " + f.read(), 3);
+				f.close();
+				file_delete(DIRECTORY_TEMP + "\\convert.ogg");
+				recording = false;
+				spamtimer.restart();
+			}
+		}
+		if (control_is_down() and key_up(KEY_LSHIFT) and key_up(KEY_RSHIFT)) {
+			if (key_pressed(KEY_T)) {
+				string[] u = string_split(users[counter], " ", true);
+				send_reliable(peer_id, "/trust " + u[0], 1);
+			}
+			if (key_pressed(KEY_M)) {
+				string[] u = string_split(users[counter], " ", true);
+				send_reliable(peer_id, "/mute " + u[0], 1);
+			}
+		}
+		if (control_is_down() and shift_is_down()) {
+			if (key_pressed(KEY_T)) {
+				string[] u = string_split(users[counter], " ", true);
+				send_reliable(peer_id, "/untrust " + u[0], 1);
+			}
+			if (key_pressed(KEY_M)) {
+				string[] u = string_split(users[counter], " ", true);
+				send_reliable(peer_id, "/unmute " + u[0], 1);
+			}
+		}
+		if (key_pressed(KEY_RETURN) and counter <= users.length() - 1 and users[counter] != "")
+			return;
+		if (key_pressed(KEY_ESCAPE)) {
+			speak("canceled");
+			return;
+		}
+	}
+	return;
+}

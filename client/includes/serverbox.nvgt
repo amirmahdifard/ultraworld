@@ -26,8 +26,9 @@ void serverbox(int mode=0, int maxlength=-1, int autosend=0, int keypresses=-1, 
 	int cancel=form.create_button("&Cancel", false, true);
 	form.focus(message);
 	while(true){
+	form.monitor();
 		wait(5);
-		form.monitor();
+		mainloop();
 		if(form.is_pressed(cancel)){
 			send_reliable(peer_id, sendtext+" [cncel]", 0);
 			inbox=false;
