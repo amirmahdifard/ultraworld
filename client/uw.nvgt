@@ -1583,7 +1583,71 @@ void netloop() {
 				} else if (parsed[0] == "buildautomatic_travelpoint") {
 					buildautomatic_travelpoint();
 				} else if (parsed[0] == "buildpautomatic_travelpoint") {
+<<<<<<< Updated upstream
 					buildpautomatic_travelpoint();
+=======
+					if (d2dsupport == 0) {
+						binput@ dat = builder_input("minx=enter the left x
+																				maxx = enter the right x
+						miny = enter the minimum y
+						maxy = enter the maximum y
+						minz = enter the bottom z
+						maxz = enter the top z
+						map = enter map destination
+						finishx = enter the destination x
+						finishy = enter the destination y
+						finishz = enter the destination z
+						text = enter the text when player press enter on this automatic_travelpoint to enter the password
+						password = enter the password");
+																							 if (@dat == null) return;
+																				string ds1 = list_ds1s();
+						if (ds1 == "") {
+							return;
+						}
+					string ds2 = list_ds3s();
+					if (ds2 == "") {
+						return;
+					}
+					string ds3 = list_ds4s();
+					if (ds3 == "") {
+						return;
+					}
+					if (dat.num("minx")<min.x or dat.num("minx")>max.x or dat.num("maxx")<min.x or dat.num("maxx")>max.x or dat.num("miny")<min.y or dat.num("miny")>max.y or dat.num("maxy")<min.y or dat.num("maxy")>max.y or dat.num("minz")<min.z or dat.num("minz")>max.z or dat.num("maxz")<min.z or dat.num("maxz")>max.z) {
+						speak("error. Given coordinates are out of range");
+							return;
+						}
+						send_reliable(peer_id, "addpautomatic_travelpoint pautomatic_travelpoint:" + dat.num("minx") + ":" + dat.num("maxx") + ":" + dat.num("miny") + ":" + dat.num("maxy") + ":" + dat.num("minz") + ":" + dat.num("maxz") + ":" + dat.str("map") + ":" + dat.num("finishx") + ":" + dat.num("finishy") + ":" + dat.num("finishz") + ":" + dat.str("text") + ":" + dat.str("password") + ":" + ds1 + ".ogg:" + ds2 + ".ogg:" + ds3 + ".ogg", 0);
+					} else {
+						binput@ dat = builder_input("minx=enter the left x
+																				maxx = enter the right x
+						miny = enter the minimum y
+						maxy = enter the maximum y
+						map = enter map destination
+						finishx = enter the destination x
+						finishy = enter the destination y
+						text = enter the text when player press enter on this automatic_travelpoint to enter the password
+						password = enter the password");
+																							 if (@dat == null) return;
+																				string ds1 = list_ds1s();
+						if (ds1 == "") {
+							return;
+						}
+					string ds2 = list_ds3s();
+					if (ds2 == "") {
+						return;
+					}
+					string ds3 = list_ds4s();
+					if (ds3 == "") {
+						return;
+					}
+					if (dat.num("minx")<min.x or dat.num("minx")>max.x or dat.num("maxx")<min.x or dat.num("maxx")>max.x or dat.num("miny")<min.z or dat.num("miny")>max.z or dat.num("maxy")<min.z or dat.num("maxy")>max.z) {
+
+						speak("error. Given coordinates are out of range");
+							return;
+						}
+						send_reliable(peer_id, "addpautomatic_travelpoint pautomatic_travelpoint:" + dat.num("minx") + ":" + dat.num("maxx") + ":0:0:" + dat.num("miny") + ":" + dat.num("maxy") + ":" + dat.str("map") + ":" + dat.num("finishx") + ":0:" + dat.num("finishy") + ":" + dat.str("text") + ":" + dat.str("password") + ":" + ds1 + ".ogg:" + ds2 + ".ogg:" + ds3 + ".ogg", 0);
+					}
+>>>>>>> Stashed changes
 				} else if (parsed[0] == "buildicautomatic_travelpoint") {
 					buildicautomatic_travelpoint();
 				} else if (parsed[0] == "builditautomatic_travelpoint") {
@@ -3831,380 +3895,40 @@ void checkloc() {
 			currentloc = locate;
 	}
 }
-void serverbox(int mode = 0, int maxlength = -1, int autosend = 0, int keypresses = -1, string sendtext = "server_box", string text = "enter text") {
-	key_hold back(KEY_BACK, 50, 50);
-	key_hold back2(KEY_DELETE, 50, 50);
+void serverbox(int mode = 0, int maxlength = -1, int autosend = 0, int keypresses = -1, string sendtext = "server_box", string text = "enter text")
+{
 	inbox = true;
-	string message;
-	speak(text);
-	get_characters();
-	int total_keypresses = 0;
-	while (true) {
-		wait(5);
-		mainloop();
-		string char = get_characters();
-		if (key_pressed(KEY_TAB))
-			speak(text);
-		if ((key_down(KEY_LMENU) or key_down(KEY_RMENU)) and (key_pressed(KEY_LSHIFT) or key_pressed(KEY_RSHIFT))) {
-			if (klang.length() < 1)
-				speak("add a keyboard language first");
-			else {
-				klangpos += 1;
-				if (klangpos >= klang.length())
-					klangpos = 0;
-				currentkeyboardlangfile = string_replace(klang[klangpos], ".lng", "", true);
-				keyboarddata = file_get_contents("keyboard_languages\\" + currentkeyboardlangfile + ".lng");
-				speak(string_replace(klang[klangpos], ".lng", "", true));
-			}
-		}
-		if (key_pressed(KEY_F1)) {
-			v.repeat = v.repeat == 1 ? 0 : 1;
-			p.play_stationary((v.repeat == 1 ? "toggleon" : "toggleoff") + ".ogg", false);
-			send_reliable(peer_id, "draw " + (v.repeat == 1 ? "toggleon" : "toggleoff") + ".ogg", 7);
-			speak("Character repeat " + (v.repeat == 1 ? "enabled" : "disabled"));
-		}
-		if (key_pressed(KEY_F2)) {
-			if (v.caps == 1) {
-				v.caps = 2;
-				p.play_stationary("cap.ogg", false);
-				send_reliable(peer_id, "draw cap.ogg", 7);
-				speak("Beep for uppercase letters.");
-				continue;
-			}
-			if (v.caps == 2) {
-				v.caps = 3;
-				p.play_stationary("toggleon.ogg", false);
-				send_reliable(peer_id, "draw toggleon.ogg", 7);
-				speak("Ignore uppercase letters.");
-				continue;
-			}
-			if (v.caps == 3) {
-				v.caps = 1;
-				p.play_stationary("toggleon.ogg", false);
-				send_reliable(peer_id, "draw toggleon.ogg", 7);
-				speak("Speak uppercase letters.");
-				continue;
-			}
-		}
-		if (key_pressed(KEY_F3)) {
-			if (v.keyboardclicks == 0) {
-				p.play_stationary("toggleon.ogg", false);
-				send_reliable(peer_id, "draw toggleon.ogg", 7);
-				speak("keyboard clicks enabled");
-				v.keyboardclicks = 1;
-			} else {
-				p.play_stationary("toggleoff.ogg", false);
-				send_reliable(peer_id, "draw toggleoff.ogg", 7);
-				speak("keyboard clicks disabled");
-				v.keyboardclicks = 0;
-			}
-		}
-		if (key_pressed(KEY_F4)) {
-			if (v.keyboardtheme == 1) {
-				rvp.play_stationary("keyboard2type" + random(1, 10) + ".ogg", false);
-				send_reliable(peer_id, "draw keyboard2type" + random(1, 10) + ".ogg", 7);
-				v.keyboardtheme = 2;
-				speak("theme" + v.keyboardtheme + "");
-			} else if (v.keyboardtheme == 2) {
-				rvp.play_stationary("keyboard3type" + random(1, 5) + ".ogg", false);
-				send_reliable(peer_id, "draw keyboard3type" + random(1, 5) + ".ogg", 7);
-				v.keyboardtheme = 3;
-				speak("theme" + v.keyboardtheme + "");
-			} else if (v.keyboardtheme == 3) {
-				rvp.play_stationary("keyboard4type" + random(1, 3) + ".ogg", false);
-				send_reliable(peer_id, "draw keyboard4type" + random(1, 3) + ".ogg", 7);
-				v.keyboardtheme = 4;
-				speak("theme" + v.keyboardtheme + "");
-			} else if (v.keyboardtheme == 4) {
-				rvp.play_stationary("keyboard5key" + random(1, 4) + ".ogg", false);
-				send_reliable(peer_id, "draw keyboard5key" + random(1, 4) + ".ogg", 7);
-				v.keyboardtheme = 5;
-				speak("theme" + v.keyboardtheme + "");
-			} else if (v.keyboardtheme == 5) {
-				rvp.play_stationary("keyboard6type" + random(1, 4) + ".ogg", false);
-				send_reliable(peer_id, "draw keyboard6type" + random(1, 4) + ".ogg", 7);
-				v.keyboardtheme = 6;
-				speak("theme" + v.keyboardtheme + "");
-			} else if (v.keyboardtheme == 6) {
-				rvp.play_stationary("keyboard7.ogg", false);
-				send_reliable(peer_id, "draw keyboard7.ogg", 7);
-				v.keyboardtheme = 7;
-				speak("theme" + v.keyboardtheme + "");
-			} else if (v.keyboardtheme == 7) {
-				rvp.play_stationary("keyboard8key" + random(1, 4) + ".ogg", false);
-				send_reliable(peer_id, "draw keyboard8key" + random(1, 4) + ".ogg", 7);
-				v.keyboardtheme = 8;
-				speak("theme" + v.keyboardtheme + "");
-			} else if (v.keyboardtheme == 8) {
-				rvp.play_stationary("keyboard9type.ogg", false);
-				send_reliable(peer_id, "draw keyboard9type.ogg", 7);
-				v.keyboardtheme = 9;
-				speak("theme" + v.keyboardtheme + "");
-			} else if (v.keyboardtheme == 9) {
-				rvp.play_stationary("phonekeytype.ogg", false);
-				send_reliable(peer_id, "draw phonekeytype.ogg", 7);
-				v.keyboardtheme = 10;
-				speak("theme" + v.keyboardtheme + "");
-			} else if (v.keyboardtheme == 11) {
-				rvp.play_stationary("keyboard10type" + random(1, 10) + ".ogg", false);
-				send_reliable(peer_id, "draw keyboard10type" + random(1, 10) + ".ogg", 7);
-				v.keyboardtheme = 11;
-				speak("theme" + v.keyboardtheme + "");
-			} else if (v.keyboardtheme == 12) {
-				rvp.play_stationary("keyboard1type" + random(1, 10) + ".ogg", false);
-				send_reliable(peer_id, "draw keyboard1type" + random(1, 10) + ".ogg", 7);
-				v.keyboardtheme = 12;
-				speak("theme" + v.keyboardtheme + "");
-			}
-		}
-		if (key_pressed(KEY_F5)) {
-			if (v.keyboardsoundforothers == 0) {
-				p.play_stationary("toggleon.ogg", false);
-				send_reliable(peer_id, "draw toggleon.ogg", 7);
-				speak("others will now hear your typing sounds");
-				v.keyboardsoundforothers = 1;
-			} else {
-				p.play_stationary("toggleoff.ogg", false);
-				send_reliable(peer_id, "draw toggleoff.ogg", 7);
-				speak("others won't hear your typing sounds from now on");
-				v.keyboardsoundforothers = 0;
-			}
-		}
-		if (key_pressed(KEY_F6)) {
-			if (v.hearotherskeyboardsound == 0) {
-				p.play_stationary("toggleon.ogg", false);
-				send_reliable(peer_id, "draw toggleon.ogg", 7);
-				speak("now hearing others typing sounds");
-				v.hearotherskeyboardsound = 1;
-			} else {
-				p.play_stationary("toggleoff.ogg", false);
-				send_reliable(peer_id, "draw toggleoff.ogg", 7);
-				speak("you won't hear others typing sounds from now on");
-				v.hearotherskeyboardsound = 0;
-			}
-		}
-		if (key_up(KEY_LSHIFT) and key_up(KEY_RSHIFT) and key_pressed(KEY_F8)) {
-			if (!directory_exists("keyboard_languages")) {
-				dlg("Could not find keyboard languages");
-				break;
-			}
-			string[] lngfiles = find_files("keyboard_languages/*.lng");
-			if (lngfiles.length() <= 0) {
-				dlg("No keyboard languages found");
-				break;
-			}
-			if (screen_reader_is_running(1))
-				form.set_output_mode(JAWS);
-			if (screen_reader_is_running(2))
-				form.set_output_mode(WINDOW_EYES);
-			if (screen_reader_is_running(3))
-				form.set_output_mode(SYSTEM_ACCESS);
-			if (screen_reader_is_running(4))
-				form.set_output_mode(NVDA);
-			form.create_window("Select a language to be added to the keyboard languages", false);
-			int klng = form.create_list("&Keyboard languages", 0);
-			for (uint i = 0; i < lngfiles.length(); i++)
-				form.add_list_item(klng, string_replace(lngfiles[i], ".lng", "", true), -1);
-			int ok = form.create_button("OK");
-			int cancel = form.create_button("cancel");
-			form.set_button_attributes(ok, true, false);
-			form.set_button_attributes(cancel, false, true);
-			while (true) {
-				form.monitor();
-				wait(5);
-				mainloop();
-				if (form.is_pressed(cancel)) {
-					form.reset();
-					break;
-				} else if (form.is_pressed(ok)) {
-					if (form.get_list_position(klng) == -1) {
-						dlg("An error has occured. Please set your keyboard language");
-						form.reset();
-					} else {
-						klang.insert_last("" + form.get_list_item(klng, form.get_list_position(klng)) + ".lng");
-						form.reset();
-						speak("done");
-						break;
-					}
-				}
-			}
-		}
-		if (shift_is_down() and key_pressed(KEY_F8)) {
-			if (screen_reader_is_running(1))
-				form.set_output_mode(JAWS);
-			if (screen_reader_is_running(2))
-				form.set_output_mode(WINDOW_EYES);
-			if (screen_reader_is_running(3))
-				form.set_output_mode(SYSTEM_ACCESS);
-			if (screen_reader_is_running(4))
-				form.set_output_mode(NVDA);
-			form.create_window("Select a language to be removed from keyboard languages", false);
-			int klng2 = form.create_list("&Keyboard languages", 0);
-			for (uint i = 0; i < klang.length(); i++)
-				form.add_list_item(klng2, string_replace(klang[i], ".lng", "", true), -1);
-			int ok = form.create_button("OK");
-			int cancel = form.create_button("cancel");
-			form.set_button_attributes(ok, true, false);
-			form.set_button_attributes(cancel, false, true);
-			while (true) {
-				form.monitor();
-				wait(5);
-				mainloop();
-				if (form.is_pressed(cancel)) {
-					form.reset();
-					break;
-				} else if (form.is_pressed(ok)) {
-					int something = klang.find("" + form.get_list_item(klng2, form.get_list_position(klng2)) + ".lng");
-					if (something > -1)
-						klang.remove_at(something);
-					currentkeyboardlangfile = "";
-					form.reset();
-					speak("done");
-					break;
-				}
-			}
-		}
-		if (control_down) {
-			if (key_pressed(KEY_V)) {
-				if (clipboard_read_text() == "")
-					speak("There is no text on the clipboard");
-				else {
-					speak(clipboard_read_text() + " pasted");
-					message += clipboard_read_text();
-				}
-			}
-		}
-		if (mode == 1) {
-			if (!string_is_alphanumeric(char) and char != " ") char = "";
-		}
-		if (mode == 2) {
-			if (!string_contains_numbers(char)) char = "";
-		}
-		if (char != "") {
-			total_keypresses += char.length();
-			if (string_is_upper_case(char)) {
-				if (v.keyboardtheme == 1) vplay("keyboard1type" + random(1, 10) + "");
-				else if (v.keyboardtheme == 2) vplay("keyboard2type" + random(1, 10) + "");
-				else if (v.keyboardtheme == 3) vplay("keyboard3type" + random(1, 5) + "");
-				else if (v.keyboardtheme == 4) vplay("keyboard4type" + random(1, 3) + "");
-				else if (v.keyboardtheme == 5) vplay("keyboard5key" + random(1, 4) + "");
-				else if (v.keyboardtheme == 6) vplay("keyboard6type" + random(1, 4) + "");
-				else if (v.keyboardtheme == 7) vplay("keyboard7");
-				else if (v.keyboardtheme == 8) vplay("keyboard8key" + random(1, 4) + "");
-				else if (v.keyboardtheme == 9) vplay("keyboard9type");
-				else if (v.keyboardtheme == 10) vplay("phonekeytype");
-				if (currentkeyboardlangfile == "english") {
-					if (v.caps == 1) {
-						if (v.repeat == 1) speak("Capital " + char);
-					} else if (v.caps == 2) {
-						v.capital.stop(); v.capital.play();
-						if (v.repeat == 1) speak(char);
-					} else if (v.caps == 3) {
-						if (v.repeat == 1) speak(char);
-					}
-				} else {
-					if (v.repeat == 1) speak(char);
-				}
-			} else if (char == " ") {
-				if (v.keyboardtheme == 4) vplay("keyboard4type" + random(1, 3) + "");
-				else if (v.keyboardtheme == 5) vplay("keyboard5key" + random(1, 4) + "");
-				else if (v.keyboardtheme == 6) vplay("keyboard6type" + random(1, 4) + "");
-				else if (v.keyboardtheme == 7) vplay("keyboard7");
-				else if (v.keyboardtheme == 8) vplay("keyboard8key" + random(1, 4) + "");
-				else if (v.keyboardtheme == 10) vplay("phonekeyspace");
-				else vplay("keyboard" + v.keyboardtheme + "space");
-				if (v.repeat == 1) speak("space");
-			} else {
-				if (v.keyboardtheme == 1) vplay("keyboard1type" + random(1, 10) + "");
-				else if (v.keyboardtheme == 2) vplay("keyboard2type" + random(1, 10) + "");
-				else if (v.keyboardtheme == 3) vplay("keyboard3type" + random(1, 5) + "");
-				else if (v.keyboardtheme == 4) vplay("keyboard4type" + random(1, 3) + "");
-				else if (v.keyboardtheme == 5) vplay("keyboard5key" + random(1, 4) + "");
-				else if (v.keyboardtheme == 6) vplay("keyboard6type" + random(1, 4) + "");
-				else if (v.keyboardtheme == 7) vplay("keyboard7");
-				else if (v.keyboardtheme == 8) vplay("keyboard8key" + random(1, 4) + "");
-				else if (v.keyboardtheme == 9) vplay("keyboard9type");
-				else if (v.keyboardtheme == 10) vplay("phonekeytype");
-				if (v.repeat == 1) speak(char);
-			}
-			message += char;
-			if (total_keypresses >= keypresses and keypresses > -1) {
-				if (autosend >= 1) {
-					message = string_replace(message, " ", "[SPCE]", true);
-					send_reliable(peer_id, sendtext + " " + message, 0);
-					keys_pressed();
-					get_characters();
-					//keys_released();
-					//keys_up();
-					inbox = false;
-					return;
-				}
-			}
-		}
-		if ((back.pressing() or back2.pressing())) {
-			if (v.keyboardtheme == 4) vplay("keyboard4type" + random(1, 3) + "");
-			else if (v.keyboardtheme == 5) vplay("keyboard5key" + random(1, 4) + "");
-			else if (v.keyboardtheme == 6) vplay("keyboard6type" + random(1, 4) + "");
-			else if (v.keyboardtheme == 7) vplay("keyboard7");
-			else if (v.keyboardtheme == 8) vplay("keyboard8key" + random(1, 4) + "");
-			else if (v.keyboardtheme == 10) vplay("phonekeydelete");
-			else vplay("keyboard" + v.keyboardtheme + "delete");
-			if (message.length() > 0) {
-				string char = message[message.length() - 1];
-				speak(char);
-				message.resize(message.length() - 1);
-			}
-			total_keypresses--;
-			if (total_keypresses >= keypresses and keypresses > -1) {
-				if (autosend >= 1) {
-					if (message.length() <= 0)
-						message = "[bckspace]";
-					send_reliable(peer_id, sendtext + " " + message, 0);
-					keys_pressed();
-					get_characters();
-					//keys_released();
-					//keys_up();
-					inbox = false;
-					return;
-				}
-			}
-		}
-		if (key_pressed(KEY_LEFT) or key_pressed(KEY_RIGHT) or key_pressed(KEY_UP) or key_pressed(KEY_DOWN)) {
-			if (message.length() > 0)
-				speak(message);
-			else
-				speak("blank");
-		}
-		if (key_pressed(KEY_ESCAPE)) {
-			send_reliable(peer_id, sendtext + " [cncel]", 0);
-			keys_pressed();
-			get_characters();
-			//keys_released();
-			//keys_up();
-			inbox = false;
-			return;
-		} else if (key_pressed(KEY_RETURN) and message.length() > 0) {
-			if (v.keyboardtheme == 5) vplay("keyboard5key" + random(1, 4) + "");
-			else if (v.keyboardtheme == 7) vplay("keyboard7");
-			else if (v.keyboardtheme == 8) vplay("keyboard8key" + random(1, 4) + "");
-			else if (v.keyboardtheme == 10) vplay("phone
-				                                      ");
-				                                      else vplay("keyboard" + v.keyboardtheme + "enter");
-					                                      send_reliable(peer_id, sendtext + " " + message, 0);
-					                                      get_characters();
-					                                      //keys_released();
-					                                      //keys_up();
-					                                      inbox = false;
-					                                      return;
-				}
-		wait(5);
+	string disallowed = "";
+	bool only_disallowed = false;
+	string description = "";
+	if (mode == 1) {
+		disallowed = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
+		only_disallowed = true;
+		description = "Only letters and numbers are allowed";
 	}
-	keys_pressed();
-	get_characters();
-	get_characters();
-	//keys_released();
-	//keys_up();
-	return;
+	else if (mode == 2) {
+		disallowed = "0123456789";
+		only_disallowed = true;
+		description = "Only numbers are allowed";
+	}
+	int max_len;
+	if (maxlength < 0) {
+		max_len = 5000;
+	} else {
+		max_len = maxlength + 1;
+	}
+	string result = input("Server input", "" + text + "", "", "", max_len, false, false, "&Ok", "&Cancel", "", disallowed, only_disallowed, description);
+	inbox = false;
+	if (result == "") {
+		send_reliable(peer_id, sendtext + " [cncel]", 0);
+		return;
+	}
+	if (autosend >= 1) {
+		string clipped = string_replace(result, " ", "[SPCE]", true);
+		send_reliable(peer_id, sendtext + " " + clipped, 0);
+		return;
+	}
+	send_reliable(peer_id, sendtext + " " + result, 0);
 }
 void beep(int hz) {
 	ts.reset();
