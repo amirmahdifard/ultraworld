@@ -9661,16 +9661,16 @@ void player_event(player@p, string event) {
 				pspurchase(parsed[1], 1, p);
 			else
 				purchase(parsed[1], 1, p);
-		} else send_serverbox(p.peer_id, 2, 1, 0, -1, "purchase " + parsed[1], "type the amount you wish to buy");
+		} else send_serverbox(p.peer_id, 2, -1, 0, -1, "purchase " + parsed[1], "type the amount you wish to buy");
 	} else if (parsed[0] == "paid_buysomething" and parsed.length() > 1) {
 		if (parsed[1] == "back") return;
-		send_serverbox(p.peer_id, 2, 1, 0, -1, "paid_purchase " + parsed[1], "type the amount you wish to buy");
+		send_serverbox(p.peer_id, 2, -1, 0, -1, "paid_purchase " + parsed[1], "type the amount you wish to buy");
 	} else if (parsed[0] == "xp_potion_paid_buysomething" and parsed.length() > 1) {
 		if (parsed[1] == "back") return;
-		send_serverbox(p.peer_id, 2, 1, 0, -1, "paid_purchase " + parsed[1], "for how much minutes do you want to have the potion?");
+		send_serverbox(p.peer_id, 2, -1, 0, -1, "paid_purchase " + parsed[1], "for how much minutes do you want to have the potion?");
 	} else if (parsed[0] == "team_buysomething" and parsed.length() > 1) {
 		if (parsed[1] == "back") return;
-		send_serverbox(p.peer_id, 2, 1, 0, -1, "team_purchase " + parsed[1], "type the amount you wish to buy");
+		send_serverbox(p.peer_id, 2, -1, 0, -1, "team_purchase " + parsed[1], "type the amount you wish to buy");
 	} else if (parsed[0] == "revive") {
 		if (p.is_dead = true)
 			respawn(p);
