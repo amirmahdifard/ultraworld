@@ -3911,6 +3911,7 @@ void serverbox(int mode = 0, int maxlength = -1, int autosend = 0, int keypresse
 		only_disallowed = true;
 		description = "Only numbers are allowed";
 	}
+	//length
 	int max_len;
 	if (maxlength < 0) {
 		max_len = 5000;
