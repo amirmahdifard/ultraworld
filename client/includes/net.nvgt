@@ -142,136 +142,133 @@ void login(bool is_reconnecting = false) {
 	}
 }
 void create() {
-	form.reset();
-	if (screen_reader_is_running(1))
-		form.set_output_mode(JAWS);
-	if (screen_reader_is_running(2))
-		form.set_output_mode(WINDOW_EYES);
-	if (screen_reader_is_running(3))
-		form.set_output_mode(SYSTEM_ACCESS);
-	if (screen_reader_is_running(4))
-		form.set_output_mode(NVDA);
-	form.create_window("Registration Form", false);
-	int user = form.create_input_box("&Username");
-	int pass = form.create_input_box("&Password", "", "*");
-	int email = form.create_input_box("&Email", "");
-	int gender = form.create_list("&Gender selection", 0);
-	form.add_list_item(gender, "Male", 0);
-	form.add_list_item(gender, "Female", 1);
-	int ok = form.create_button("&Register");
-	int cancel = form.create_button("&Cancel");
-	form.set_button_attributes(ok, true, false);
-	form.set_button_attributes(cancel, false, true);
+	nv_form f;
+	f.create_window("Registration Form", false);
+	nv_form_input@ user = f.add_input("Please enter a username. (No spaces allowed)", "user");
+	@user.shortcut = nv_shortcut(KEY_U, alt = true);
+	nv_form_input@ pass = f.add_input("Enter a password for your account. (Must not contain spaces)", "pass", "", "*");
+	@pass.shortcut = nv_shortcut(KEY_P, alt = true);
+	nv_form_input@ email = f.add_input("Please enter a valid email address.", "email");
+	@email.shortcut = nv_shortcut(KEY_E, alt = true);
+	nv_form_list_box@ gender = f.add_list("Choose your gender.", "gender");
+	gender.add("Male", "0");
+	gender.add("Female", "1");
+	@gender.shortcut = nv_shortcut(KEY_G, alt = true);
+	nv_form_button@ ok = f.add_button("Register", "ok", primary = true);
+	nv_form_button@ can = f.add_button("Cancel", "can", cancel = true);
+	f.focus_control(user, false, false);
 	while (true) {
-		form.monitor();
+		f.monitor();
 		wait(5);
-		if (form.is_pressed(cancel)) {
-			form.reset();
+		if (f.is_pressed(can)) {
+			f.reset();
 			n.destroy();
 			reset_network();
 			mainmenu();
 			break;
-		} else if (form.is_pressed(ok)) {
-			if (form.get_text(user) == "" or string_contains(form.get_text(user), " ", 1) != -1 || !name_is_valid(form.get_text(user))) {
-				dlg("An error has occured. Please check the username field and try again");
-				creating = false;
-				form.reset();
-				reset_network();
-				mainmenu();
-				break;
-			} else if (form.get_text(pass) == "" or string_contains(form.get_text(pass), " ", 1) != -1) {
-				dlg("An error has occured. Please check the password field and try again");
-				creating = false;
-				form.reset();
-				reset_network();
-				mainmenu();
-				break;
-			} else if (form.get_text(email) == "" or string_contains(form.get_text(email), "@", 1) == -1) {
-				dlg("An error has occured. Please check the e-mail field and try again");
-				creating = false;
-				form.reset();
-				reset_network();
-				mainmenu();
-				break;
-			} else if (form.get_list_position(gender) == -1) {
-				dlg("An error has occured. Please set your gender in the gender selection list and try again");
-				creating = false;
-				form.reset();
-				reset_network();
-				mainmenu();
-				break;
-			} else {
-				timeouttimer.restart();
-				messager lmsg;
-				lmsg.add("message", "newchar");
-				lmsg.add("name", form.get_text(user));
-				lmsg.add("password", form.get_text(pass));
-				lmsg.add("email", form.get_text(email));
-				lmsg.add("gender", form.get_list_position(gender));
-				lmsg.add("compid", compid);
-				lmsg.add("node_id", system_node_id);
-				lmsg.add("yv", app.version);
-				speak("establishing connection... please wait");
-				sr.load("roleta.ogg");
-				sr.play_looped();
-				reset_network();
-				net_client();
-				n.connect(netaddress, netport);
+		} if (f.is_pressed(ok)) {
+			if (user.text == "") {
+				speak("Username is required");
+				f.focus_control(user, false, false);
+				continue;
+			} if (string_contains(user.text, " ", 1) != -1 || !name_is_valid(user.text)) {
+				speak("Usernames cannot contain spaces or special characters.");
+				f.focus_control(user, false, false);
+				continue;
+			} if (pass.text == "") {
+				speak("Password is required");
+				f.focus_control(pass, false, false);
+				continue;
+			} if (string_contains(pass.text, " ", 1) != -1) {
+				speak("Password cannot contain spaces.");
+				f.focus_control(pass, false, false);
+				continue;
+			} if (email.text == "") {
+				speak("Email address is required.");
+				f.focus_control(email, false, false);
+				continue;
+			} if (string_contains(email.text, "@", 1) == -1) {
+				speak("This email address is invalid.");
+				f.focus_control(email, false, false);
+				continue;
+			} if (@gender.focused_item == null) {
+				speak("Please select a gender.");
+				f.focus_control(gender, false, false);
+				continue;
+			}
+			timeouttimer.restart();
+			messager lmsg;
+			lmsg.add("message", "newchar");
+			lmsg.add("name", user.text);
+			lmsg.add("password", pass.text);
+			lmsg.add("email", email.text);
+			lmsg.add("gender", string_to_number(gender.focused_item.id));
+			lmsg.add("compid", compid);
+			lmsg.add("node_id", system_node_id);
+			lmsg.add("yv", app.version);
+			speak("Establishing connection... please wait");
+			sr.load("roleta.ogg");
+			sr.play_looped();
+			reset_network();
+			net_client();
+			n.connect(netaddress, netport);
 				while (true) {
 					wait(5);
-					e = n.request();
-					if (key_pressed(KEY_ESCAPE)) {
-						sr.stop();
-						form.reset();
-						reset_network();
-						mainmenu();
-						break;
-					}
-					if (e.type == event_disconnect or timeouttimer.elapsed >= timeouttime) {
-						sr.stop();
-						p.play_stationary("error.ogg", false);
-						speak("Server down");
-						reset_network();
-						mainmenu();
-						break;
-					}
-					if (e.type == event_connect and connected == false) {
-						creating = true;
-						peer_id = e.peer_id;
-						speak("creating");
-						send(peer_id, lmsg, 10);
-					} else if (e.type == event_receive and get_event_message() == "createdchar") {
+				e = n.request();
+				if (key_pressed(KEY_ESCAPE)) {
+					sr.stop();
+						f.reset();
+					reset_network();
+					mainmenu();
+					break;
+				}
+if (e.type == event_disconnect or timeouttimer.elapsed >= timeouttime) {
+					sr.stop();
+					p.play_stationary("error.ogg", false);
+					speak("Server down");
+					reset_network();
+					mainmenu();
+					break;
+				}
+				if (e.type == event_connect and connected == false) {
+					creating = true;
+					peer_id = e.peer_id;
+					speak("Creating account...");
+					send(peer_id, lmsg, 10);
+				} else if (e.type == event_receive) {
+					string msg = get_event_message();
+					if (msg == "createdchar") {
 						sr.close();
-						dlg("success! Your account has been registered! press enter to connect");
+						dlg("Success! Your account has been registered! Press enter to connect");
 						s.fade_music(20);
-						name = form.get_text(user);
-						password = form.get_text(pass);
+						name = user.text;
+						password = pass.text;
 						writeprefs();
-						form.reset();
+						f.reset();
 						client::destruct();
 						reset_network();
 						login();
 						creating = false;
 						break;
-					} else if (e.type == event_receive and get_event_message() == "alreadyaccount") {
+					} else if (msg == "alreadyaccount") {
 						creating = false;
-						form.reset();
+						f.reset();
 						reset_network();
 						mainmenu();
 						break;
-					} else if (e.type == event_receive and get_event_message() == "alreadyexists") {
+					} else if (msg == "alreadyexists") {
 						sr.close();
 						dlg("This account already exists");
 						creating = false;
-						form.reset();
+						f.reset();
 						reset_network();
 						mainmenu();
 						break;
-					} else if (e.type == event_receive and string_contains(get_event_message(), "Error", 1) > -1) {
+					} else if (string_contains(msg, "Error", 1) > -1) {
 						sr.close();
-						dlg(get_event_message());
+						dlg(msg);
 						creating = false;
-						form.reset();
+						f.reset();
 						reset_network();
 						mainmenu();
 						break;
