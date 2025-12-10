@@ -387,6 +387,7 @@ void main() {
 	if (!directory_exists(prefsdir))directory_create(prefsdir);
 	capbeep.load("cap.ogg");
 	readprefs();
+	set_sound_master_volume(mvol);
 	initialize_pools();
 	show_window(app.name + (app.status != "" ? " (" + app.status + ")" : "") + " version " + app.version);
 	set_application_name(app.name);
@@ -3834,6 +3835,12 @@ string get_game_path() {
 	if (SCRIPT_COMPILED == false)game_path = string_replace(get_script_path(), "\\uw.bgt", "", true);
 	else game_path = string_replace(get_script_path(), "\\uw.exe", "", true);
 	return game_path;
+}
+void change_master_volume(int change) {
+	mvol += change;
+	if (mvol > 0) mvol = 0;
+	if (mvol < -60) mvol = -60;
+	set_sound_master_volume(mvol);
 }
 void checarjanela() {
 	if (is_game_window_active() == true)

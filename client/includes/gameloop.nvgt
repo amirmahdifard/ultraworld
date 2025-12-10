@@ -1163,16 +1163,15 @@ chat("public chat");
 		speak((winsound == 0 ? "enabled" : "disabled") + " muting audio when the game is not in focus");
 	}
 	if (key_up(KEY_LSHIFT) and key_up(KEY_RSHIFT)) {
-		if (key_pressed(KEY_HOME) == false and khome.pressing() and get_sound_master_volume() < 0) {
-			set_sound_master_volume(get_sound_master_volume() + 1);
+		if (key_pressed(KEY_HOME) == false and khome.pressing() and mvol < 0) {
+			change_master_volume(1);
 			p.play_stationary("volume_up.ogg", false);
-			mvol++;
 		}
-		if (key_pressed(KEY_END) == false and kend.pressing() and get_sound_master_volume() > -60) {
-			set_sound_master_volume(get_sound_master_volume() - 1);
+		if (key_pressed(KEY_END) == false and kend.pressing() and mvol > -60) {
+			change_master_volume(-1);
 			p.play_stationary("volume_down.ogg", false);
-			mvol--;
 		}
+		if (key_up(KEY_HOME) or key_up(KEY_END)) writeprefs();
 	} else if (shift_is_down()) {
 		if (key_pressed(KEY_HOME) == false and khome.pressing() and mmusic_volume <= 0)
 			change_music_volume(mmusic_volume + 1);
