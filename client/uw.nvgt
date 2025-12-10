@@ -3242,6 +3242,7 @@ void fallloop() {
 					rvp.play_stationary(get_tile_at(me.x, me.y, me.z) + "land.ogg", false);
 					send_reliable(peer_id, "draw " + get_tile_at(me.x, me.y, me.z) + "land.ogg", 7);
 					jumping = false;
+					movecheck();
 				}
 			} else {
 				if (get_tile_at(me.x, me.y, me.z) == "" or get_tile_at(me.x, me.y, me.z) == "air" and frozen == false and in_map) {

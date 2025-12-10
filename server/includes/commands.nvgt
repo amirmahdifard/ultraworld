@@ -1,6 +1,10 @@
 void command(player@p, string command) {
 	string[] parsed = string_split(command, " ", true);
 	if (parsed[0] == "/suicide") {
+		if (p.pvp == 1) {
+			send_reliable(p, "you can't suicide while you are pvp", 2);
+			return;
+		}
 		for (uint i = 0; i < weapons.length(); i++) {
 			int rx = round(weapons[i].x, 0);
 			int ry = round(weapons[i].y, 0);
