@@ -2342,7 +2342,7 @@ void use(player@p, string message) {
 				p.tenter.restart();
 				string tile = get_tile_at(p.x, p.y, p.z, maps[get_map_index(p.map)]);
 				string[] tiles = {"water", "deepwater", "swim", "swimming", "spring", "puddle"};
-				if (watertiles.find(gettile(tile)) > -1 || tile == "wallboat") {
+				if ((watertiles.find(gettile(tile)) > -1 || tile == "wallboat") and is_fishingcoordinate(p.x, p.y, p.z, maps[get_map_index(p.map)])) {
 					if (p.npescar > 0) {
 						p.npescar--;
 						p.tppeixe.restart();
@@ -2375,7 +2375,7 @@ void use(player@p, string message) {
 			if (p.tenter.elapsed >= 100) {
 				p.tenter.restart();
 				string tile = get_tile_at(p.x, p.y, p.z, maps[get_map_index(p.map)]);
-				if (watertiles.find(gettile(tile)) > -1 || tile == "wallboat") {
+				if ((watertiles.find(gettile(tile)) > -1 || tile == "wallboat") and is_fishingcoordinate(p.x, p.y, p.z, maps[get_map_index(p.map)])) {
 					if (p.npescar > 0) {
 						p.npescar--;
 						p.tppeixe.restart();

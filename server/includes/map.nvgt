@@ -638,7 +638,7 @@ bool is_fishingcoordinate(int x, int y, int z, mapdata@m) {
 	string[] text = string_split(d, "\n");
 	for (uint i = 0; i < text.length(); i++) {
 		string[] parsed = string_split(text[i], ":", false);
-		if (parsed[0] == "fishingcoordinate" and parsed.length() > 6) {
+		if ((parsed[0] == "fishingcoordinate" or parsed[0] == "fishing_coordinate") and parsed.length() > 6) {
 			int minx = string_to_number(parsed[1]);
 			int maxx = string_to_number(parsed[2]);
 			int miny = string_to_number(parsed[3]);
