@@ -1,4 +1,24 @@
 mapdata@[] maps(0);
+class map_zone {
+	double minx, maxx, miny, maxy, minz, maxz;
+	string name;
+	map_zone(double _minx, double _maxx, double _miny, double _maxy, double _minz, double _maxz, string _name) {
+		minx = _minx; maxx = _maxx;
+		miny = _miny; maxy = _maxy;
+		minz = _minz; maxz = _maxz;
+		name = _name;
+	}
+}
+class map_tile {
+	double minx, maxx, miny, maxy, minz, maxz;
+	string type;
+	map_tile(double _minx, double _maxx, double _miny, double _maxy, double _minz, double _maxz, string _type) {
+		minx = _minx; maxx = _maxx;
+		miny = _miny; maxy = _maxy;
+		minz = _minz; maxz = _maxz;
+		type = _type;
+	}
+}
 class mapdata {
 	string name;
 	int litem = 0;
@@ -16,6 +36,8 @@ class mapdata {
 	string description;
 	mapispawn@[] mapispawns;
 	mapai@[] mapais;
+	map_zone@[] zones;
+	map_tile@[] tiles;
 	string[] owners;
 	string rawdata;
 	vector min, max;
@@ -75,7 +97,22 @@ class mapdata {
 				szminz = string_to_number(parsed[5]);
 				szmaxz = string_to_number(parsed[6]);
 			} else if (parsed[0] == "litem" and parsed.length() > 1) litem = string_to_number(parsed[1]);
-			else if (parsed[0] == "ntm") {
+			else if (parsed[0] == "zone" and parsed.length() > 7) {
+				double a = stn(parsed[1]);
+				double b = stn(parsed[2]);
+				double c = stn(parsed[3]);
+				double d = stn(parsed[4]);
+				double e = stn(parsed[5]);
+				double f = stn(parsed[6]);
+				string t = string_trimleft(map[i], (parsed[0] + ":" + parsed[1] + ":" + parsed[2] + ":" + parsed[3] + ":" + parsed[4] + ":" + parsed[5] + ":" + parsed[6] + ":").length());
+				uint l = (":trackme").length();
+				if (stringright(t, l) == ":trackme") t = string_trimright(t, l);
+				map_zone z(a, b, c, d, e, f, t);
+				zones.insert_last(z);
+			} else if (parsed[0] == "tile" and parsed.length() > 7) {
+				map_tile t(stn(parsed[1]), stn(parsed[2]), stn(parsed[3]), stn(parsed[4]), stn(parsed[5]), stn(parsed[6]), parsed[7]);
+				tiles.insert_last(t);
+			} else if (parsed[0] == "ntm") {
 				double a, b, c, d, e, f;
 				string id = "";
 				if (parsed.length() > 6) {
@@ -404,55 +441,31 @@ class mapai {
 string get_tile_at(int x, int y, int z, mapdata@m, bool includeglobal = true) {
 	string outval;
 	if (includeglobal == true) {
-		if (!directory_exists("maps/" + m.name))return"";
-		file f;
-		f.open("maps/" + m.name + "/!.map", "r");
-		string[] map = delinear(f.read());
-		f.close();
-		for (uint i = 0; i < map.length(); i++) {
-			string[] parsed = string_split(map[i], ":", false);
-			if (parsed[0] == "tile") {
-				int minx = string_to_number(parsed[1]);
-				int maxx = string_to_number(parsed[2]);
-				int miny = string_to_number(parsed[3]);
-				int maxy = string_to_number(parsed[4]);
-				int minz = string_to_number(parsed[5]);
-				int maxz = string_to_number(parsed[6]);
-				if (inrange(x, y, z, minx, maxx, miny, maxy, minz, maxz)) {
-					if (is_on_fire(x, y, z, maps[get_map_index(m.name)])) outval = "fire";
-					else if (chovendo == 1 and string_contains(parsed[7], "wall", 1)<0 and string_contains(parsed[7], "concrete", 1)> -1) outval = "wetconcrete";
-					else if (chovendo == 1 and string_contains(parsed[7], "wall", 1)<0 and string_contains(parsed[7], "dirt", 1)> -1) outval = "mud" + random(2, 4) + "";
-					else if (chovendo == 1 and string_contains(parsed[7], "wall", 1)<0 and string_contains(parsed[7], "grass", 1)> -1) outval = "mud" + random(2, 4) + "";
-					else if (chovendo == 1 and string_contains(parsed[7], "wall", 1)<0 and string_contains(parsed[7], "gravel", 1)> -1) outval = "gravel3";
-					else if (chovendo == 1 and string_contains(parsed[7], "wall", 1)<0 and string_contains(parsed[7], "lawn", 1)> -1) outval = "mud" + random(2, 4) + "";
-					else if (chovendo == 1 and string_contains(parsed[7], "wall", 1)<0 and string_contains(parsed[7], "mud", 1)> -1) outval = "mud" + random(6, 7) + "";
-					else outval = parsed[7];
-				}
+		for (uint i = 0; i < m.tiles.length(); i++) {
+			if (inrange(x, y, z, m.tiles[i].minx, m.tiles[i].maxx, m.tiles[i].miny, m.tiles[i].maxy, m.tiles[i].minz, m.tiles[i].maxz)) {
+				if (is_on_fire(x, y, z, maps[get_map_index(m.name)])) outval = "fire";
+				else if (chovendo == 1 and string_contains(m.tiles[i].type, "wall", 1) < 0 and string_contains(m.tiles[i].type, "concrete", 1) > -1) outval = "wetconcrete";
+				else if (chovendo == 1 and string_contains(m.tiles[i].type, "wall", 1) < 0 and string_contains(m.tiles[i].type, "dirt", 1) > -1) outval = "mud" + random(2, 4) + "";
+				else if (chovendo == 1 and string_contains(m.tiles[i].type, "wall", 1) < 0 and string_contains(m.tiles[i].type, "grass", 1) > -1) outval = "mud" + random(2, 4) + "";
+				else if (chovendo == 1 and string_contains(m.tiles[i].type, "wall", 1) < 0 and string_contains(m.tiles[i].type, "gravel", 1) > -1) outval = "gravel3";
+				else if (chovendo == 1 and string_contains(m.tiles[i].type, "wall", 1) < 0 and string_contains(m.tiles[i].type, "lawn", 1) > -1) outval = "mud" + random(2, 4) + "";
+				else if (chovendo == 1 and string_contains(m.tiles[i].type, "wall", 1) < 0 and string_contains(m.tiles[i].type, "mud", 1) > -1) outval = "mud" + random(6, 7) + "";
+				else outval = m.tiles[i].type;
 			}
 		}
 	}
 	return outval;
 }
 string get_zone_at(double x, double y, double z, string map, string def = "Unknown", dictionary@ args = dictionary()) {
-	map = map.replace(".map", "");
-	string[] lines = get_map_text(map).split("\n");
-	if (lines.length() < 1) return def;
-	uint l = (":trackme").length();
+	int ind = get_map_index(map);
+	if (ind < 0) return map_vars(args, def);
+	mapdata@ m = maps[ind];
 	string final = "";
-	for (uint i = 0; i < lines.length(); i++) {
-		string[] parsed = lines[i].split(":");
-		if (parsed[0] == "zone" and parsed.length() > 7) {
-			double a = stn(parsed[1]);
-			double b = stn(parsed[2]);
-			double c = stn(parsed[3]);
-			double d = stn(parsed[4]);
-			double e = stn(parsed[5]);
-			double f = stn(parsed[6]);
-			string t = string_trimleft(lines[i], (parsed[0] + ":" + parsed[1] + ":" + parsed[2] + ":" + parsed[3] + ":" + parsed[4] + ":" + parsed[5] + ":" + parsed[6] + ":").length());
-			if (stringright(t, l) == ":trackme") t = string_trimright(t, l);
-			if (inrange(x, y, z, a, b, c, d, e, f)) final = t;
-		}//parsed
-	}//i
+	for (uint i = 0; i < m.zones.length(); i++) {
+		if (inrange(x, y, z, m.zones[i].minx, m.zones[i].maxx, m.zones[i].miny, m.zones[i].maxy, m.zones[i].minz, m.zones[i].maxz)) {
+			final = m.zones[i].name;
+		}
+	}
 	if (final == "") final = def;
 	return map_vars(args, final);
 }
