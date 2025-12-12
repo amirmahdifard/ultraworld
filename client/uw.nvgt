@@ -364,6 +364,7 @@ void main() {
 	create_buffer("local chats");
 	create_buffer("team chats");
 	create_buffer("teamn", "Team Notifications");
+	create_buffer("team events");
 	create_buffer("lcm chats");
 	create_buffer("astc", "Assistant Chats");
 	create_buffer("admin chats");
@@ -2912,6 +2913,9 @@ void netloop() {
 						if (itdoors[i].moving == true) itdoors[i].moving = false;
 					}
 				}
+			}
+			if (e.channel == 8 and buffer_active("team events") == 1) {
+				add_buffer_item("team events", get_event_message());
 			}
 		}
 	}

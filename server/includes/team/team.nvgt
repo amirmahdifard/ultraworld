@@ -162,7 +162,7 @@ class team {
 			::bsend(l.obj.peer_id, buffer, snd, msg);
 		}
 	}
-	void transmit(string t, bool chat = false, int channel = 2, string snd = "teamchat.ogg") {
+	void transmit(string t, bool chat = false, int channel = 8, string snd = "teamchat.ogg") {
 		if (chat) {
 			this.transmit2(t, snd = snd);
 			return;
