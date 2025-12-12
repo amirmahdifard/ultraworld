@@ -441,6 +441,11 @@ void main() {
 		enterfake.load("menuenter.ogg");
 		enterfake.play();
 		speak("Ok. Using " + soundcardname);
+		if(kh == 0) {
+			keyhook jawshook;
+		jawshook.install();
+		kh = 1;
+		}
 		mainmenu();
 	}
 	garbage_collect();

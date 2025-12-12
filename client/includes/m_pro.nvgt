@@ -1,4 +1,5 @@
-#include "bgt_compat.nvgt"#include "bgt_compat.nvgt"uint wine=0;
+#include "bgt_compat.nvgt"
+uint wine=0;
 #include"key_hold.nvgt"
 key_hold left(KEY_LEFT, 300, 50);
 key_hold right(KEY_RIGHT, 300, 50);

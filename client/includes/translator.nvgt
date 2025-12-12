@@ -1,4 +1,5 @@
-#include "bgt_compat.nvgt"#include "bgt_compat.nvgt"dictionary translation_cache;
+#include "bgt_compat.nvgt"
+dictionary translation_cache;
 dictionary keyboard_translation_cache;
 void load_translation_cache(string data, dictionary@ cache) {
 	string[] lines = string_split(data, "\r\n", true);

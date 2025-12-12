@@ -1,4 +1,5 @@
-#include "bgt_compat.nvgt"#include "bgt_compat.nvgt"forcefield@[] forcefields(0);
+#include "bgt_compat.nvgt"
+forcefield@[] forcefields(0);
 class forcefield {
 	int minx, maxx, miny, maxy, minz, maxz, forcefieldtime, forcefieldingsound, health;
 	string forcefieldsound, forcefieldhitsound;

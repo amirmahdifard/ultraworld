@@ -1,4 +1,5 @@
-#include "bgt_compat.nvgt"#include "bgt_compat.nvgt"tts_voice s; //If you want to use default tts for some reason...
+#include "bgt_compat.nvgt"
+tts_voice s; //If you want to use default tts for some reason...
 sound dlgaudio;
 sound lmusic; //The main background music track useable in levels.
 int lmusicv = -10; //The volume of the music, held independently so that we can have music volume save.
