@@ -3,13 +3,25 @@ void team_menu() {
 	f.reset();
 	f.create_window("Team menu", false);
 	int a = f.create_button("&Check the stats of your team");
-	string cmds ="Here are all the arguments you can use to view your team's stats.\n"
-		"kills: Shows the total number of kills your team has\n"
-		"points: Shows how many points your team has\n"
-		"all: Sends you a list with all teams from the server\n"
-		"leave: If you are not the leader leaves the team\n"
-		"yes: Accept a team invitation\n"
-		"no: Refuse a team invitation";
+	string cmds =
+"Here are all the arguments you can use to view and manage your team:\n\n"
+"Note: After executing an action, if you are unsure what to do next, press TAB to navigate through the menu. In most cases, the menu will remain open after an action is performed.\n\n"
+"kills: Displays the total number of kills your team has\n"
+"points: Displays the total number of points your team has\n"
+"all: Opens a menu with all teams from the server\n"
+"leave: Leaves the team (only available if you are not the leader)\n"
+"yes: Accepts a team invitation\n"
+"no: Declines a team invitation\n\n"
+"The following arguments are available only to team leaders:\n\n"
+"cancel: Permanently deletes your team (this action cannot be undone)\n"
+"password: Displays your team's password\n"
+"change_password: Changes your team's password to the specified one\n"
+"new_leader <name>: Transfers team leadership to the specified player\n"
+"kick <name>: Removes the specified player from the team\n"
+"mod <name>: Promotes the specified player to a team moderator\n"
+"demote <name>: Removes the specified player's moderator role\n\n"
+"The following arguments are available to team moderators:\n\n"
+"invite <name>: Invites the specified player to join the team\n";
 	int b = f.create_input_box("Viewing arguments", cmds, "", 0, true,multiline=true);
 	int c=f.create_button("&Join in a team");
 	int d = f.create_button("&Close this menu", false, true);
@@ -22,7 +34,6 @@ mainloop();
 		string result = input("Field","Check what?").lower().trim_whitespace();
 			if (result == "") {
 				speak("You can't send an empty command.");
-				f.focus(a);
 				continue;
 			}
 			if (result == "yes") {
@@ -35,13 +46,49 @@ mainloop();
 			}
 			if (result == "all") {
 				send_reliable(peer_id, "/teams", 1);
-				continue;
+				break;
 			}
-			if (result == "leave") {
-				send_reliable(peer_id, "/teamleave", 1);
-				continue;
+			if (result=="kick") {
+			string r=input("Input","Enter the player name to remove from the team",disallowed_chars=" ");
+			if (r=="") break;
+			send_reliable(peer_id,"/teamkick "+r,1);
+			continue;
 			}
-			array<string> valid = {"kills", "points"};
+			if (result=="invite") {
+			string b=input("Input","Enter the player name to invite",disallowed_chars=" ");
+			if (b=="") break;
+			send_reliable(peer_id,"/tinvite "+b,1);
+			continue;
+			}
+			if (result=="demote") {
+			string name=input("Player name","Enter the player name to remove from the moderators list",disallowed_chars=" ");
+			if (name=="") break;
+			send_reliable(peer_id,"/rtmod "+name,1);
+			continue;
+			}
+			if (result=="mod") {
+			string n=input("team moderator","Enter the player name to promote to the moderator position",disallowed_chars=" ");
+			if (n=="") break;
+			send_reliable(peer_id,"/atmod "+n,1);
+			continue;
+			}
+			if (result=="new_leader") {
+			string a=input("New team leader","Enter the player name to promote to the leader position",disallowed_chars=" ");
+			if (a=="") break;
+			send_reliable(peer_id,"/changeteamleader "+a,1);
+			continue;
+			}
+			if (result=="change_password") {
+			string newpass=input("New password","Enter your new team password",disallowed_chars=" ");
+			if (newpass=="") break;
+			send_reliable(peer_id,"/changeteampass "+newpass,1);
+			continue;
+			}
+			if (result=="password") {
+			send_reliable(peer_id,"/getteampass",1);
+			continue;
+			}
+			array<string> valid = {"kills", "points","cancel","leave"};
 			if (valid.find(result) > -1) {
 				send_reliable(peer_id, "/team" + result, 1);
 				continue;
