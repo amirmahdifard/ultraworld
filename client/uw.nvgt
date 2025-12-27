@@ -1915,6 +1915,9 @@ string email(string address, string from, string subject, string message) {
 }
 void spy(int direction, int distance) {
 	vector spyage(me.x, me.y, me.z);
+	spyage.x = round(spyage.x, 0);
+	spyage.y = round(spyage.y, 0);
+	spyage.z = round(spyage.z, 0);
 	string materials = "";
 	string current_tile = get_tile_at(spyage.x, spyage.y, spyage.z);
 	string last_tile_name = current_tile;
@@ -1963,6 +1966,9 @@ void spy(int direction, int distance) {
 			spyage.z += 1;
 		else if (direction == Down)
 			spyage.z -= 1;
+			spyage.x = round(spyage.x, 0);
+			spyage.y = round(spyage.y, 0);
+			spyage.z = round(spyage.z, 0);
 		}
 		if (spyage.x < min.x or spyage.x > max.x or spyage.y < min.y or spyage.y > max.y or spyage.z < min.z or spyage.z > max.z)
 			continue;
@@ -1978,166 +1984,194 @@ void spy(int direction, int distance) {
 			else
 				materials += check_tile + ": " + i + " feet. ";
 		}
-		for (uint i2 = 0; i2 < players.length(); i2++) {
-			if (dspyplayer == 0 and seen_players.find(i2) == -1 and players[i2].x == spyage.x and players[i2].y == spyage.y and players[i2].z == spyage.z and players[i2].name != name and players[i2].map == mapname) {
-				materials += players[i2].name + ": " + i + " feet. ";
-				seen_players.insert_last(i2);
+		if (dspyplayer == 0) {
+			for (uint i2 = 0; i2 < players.length(); i2++) {
+				if (seen_players.find(i2) == -1 and players[i2].x == spyage.x and players[i2].y == spyage.y and players[i2].z == spyage.z and players[i2].name != name and players[i2].map == mapname) {
+					materials += players[i2].name + ": " + i + " feet. ";
+					seen_players.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < mapitems.length(); i2++) {
-			if (dspyitem == 0 and seen_items.find(i2) == -1 and mapitems[i2].x == spyage.x and mapitems[i2].y == spyage.y and mapitems[i2].z == spyage.z and mapitems[i2].map == mapname) {
-				materials += "item: " + i + " feet. ";
-				seen_items.insert_last(i2);
+		} if (dspyitem == 0) {
+			for (uint i2 = 0; i2 < mapitems.length(); i2++) {
+				if (seen_items.find(i2) == -1 and mapitems[i2].x == spyage.x and mapitems[i2].y == spyage.y and mapitems[i2].z == spyage.z and mapitems[i2].map == mapname) {
+					materials += "item: " + i + " feet. ";
+					seen_items.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < doors.length(); i2++) {
-			if (dspydoor == 0 and seen_doors.find(i2) == -1 and spyage.x >= doors[i2].mindx and spyage.x <= doors[i2].maxdx and spyage.y >= doors[i2].mindy and spyage.y <= doors[i2].maxdy and spyage.z >= doors[i2].mindz and spyage.z <= doors[i2].maxdz) {
-				materials += "door: " + i + " feet. ";
-				seen_doors.insert_last(i2);
+		} if (dspydoor == 0) {
+			for (uint i2 = 0; i2 < doors.length(); i2++) {
+				if (seen_doors.find(i2) == -1 and spyage.x >= doors[i2].mindx and spyage.x <= doors[i2].maxdx and spyage.y >= doors[i2].mindy and spyage.y <= doors[i2].maxdy and spyage.z >= doors[i2].mindz and spyage.z <= doors[i2].maxdz) {
+					materials += "door: " + i + " feet. ";
+					seen_doors.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < pdoors.length(); i2++) {
-			if (dspypdoor == 0 and seen_pdoors.find(i2) == -1 and spyage.x >= pdoors[i2].mindx and spyage.x <= pdoors[i2].maxdx and spyage.y >= pdoors[i2].mindy and spyage.y <= pdoors[i2].maxdy and spyage.z >= pdoors[i2].mindz and spyage.z <= pdoors[i2].maxdz) {
-				materials += "password protected door: " + i + " feet. ";
-				seen_pdoors.insert_last(i2);
+		} if (dspypdoor == 0) {
+			for (uint i2 = 0; i2 < pdoors.length(); i2++) {
+				if (seen_pdoors.find(i2) == -1 and spyage.x >= pdoors[i2].mindx and spyage.x <= pdoors[i2].maxdx and spyage.y >= pdoors[i2].mindy and spyage.y <= pdoors[i2].maxdy and spyage.z >= pdoors[i2].mindz and spyage.z <= pdoors[i2].maxdz) {
+					materials += "password protected door: " + i + " feet. ";
+					seen_pdoors.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < icdoors.length(); i2++) {
-			if (dspyicdoor == 0 and seen_icdoors.find(i2) == -1 and spyage.x >= icdoors[i2].mindx and spyage.x <= icdoors[i2].maxdx and spyage.y >= icdoors[i2].mindy and spyage.y <= icdoors[i2].maxdy and spyage.z >= icdoors[i2].mindz and spyage.z <= icdoors[i2].maxdz) {
-				materials += "item checker door: " + i + " feet. ";
-				seen_icdoors.insert_last(i2);
+		} if (dspyicdoor == 0) {
+			for (uint i2 = 0; i2 < icdoors.length(); i2++) {
+				if (seen_icdoors.find(i2) == -1 and spyage.x >= icdoors[i2].mindx and spyage.x <= icdoors[i2].maxdx and spyage.y >= icdoors[i2].mindy and spyage.y <= icdoors[i2].maxdy and spyage.z >= icdoors[i2].mindz and spyage.z <= icdoors[i2].maxdz) {
+					materials += "item checker door: " + i + " feet. ";
+					seen_icdoors.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < itdoors.length(); i2++) {
-			if (dspyitdoor == 0 and seen_itdoors.find(i2) == -1 and spyage.x >= itdoors[i2].mindx and spyage.x <= itdoors[i2].maxdx and spyage.y >= itdoors[i2].mindy and spyage.y <= itdoors[i2].maxdy and spyage.z >= itdoors[i2].mindz and spyage.z <= itdoors[i2].maxdz) {
-				materials += "item taker door: " + i + " feet. ";
-				seen_itdoors.insert_last(i2);
+		} if (dspyitdoor == 0) {
+			for (uint i2 = 0; i2 < itdoors.length(); i2++) {
+				if (seen_itdoors.find(i2) == -1 and spyage.x >= itdoors[i2].mindx and spyage.x <= itdoors[i2].maxdx and spyage.y >= itdoors[i2].mindy and spyage.y <= itdoors[i2].maxdy and spyage.z >= itdoors[i2].mindz and spyage.z <= itdoors[i2].maxdz) {
+					materials += "item taker door: " + i + " feet. ";
+					seen_itdoors.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < igdoors.length(); i2++) {
-			if (dspyigdoor == 0 and seen_igdoors.find(i2) == -1 and spyage.x >= igdoors[i2].mindx and spyage.x <= igdoors[i2].maxdx and spyage.y >= igdoors[i2].mindy and spyage.y <= igdoors[i2].maxdy and spyage.z >= igdoors[i2].mindz and spyage.z <= igdoors[i2].maxdz) {
-				materials += "item giver door: " + i + " feet. ";
-				seen_igdoors.insert_last(i2);
+		} if (dspyigdoor == 0) {
+			for (uint i2 = 0; i2 < igdoors.length(); i2++) {
+				if (seen_igdoors.find(i2) == -1 and spyage.x >= igdoors[i2].mindx and spyage.x <= igdoors[i2].maxdx and spyage.y >= igdoors[i2].mindy and spyage.y <= igdoors[i2].maxdy and spyage.z >= igdoors[i2].mindz and spyage.z <= igdoors[i2].maxdz) {
+					materials += "item giver door: " + i + " feet. ";
+					seen_igdoors.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < automovers.length(); i2++) {
-			if (dspyautomover == 0 and seen_automovers.find(i2) == -1 and spyage.x >= automovers[i2].mindx and spyage.x <= automovers[i2].maxdx and spyage.y >= automovers[i2].mindy and spyage.y <= automovers[i2].maxdy and spyage.z >= automovers[i2].mindz and spyage.z <= automovers[i2].maxdz) {
-				materials += "automover: " + i + " feet. ";
-				seen_automovers.insert_last(i2);
+		} if (dspyautomover == 0) {
+			for (uint i2 = 0; i2 < automovers.length(); i2++) {
+				if (seen_automovers.find(i2) == -1 and spyage.x >= automovers[i2].mindx and spyage.x <= automovers[i2].maxdx and spyage.y >= automovers[i2].mindy and spyage.y <= automovers[i2].maxdy and spyage.z >= automovers[i2].mindz and spyage.z <= automovers[i2].maxdz) {
+					materials += "automover: " + i + " feet. ";
+					seen_automovers.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < pautomovers.length(); i2++) {
-			if (dspypautomover == 0 and seen_pautomovers.find(i2) == -1 and spyage.x >= pautomovers[i2].mindx and spyage.x <= pautomovers[i2].maxdx and spyage.y >= pautomovers[i2].mindy and spyage.y <= pautomovers[i2].maxdy and spyage.z >= pautomovers[i2].mindz and spyage.z <= pautomovers[i2].maxdz) {
-				materials += "password protected automover: " + i + " feet. ";
-				seen_pautomovers.insert_last(i2);
+		} if (dspypautomover == 0) {
+			for (uint i2 = 0; i2 < pautomovers.length(); i2++) {
+				if (seen_pautomovers.find(i2) == -1 and spyage.x >= pautomovers[i2].mindx and spyage.x <= pautomovers[i2].maxdx and spyage.y >= pautomovers[i2].mindy and spyage.y <= pautomovers[i2].maxdy and spyage.z >= pautomovers[i2].mindz and spyage.z <= pautomovers[i2].maxdz) {
+					materials += "password protected automover: " + i + " feet. ";
+					seen_pautomovers.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < icautomovers.length(); i2++) {
-			if (dspyicautomover == 0 and seen_icautomovers.find(i2) == -1 and spyage.x >= icautomovers[i2].mindx and spyage.x <= icautomovers[i2].maxdx and spyage.y >= icautomovers[i2].mindy and spyage.y <= icautomovers[i2].maxdy and spyage.z >= icautomovers[i2].mindz and spyage.z <= icautomovers[i2].maxdz) {
-				materials += "item checker automover: " + i + " feet. ";
-				seen_icautomovers.insert_last(i2);
+		} if (dspyicautomover == 0) {
+			for (uint i2 = 0; i2 < icautomovers.length(); i2++) {
+				if (seen_icautomovers.find(i2) == -1 and spyage.x >= icautomovers[i2].mindx and spyage.x <= icautomovers[i2].maxdx and spyage.y >= icautomovers[i2].mindy and spyage.y <= icautomovers[i2].maxdy and spyage.z >= icautomovers[i2].mindz and spyage.z <= icautomovers[i2].maxdz) {
+					materials += "item checker automover: " + i + " feet. ";
+					seen_icautomovers.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < itautomovers.length(); i2++) {
-			if (dspyitautomover == 0 and seen_itautomovers.find(i2) == -1 and spyage.x >= itautomovers[i2].mindx and spyage.x <= itautomovers[i2].maxdx and spyage.y >= itautomovers[i2].mindy and spyage.y <= itautomovers[i2].maxdy and spyage.z >= itautomovers[i2].mindz and spyage.z <= itautomovers[i2].maxdz) {
-				materials += "item taker automover: " + i + " feet. ";
-				seen_itautomovers.insert_last(i2);
+		} if (dspyitautomover == 0) {
+			for (uint i2 = 0; i2 < itautomovers.length(); i2++) {
+				if (seen_itautomovers.find(i2) == -1 and spyage.x >= itautomovers[i2].mindx and spyage.x <= itautomovers[i2].maxdx and spyage.y >= itautomovers[i2].mindy and spyage.y <= itautomovers[i2].maxdy and spyage.z >= itautomovers[i2].mindz and spyage.z <= itautomovers[i2].maxdz) {
+					materials += "item taker automover: " + i + " feet. ";
+					seen_itautomovers.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < igautomovers.length(); i2++) {
-			if (dspyigautomover == 0 and seen_igautomovers.find(i2) == -1 and spyage.x >= igautomovers[i2].mindx and spyage.x <= igautomovers[i2].maxdx and spyage.y >= igautomovers[i2].mindy and spyage.y <= igautomovers[i2].maxdy and spyage.z >= igautomovers[i2].mindz and spyage.z <= igautomovers[i2].maxdz) {
-				materials += "item giver automover: " + i + " feet. ";
-				seen_igautomovers.insert_last(i2);
+		} if (dspyigautomover == 0) {
+			for (uint i2 = 0; i2 < igautomovers.length(); i2++) {
+				if (seen_igautomovers.find(i2) == -1 and spyage.x >= igautomovers[i2].mindx and spyage.x <= igautomovers[i2].maxdx and spyage.y >= igautomovers[i2].mindy and spyage.y <= igautomovers[i2].maxdy and spyage.z >= igautomovers[i2].mindz and spyage.z <= igautomovers[i2].maxdz) {
+					materials += "item giver automover: " + i + " feet. ";
+					seen_igautomovers.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < automatic_travelpoints.length(); i2++) {
-			if (dspyautomatic_travelpoint == 0 and seen_auto_tps.find(i2) == -1 and spyage.x >= automatic_travelpoints[i2].mindx and spyage.x <= automatic_travelpoints[i2].maxdx and spyage.y >= automatic_travelpoints[i2].mindy and spyage.y <= automatic_travelpoints[i2].maxdy and spyage.z >= automatic_travelpoints[i2].mindz and spyage.z <= automatic_travelpoints[i2].maxdz) {
-				materials += "automatic_travelpoint: " + i + " feet. ";
-				seen_auto_tps.insert_last(i2);
+		} if (dspyautomatic_travelpoint == 0) {
+			for (uint i2 = 0; i2 < automatic_travelpoints.length(); i2++) {
+				if (seen_auto_tps.find(i2) == -1 and spyage.x >= automatic_travelpoints[i2].mindx and spyage.x <= automatic_travelpoints[i2].maxdx and spyage.y >= automatic_travelpoints[i2].mindy and spyage.y <= automatic_travelpoints[i2].maxdy and spyage.z >= automatic_travelpoints[i2].mindz and spyage.z <= automatic_travelpoints[i2].maxdz) {
+					materials += "automatic_travelpoint: " + i + " feet. ";
+					seen_auto_tps.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < pautomatic_travelpoints.length(); i2++) {
-			if (dspypautomatic_travelpoint == 0 and seen_pauto_tps.find(i2) == -1 and spyage.x >= pautomatic_travelpoints[i2].mindx and spyage.x <= pautomatic_travelpoints[i2].maxdx and spyage.y >= pautomatic_travelpoints[i2].mindy and spyage.y <= pautomatic_travelpoints[i2].maxdy and spyage.z >= pautomatic_travelpoints[i2].mindz and spyage.z <= pautomatic_travelpoints[i2].maxdz) {
-				materials += "password protected automatic_travelpoint: " + i + " feet. ";
-				seen_pauto_tps.insert_last(i2);
+		} if (dspypautomatic_travelpoint == 0) {
+			for (uint i2 = 0; i2 < pautomatic_travelpoints.length(); i2++) {
+				if (seen_pauto_tps.find(i2) == -1 and spyage.x >= pautomatic_travelpoints[i2].mindx and spyage.x <= pautomatic_travelpoints[i2].maxdx and spyage.y >= pautomatic_travelpoints[i2].mindy and spyage.y <= pautomatic_travelpoints[i2].maxdy and spyage.z >= pautomatic_travelpoints[i2].mindz and spyage.z <= pautomatic_travelpoints[i2].maxdz) {
+					materials += "password protected automatic_travelpoint: " + i + " feet. ";
+					seen_pauto_tps.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < icautomatic_travelpoints.length(); i2++) {
-			if (dspyicautomatic_travelpoint == 0 and seen_icauto_tps.find(i2) == -1 and spyage.x >= icautomatic_travelpoints[i2].mindx and spyage.x <= icautomatic_travelpoints[i2].maxdx and spyage.y >= icautomatic_travelpoints[i2].mindy and spyage.y <= icautomatic_travelpoints[i2].maxdy and spyage.z >= icautomatic_travelpoints[i2].mindz and spyage.z <= icautomatic_travelpoints[i2].maxdz) {
-				materials += "item checker automatic_travelpoint: " + i + " feet. ";
-				seen_icauto_tps.insert_last(i2);
+		} if (dspyicautomatic_travelpoint == 0) {
+			for (uint i2 = 0; i2 < icautomatic_travelpoints.length(); i2++) {
+				if (seen_icauto_tps.find(i2) == -1 and spyage.x >= icautomatic_travelpoints[i2].mindx and spyage.x <= icautomatic_travelpoints[i2].maxdx and spyage.y >= icautomatic_travelpoints[i2].mindy and spyage.y <= icautomatic_travelpoints[i2].maxdy and spyage.z >= icautomatic_travelpoints[i2].mindz and spyage.z <= icautomatic_travelpoints[i2].maxdz) {
+					materials += "item checker automatic_travelpoint: " + i + " feet. ";
+					seen_icauto_tps.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < itautomatic_travelpoints.length(); i2++) {
-			if (dspyitautomatic_travelpoint == 0 and seen_itauto_tps.find(i2) == -1 and spyage.x >= itautomatic_travelpoints[i2].mindx and spyage.x <= itautomatic_travelpoints[i2].maxdx and spyage.y >= itautomatic_travelpoints[i2].mindy and spyage.y <= itautomatic_travelpoints[i2].maxdy and spyage.z >= itautomatic_travelpoints[i2].mindz and spyage.z <= itautomatic_travelpoints[i2].maxdz) {
-				materials += "item taker automatic_travelpoint: " + i + " feet. ";
-				seen_itauto_tps.insert_last(i2);
+		} if (dspyitautomatic_travelpoint == 0) {
+			for (uint i2 = 0; i2 < itautomatic_travelpoints.length(); i2++) {
+				if (seen_itauto_tps.find(i2) == -1 and spyage.x >= itautomatic_travelpoints[i2].mindx and spyage.x <= itautomatic_travelpoints[i2].maxdx and spyage.y >= itautomatic_travelpoints[i2].mindy and spyage.y <= itautomatic_travelpoints[i2].maxdy and spyage.z >= itautomatic_travelpoints[i2].mindz and spyage.z <= itautomatic_travelpoints[i2].maxdz) {
+					materials += "item taker automatic_travelpoint: " + i + " feet. ";
+					seen_itauto_tps.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < igautomatic_travelpoints.length(); i2++) {
-			if (dspyigautomatic_travelpoint == 0 and seen_igauto_tps.find(i2) == -1 and spyage.x >= igautomatic_travelpoints[i2].mindx and spyage.x <= igautomatic_travelpoints[i2].maxdx and spyage.y >= igautomatic_travelpoints[i2].mindy and spyage.y <= igautomatic_travelpoints[i2].maxdy and spyage.z >= igautomatic_travelpoints[i2].mindz and spyage.z <= igautomatic_travelpoints[i2].maxdz) {
-				materials += "item giver automatic_travelpoint: " + i + " feet. ";
-				seen_igauto_tps.insert_last(i2);
+		} if (dspyigautomatic_travelpoint == 0) {
+			for (uint i2 = 0; i2 < igautomatic_travelpoints.length(); i2++) {
+				if (seen_igauto_tps.find(i2) == -1 and spyage.x >= igautomatic_travelpoints[i2].mindx and spyage.x <= igautomatic_travelpoints[i2].maxdx and spyage.y >= igautomatic_travelpoints[i2].mindy and spyage.y <= igautomatic_travelpoints[i2].maxdy and spyage.z >= igautomatic_travelpoints[i2].mindz and spyage.z <= igautomatic_travelpoints[i2].maxdz) {
+					materials += "item giver automatic_travelpoint: " + i + " feet. ";
+					seen_igauto_tps.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < travelpoints.length(); i2++) {
-			if (dspytravelpoint == 0 and seen_tps.find(i2) == -1 and spyage.x >= travelpoints[i2].mindx and spyage.x <= travelpoints[i2].maxdx and spyage.y >= travelpoints[i2].mindy and spyage.y <= travelpoints[i2].maxdy and spyage.z >= travelpoints[i2].mindz and spyage.z <= travelpoints[i2].maxdz) {
-				materials += "travelpoint: " + i + " feet. ";
-				seen_tps.insert_last(i2);
+		} if (dspytravelpoint == 0) {
+			for (uint i2 = 0; i2 < travelpoints.length(); i2++) {
+				if (seen_tps.find(i2) == -1 and spyage.x >= travelpoints[i2].mindx and spyage.x <= travelpoints[i2].maxdx and spyage.y >= travelpoints[i2].mindy and spyage.y <= travelpoints[i2].maxdy and spyage.z >= travelpoints[i2].mindz and spyage.z <= travelpoints[i2].maxdz) {
+					materials += "travelpoint: " + i + " feet. ";
+					seen_tps.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < ptravelpoints.length(); i2++) {
-			if (dspyptravelpoint == 0 and seen_ptps.find(i2) == -1 and spyage.x >= ptravelpoints[i2].mindx and spyage.x <= ptravelpoints[i2].maxdx and spyage.y >= ptravelpoints[i2].mindy and spyage.y <= ptravelpoints[i2].maxdy and spyage.z >= ptravelpoints[i2].mindz and spyage.z <= ptravelpoints[i2].maxdz) {
-				materials += "password protected travelpoint: " + i + " feet. ";
-				seen_ptps.insert_last(i2);
+		} if (dspyptravelpoint == 0) {
+			for (uint i2 = 0; i2 < ptravelpoints.length(); i2++) {
+				if (seen_ptps.find(i2) == -1 and spyage.x >= ptravelpoints[i2].mindx and spyage.x <= ptravelpoints[i2].maxdx and spyage.y >= ptravelpoints[i2].mindy and spyage.y <= ptravelpoints[i2].maxdy and spyage.z >= ptravelpoints[i2].mindz and spyage.z <= ptravelpoints[i2].maxdz) {
+					materials += "password protected travelpoint: " + i + " feet. ";
+					seen_ptps.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < ictravelpoints.length(); i2++) {
-			if (dspyictravelpoint == 0 and seen_ictps.find(i2) == -1 and spyage.x >= ictravelpoints[i2].mindx and spyage.x <= ictravelpoints[i2].maxdx and spyage.y >= ictravelpoints[i2].mindy and spyage.y <= ictravelpoints[i2].maxdy and spyage.z >= ictravelpoints[i2].mindz and spyage.z <= ictravelpoints[i2].maxdz) {
-				materials += "item checker travelpoint: " + i + " feet. ";
-				seen_ictps.insert_last(i2);
+		} if (dspyictravelpoint == 0) {
+			for (uint i2 = 0; i2 < ictravelpoints.length(); i2++) {
+				if (seen_ictps.find(i2) == -1 and spyage.x >= ictravelpoints[i2].mindx and spyage.x <= ictravelpoints[i2].maxdx and spyage.y >= ictravelpoints[i2].mindy and spyage.y <= ictravelpoints[i2].maxdy and spyage.z >= ictravelpoints[i2].mindz and spyage.z <= ictravelpoints[i2].maxdz) {
+					materials += "item checker travelpoint: " + i + " feet. ";
+					seen_ictps.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < ittravelpoints.length(); i2++) {
-			if (dspyittravelpoint == 0 and seen_ittps.find(i2) == -1 and spyage.x >= ittravelpoints[i2].mindx and spyage.x <= ittravelpoints[i2].maxdx and spyage.y >= ittravelpoints[i2].mindy and spyage.y <= ittravelpoints[i2].maxdy and spyage.z >= ittravelpoints[i2].mindz and spyage.z <= ittravelpoints[i2].maxdz) {
-				materials += "item taker travelpoint: " + i + " feet. ";
-				seen_ittps.insert_last(i2);
+		} if (dspyittravelpoint == 0) {
+			for (uint i2 = 0; i2 < ittravelpoints.length(); i2++) {
+				if (seen_ittps.find(i2) == -1 and spyage.x >= ittravelpoints[i2].mindx and spyage.x <= ittravelpoints[i2].maxdx and spyage.y >= ittravelpoints[i2].mindy and spyage.y <= ittravelpoints[i2].maxdy and spyage.z >= ittravelpoints[i2].mindz and spyage.z <= ittravelpoints[i2].maxdz) {
+					materials += "item taker travelpoint: " + i + " feet. ";
+					seen_ittps.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < igtravelpoints.length(); i2++) {
-			if (dspyigtravelpoint == 0 and seen_igtps.find(i2) == -1 and spyage.x >= igtravelpoints[i2].mindx and spyage.x <= igtravelpoints[i2].maxdx and spyage.y >= igtravelpoints[i2].mindy and spyage.y <= igtravelpoints[i2].maxdy and spyage.z >= igtravelpoints[i2].mindz and spyage.z <= igtravelpoints[i2].maxdz) {
-				materials += "item giver travelpoint: " + i + " feet. ";
-				seen_igtps.insert_last(i2);
+		} if (dspyigtravelpoint == 0) {
+			for (uint i2 = 0; i2 < igtravelpoints.length(); i2++) {
+				if (seen_igtps.find(i2) == -1 and spyage.x >= igtravelpoints[i2].mindx and spyage.x <= igtravelpoints[i2].maxdx and spyage.y >= igtravelpoints[i2].mindy and spyage.y <= igtravelpoints[i2].maxdy and spyage.z >= igtravelpoints[i2].mindz and spyage.z <= igtravelpoints[i2].maxdz) {
+					materials += "item giver travelpoint: " + i + " feet. ";
+					seen_igtps.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < vanishing_platforms.length(); i2++) {
-			if (dspyvp == 0 and seen_vps.find(i2) == -1 and vanishing_platforms[i2].vanished == true and spyage.x >= vanishing_platforms[i2].minx and spyage.x <= vanishing_platforms[i2].maxx and spyage.y >= vanishing_platforms[i2].miny and spyage.y <= vanishing_platforms[i2].maxy and spyage.z >= vanishing_platforms[i2].minz and spyage.z <= vanishing_platforms[i2].maxz) {
-				materials += "vanishing platform: " + i + " feet. ";
-				seen_vps.insert_last(i2);
+		} if (dspyvp == 0) {
+			for (uint i2 = 0; i2 < vanishing_platforms.length(); i2++) {
+				if (seen_vps.find(i2) == -1 and vanishing_platforms[i2].vanished == true and spyage.x >= vanishing_platforms[i2].minx and spyage.x <= vanishing_platforms[i2].maxx and spyage.y >= vanishing_platforms[i2].miny and spyage.y <= vanishing_platforms[i2].maxy and spyage.z >= vanishing_platforms[i2].minz and spyage.z <= vanishing_platforms[i2].maxz) {
+					materials += "vanishing platform: " + i + " feet. ";
+					seen_vps.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < forcefields.length(); i2++) {
-			if (dspyff == 0 and seen_ffs.find(i2) == -1 and forcefields[i2].forcefielded == true and spyage.x >= forcefields[i2].minx and spyage.x <= forcefields[i2].maxx and spyage.y >= forcefields[i2].miny and spyage.y <= forcefields[i2].maxy and spyage.z >= forcefields[i2].minz and spyage.z <= forcefields[i2].maxz) {
-				materials += "forcefield: " + i + " feet. ";
-				seen_ffs.insert_last(i2);
+		} if (dspyff == 0) {
+			for (uint i2 = 0; i2 < forcefields.length(); i2++) {
+				if (seen_ffs.find(i2) == -1 and forcefields[i2].forcefielded == true and spyage.x >= forcefields[i2].minx and spyage.x <= forcefields[i2].maxx and spyage.y >= forcefields[i2].miny and spyage.y <= forcefields[i2].maxy and spyage.z >= forcefields[i2].minz and spyage.z <= forcefields[i2].maxz) {
+					materials += "forcefield: " + i + " feet. ";
+					seen_ffs.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < teleporters.length(); i2++) {
-			if (dspytp == 0 and seen_teleporters.find(i2) == -1 and spyage.x >= teleporters[i2].minx and spyage.x <= teleporters[i2].maxx and spyage.y >= teleporters[i2].miny and spyage.y <= teleporters[i2].maxy and spyage.z >= teleporters[i2].minz and spyage.z <= teleporters[i2].maxz) {
-				materials += "teleporter: " + i + " feet. ";
-				seen_teleporters.insert_last(i2);
+		} if (dspytp == 0) {
+			for (uint i2 = 0; i2 < teleporters.length(); i2++) {
+				if (seen_teleporters.find(i2) == -1 and spyage.x >= teleporters[i2].minx and spyage.x <= teleporters[i2].maxx and spyage.y >= teleporters[i2].miny and spyage.y <= teleporters[i2].maxy and spyage.z >= teleporters[i2].minz and spyage.z <= teleporters[i2].maxz) {
+					materials += "teleporter: " + i + " feet. ";
+					seen_teleporters.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < signs.length(); i2++) {
-			if (dspysign == 0 and seen_signs.find(i2) == -1 and spyage.x >= signs[i2].minx and spyage.x <= signs[i2].maxx and spyage.y >= signs[i2].miny and spyage.y <= signs[i2].maxy and spyage.z >= signs[i2].minz and spyage.z <= signs[i2].maxz) {
-				materials += "sign: " + i + " feet. ";
-				seen_signs.insert_last(i2);
+		} if (dspysign == 0) {
+			for (uint i2 = 0; i2 < signs.length(); i2++) {
+				if (seen_signs.find(i2) == -1 and spyage.x >= signs[i2].minx and spyage.x <= signs[i2].maxx and spyage.y >= signs[i2].miny and spyage.y <= signs[i2].maxy and spyage.z >= signs[i2].minz and spyage.z <= signs[i2].maxz) {
+					materials += "sign: " + i + " feet. ";
+					seen_signs.insert_last(i2);
+				}
 			}
-		}
-		for (uint i2 = 0; i2 < txts.length(); i2++) {
-			if (dspytxt == 0 and seen_txts.find(i2) == -1 and spyage.x >= txts[i2].minx and spyage.x <= txts[i2].maxx and spyage.y >= txts[i2].miny and spyage.y <= txts[i2].maxy and spyage.z >= txts[i2].minz and spyage.z <= txts[i2].maxz) {
-				materials += "txt: " + i + " feet. ";
-				seen_txts.insert_last(i2);
+		} if (dspytxt == 0) {
+			for (uint i2 = 0; i2 < txts.length(); i2++) {
+				if (seen_txts.find(i2) == -1 and spyage.x >= txts[i2].minx and spyage.x <= txts[i2].maxx and spyage.y >= txts[i2].miny and spyage.y <= txts[i2].maxy and spyage.z >= txts[i2].minz and spyage.z <= txts[i2].maxz) {
+					materials += "txt: " + i + " feet. ";
+					seen_txts.insert_last(i2);
+				}
 			}
 		}
 	}
