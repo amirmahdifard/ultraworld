@@ -3,12 +3,12 @@ void buildfloor() {
 	string nums = "1234567890-";
 	string mx, mmx, my, mmy, mz, mmz, t;
 	form.create_window("floor", false);
-	int a = form.create_input_box("type the minimum &x of the floor");
-	int b = form.create_input_box("type the maximum &x of the floor");
-	int c = form.create_input_box("type the minimum &y of the floor");
-	int d = form.create_input_box("type the maximum &y of the floor");
-	int e = form.create_input_box("type the minimum &z of the floor");
-	int f = form.create_input_box("type the maximum &z of the floor");
+	int a = form.create_input_box("type the minimum &x of the floor",lx);
+	int b = form.create_input_box("type the maximum &x of the floor",rx);
+	int c = form.create_input_box("type the minimum &y of the floor",by);
+	int d = form.create_input_box("type the maximum &y of the floor",fy);
+	int e = form.create_input_box("type the minimum &z of the floor",bz);
+	int f = form.create_input_box("type the maximum &z of the floor",tz);
 	int g = form.create_input_box("type the &text of the floor (optional", "", "", 0, false, false);
 	form.set_disallowed_chars(a, nums, true);
 	form.set_disallowed_chars(b, nums, true);

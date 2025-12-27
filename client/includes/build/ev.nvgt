@@ -8,12 +8,12 @@ void buildev() {
 	string mx, mmx, my, mmy, mz, mmz, speed;
 	string text_open, text_close;
 	form.create_window("elevator", false);
-	int a = form.create_input_box("type the minimum &x of the elevator");
-	int b = form.create_input_box("type the maximum &x of the elevator");
-	int c = form.create_input_box("type the minimum &y of the elevator");
-	int d = form.create_input_box("type the maximum &y of the elevator");
-	int e = form.create_input_box("type the minimum &z of the elevator");
-	int f = form.create_input_box("type the maximum &z of the elevator");
+	int a = form.create_input_box("type the minimum &x of the elevator",lx);
+	int b = form.create_input_box("type the maximum &x of the elevator",rx);
+	int c = form.create_input_box("type the minimum &y of the elevator",by);
+	int d = form.create_input_box("type the maximum &y of the elevator",fy);
+	int e = form.create_input_box("type the minimum &z of the elevator",bz);
+	int f = form.create_input_box("type the maximum &z of the elevator",tz);
 	form.set_disallowed_chars(a, nums, true);
 	form.set_disallowed_chars(b, nums, true);
 	form.set_disallowed_chars(c, nums, true);

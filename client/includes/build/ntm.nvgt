@@ -1,0 +1,77 @@
+void buildntm() {
+    if (d2dsupport == 0) {
+        form.reset();
+        string nums = "1234567890-";
+        string nx, ny, nz, id;
+	form.create_window("nutrition machine", false);
+	int a = form.create_input_box("type the x coordinate of the nutrition machine",gx);
+	int b = form.create_input_box("type the y coordinate of the nutrition machine",gy);
+	int c = form.create_input_box("type the z coordinate of the nutrition machine",gz);
+	int d = form.create_input_box("type the ID of the nutrition machine");
+        form.set_disallowed_chars(a, nums, true);
+        form.set_disallowed_chars(b, nums, true);
+        form.set_disallowed_chars(c, nums, true);
+        int ok = form.create_button("finish", false);
+        int can = form.create_button("cancel", false, true);
+        form.focus(a);
+
+        while (true) {
+            wait(5);
+            form.monitor(); mainloop();
+            nx = form.get_text(a);
+            ny = form.get_text(b);
+            nz = form.get_text(c);
+		id = form.get_text(d);
+            if (form.is_pressed(ok)) {
+                form.reset();
+                break;
+            } else if (form.is_pressed(can)) {
+                form.reset();
+                return;
+            }
+        }
+
+        if (nx == "" || ny == "" || nz == "" || id == "") {
+            speak("canceled");
+            return;
+        }
+	string se = "ntm:" + nx + ":" + ny + ":" + nz + ":" + id;
+	send(0, buildadd + " " + se, 0);
+    }
+    else {
+        form.reset();
+        string nums = "1234567890-";
+        string nx, ny, id;
+	form.create_window("nutrition machine", false);
+	int a = form.create_input_box("type the x coordinate of the nutrition machine",gx);
+	int b = form.create_input_box("type the y coordinate of the nutrition machine",gz);
+	int c = form.create_input_box("type the ID of the nutrition machine");
+        form.set_disallowed_chars(a, nums, true);
+        form.set_disallowed_chars(b, nums, true);
+        int ok = form.create_button("finish", false);
+        int can = form.create_button("cancel", false, true);
+        form.focus(a);
+
+        while (true) {
+            wait(5);
+            form.monitor(); mainloop();
+            nx = form.get_text(a);
+            ny = form.get_text(b);
+		id = form.get_text(c);
+            if (form.is_pressed(ok)) {
+                form.reset();
+                break;
+            } else if (form.is_pressed(can)) {
+                form.reset();
+                return;
+            }
+        }
+
+        if (nx == "" || ny == "" || id == "") {
+            speak("canceled");
+            return;
+        }
+	string se = "ntm:" + nx + ":0:" + ny + ":" + id;
+	send(0, buildadd + " " + se, 0);
+    }
+}

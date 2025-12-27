@@ -27,7 +27,7 @@ void build_menu(player@ p) {
 	a.add("door", "door");
 	if (p.admin) a.add("travelpoint", "travelpoint");
 	a.add("safe zone", "safezone");
-	if (p.admin) a.add("fishing coordinate", "fishingcoordinate");
+	a.add("fishing coordinate", "fishingcoordinate");
 	a.add("starting_point", "starting_point");
 	a.add("deathpoint", "deathpoint");
 	a.add("sign", "sign");
@@ -39,13 +39,16 @@ void build_menu(player@ p) {
 	a.add("forcefield", "forcefield");
 	a.add("specified air temperature", "specified_air_temperature");
 	a.add("teleporter", "teleporter");
+	a.add("nutrition machine", "ntm");
 	a.add("vanishing platform", "vanishing_platform");
 	if (p.admin) {
 		a.add("vending machine", "vending_machine");
 		a.add("AI", "AI");
+/*
 		a.add("foods and drinks", "fad");
 		a.add("draw sounds", "drawsounds");
 		a.add("item usage limit", "itemusagelimit");
+*/
 		a.add("item", "item");
 	}
 	//if (p.assistant) a.add("item description", "desc_menu");

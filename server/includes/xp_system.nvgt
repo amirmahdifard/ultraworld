@@ -1,0 +1,256 @@
+int override_mode = 0;
+double override_time_left = 0; 
+timer override_timer;
+
+string get_xp_name(int mode) {
+	return mode == 1 ? "Double XP" : mode == 2 ? "Super XP" : mode == 3 ? "Mega XP" : mode == 4 ? "Giga XP" : mode == 5 ? "Master XP" : "Normal XP";
+}
+
+string get_day_name(int day) {
+	return day == 0 ? "Sunday" : day == 1 ? "Monday" : day == 2 ? "Tuesday" : day == 3 ? "Wednesday" : day == 4 ? "Thursday" : day == 5 ? "Friday" : day == 6 ? "Saturday" : "Unknown";
+}
+
+void set_raw_xp_vars(int mode) {
+	doublexp = (mode == 1 ? 1 : 0);
+	superxp = (mode == 2 ? 1 : 0);
+	megaxp = (mode == 3 ? 1 : 0);
+	gigaxp = (mode == 4 ? 1 : 0);
+	masterxp = (mode == 5 ? 1 : 0);
+}
+
+int get_current_active_mode() {
+	if (masterxp == 1) return 5;
+	if (gigaxp == 1) return 4;
+	if (megaxp == 1) return 3;
+	if (superxp == 1) return 2;
+	if (doublexp == 1) return 1;
+	return 0;
+}
+
+ double parse_duration_string(string s) {
+	if (s == "") return 0;
+	double val = string_to_number(s);
+	string suffix = string_to_lower_case(string_right(s, 1));
+	if (suffix == "m") return val;
+	if (suffix == "h") return val * 60;
+	if (suffix == "d") return val * 1440;
+	if (suffix == "w") return val * 10080;
+	return val; 
+}
+
+string format_duration(double minutes) {
+	if (minutes > 0 && minutes < 1) return "less than a minute";
+	if (minutes >= 10080) {
+        double val = round(minutes / 10080.0, 1);
+        return val + (val == 1.0 ? " week" : " weeks");
+    }
+	if (minutes >= 1440) {
+        double val = round(minutes / 1440.0, 1);
+        return val + (val == 1.0 ? " day" : " days");
+    }
+	if (minutes >= 60) {
+        double val = round(minutes / 60.0, 1);
+        return val + (val == 1.0 ? " hour" : " hours");
+    }
+	return round(minutes, 0) + (minutes == 1.0 ? " minute" : " minutes");
+}
+
+void start_xp_event(int mode, string duration_str, string admin_name) {
+	if (mode < 0 || mode > 5) return;
+	
+	int current = get_current_active_mode();
+	string old_name = get_xp_name(current);
+
+	if (mode == 0) {
+		if (override_mode == 0) {
+			if (auto_xp) return; 
+			if (current != 0) {
+				set_raw_xp_vars(0);
+				send_reliable(0, "play_s notify_news2.ogg", 6);
+				send_reliable(0, admin_name + " disabled " + get_xp_name(current) + "!", 2);
+			}
+			return;
+		}
+		override_mode = 0;
+		override_time_left = 0;
+		send_reliable(0, "play_s notify_news2.ogg", 6);
+		send_reliable(0, "The manual XP event has been cancelled by " + admin_name + ".", 2);
+		check_auto_xp(); 
+		return;
+	}
+	
+	double minutes = parse_duration_string(duration_str);
+	override_mode = mode;
+	
+	if (minutes > 0) {
+		override_time_left = minutes * 60.0 * 1000.0;
+		override_timer.restart();
+	} else {
+		override_time_left = 0;
+	}
+	
+	set_raw_xp_vars(mode);
+	string new_name = get_xp_name(mode);
+	
+	string msg = admin_name + " has activated " + new_name + "!";
+	if (current != 0 && current != mode) {
+		msg += " (Replacing " + old_name + ").";
+	}
+	
+	if (minutes > 0) msg += " Duration: " + format_duration(minutes) + ".";
+	else msg += " (Indefinite).";
+	
+	send_reliable(0, "play_s notify_news2.ogg", 6);
+	send_reliable(0, msg, 2);
+	log("events", msg);
+	save_xp_schedule();
+}
+
+void check_auto_xp() {
+	if (override_mode > 0) {
+		if (override_time_left > 0) {
+			if (override_timer.elapsed >= override_time_left) {
+				int finished = override_mode;
+				override_mode = 0;
+				override_time_left = 0;
+				
+				string msg = "The " + get_xp_name(finished) + " event has ended.";
+				
+				int next_mode = 0;
+				if (auto_xp) {
+					datetime d;
+					int today = d.weekday;
+					if (today >= 0 && today <= 6) next_mode = xp_schedule[today];
+					msg += " We are now back to " + get_xp_name(next_mode) + ".";
+				} else {
+					msg += " XP is back to normal.";
+				}
+				
+				set_raw_xp_vars(next_mode);
+				send_reliable(0, "play_s notify_news2.ogg", 6);
+				send_reliable(0, msg, 2);
+			}
+		}
+		if (get_current_active_mode() != override_mode) set_raw_xp_vars(override_mode);
+		return;
+	}
+
+	if (!auto_xp) return;
+	
+	datetime d;
+	int today_idx = d.weekday;
+	if (today_idx < 0 || today_idx > 6) return;
+	int target = xp_schedule[today_idx];
+	int current = get_current_active_mode();
+	
+	if (current != target) {
+		set_raw_xp_vars(target);
+		string name = get_xp_name(target);
+		send_reliable(0, "play_s notify_news2.ogg", 6);
+		send_reliable(0, "Auto XP Update: " + name + " is now active!", 2);
+	}
+}
+
+string get_xp_status_message() {
+	int current = get_current_active_mode();
+	string msg = "Current: " + get_xp_name(current);
+	
+	if (override_mode > 0) {
+		msg += " (Active Event). ";
+		if (override_time_left > 0) {
+			double left = override_time_left - override_timer.elapsed;
+			if (left > 0) msg += "Ends in: " + format_duration(left / 1000.0 / 60.0) + ". ";
+			else msg += "Ends in: less than a minute. ";
+		} else {
+			msg += "Indefinite. ";
+		}
+	} else {
+		msg += ". ";
+	}
+	
+	if (auto_xp) {
+		msg += "Auto-Schedule: ON. ";
+		if (override_mode == 0) {
+			datetime d;
+			int hours = 23 - d.hour;
+			int minutes = 59 - d.minute;
+			
+			int streak = 0;
+			for(int i=1; i<7; i++) {
+				int check_day = (d.weekday + i) % 7;
+				if (xp_schedule[check_day] == current) streak++;
+				else break;
+			}
+			
+			if (streak > 0) {
+				msg += "Schedule: " + get_xp_name(current) + " continues ";
+				if (streak == 1) msg += "tomorrow.";
+				else msg += "for " + streak + " more days.";
+			} else {
+				int next_day = (d.weekday + 1) % 7;
+				int next_mode = xp_schedule[next_day];
+				msg += "Next: " + get_xp_name(next_mode) + " (starts in " + hours + "h " + minutes + "m).";
+			}
+		} else {
+			datetime d;
+			int today = d.weekday;
+			int restore_mode = xp_schedule[today];
+			msg += "Returns to " + get_xp_name(restore_mode) + " after event.";
+		}
+	} else {
+		msg += "Auto-Schedule: OFF.";
+	}
+	return msg;
+}
+
+void save_xp_schedule() {
+	file f;
+	if (f.open("xp.dat", "w")) {
+		f.write((auto_xp ? "1" : "0") + "\n");
+		string sched_str = "";
+		for(uint i=0; i<7; i++) {
+			sched_str += xp_schedule[i];
+			if (i < 6) sched_str += ",";
+		}
+		f.write(sched_str + "\n");
+		
+		f.write(override_mode + "\n");
+		double remaining = 0;
+		if (override_mode > 0 && override_time_left > 0) {
+			remaining = override_time_left - override_timer.elapsed;
+			if (remaining < 0) remaining = 0;
+		}
+		f.write(remaining + "\n");
+		
+		f.close();
+	}
+}
+
+void load_xp_schedule() {
+	file f;
+	if (f.open("xp.dat", "r")) {
+		string l = f.read_line().replace("\n","").replace("\r","");
+		if (l != "") auto_xp = (string_to_number(l) == 1);
+		
+		l = f.read_line().replace("\n","").replace("\r","");
+		if (l != "") {
+			string[] p = string_split(l, ",", false);
+			if (p.length() == 7) {
+				for(uint i=0; i<7; i++) xp_schedule[i] = string_to_number(p[i]);
+			}
+		}
+		
+		l = f.read_line().replace("\n","").replace("\r","");
+		if (l != "") override_mode = string_to_number(l);
+		
+		l = f.read_line().replace("\n","").replace("\r","");
+		if (l != "") override_time_left = string_to_number(l);
+		
+		if (override_mode > 0) {
+			override_timer.restart();
+			set_raw_xp_vars(override_mode);
+		}
+		
+		f.close();
+	}
+}

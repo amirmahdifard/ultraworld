@@ -4,12 +4,12 @@ void buildtask_status() {
         string nums = "1234567890-";
         string mx, mmx, my, mmy, mz, mmz, item, amount;
         form.create_window("task status", false);
-        int a = form.create_input_box("type the minimum &x of the task area");
-        int b = form.create_input_box("type the maximum &x of the task area");
-        int c = form.create_input_box("type the minimum &y of the task area");
-        int d = form.create_input_box("type the maximum &y of the task area");
-        int e = form.create_input_box("type the minimum &z of the task area");
-        int f = form.create_input_box("type the maximum &z of the task area");
+        int a = form.create_input_box("type the minimum &x of the task area",lx);
+        int b = form.create_input_box("type the maximum &x of the task area",rx);
+        int c = form.create_input_box("type the minimum &y of the task area",by);
+        int d = form.create_input_box("type the maximum &y of the task area",fy);
+        int e = form.create_input_box("type the minimum &z of the task area",bz);
+        int f = form.create_input_box("type the maximum &z of the task area",tz);
         int g = form.create_input_box("enter the &item name", "", "", 0, false, false);
         int h = form.create_input_box("enter the item &amount");
         form.set_disallowed_chars(a, nums, true);
@@ -48,17 +48,6 @@ void buildtask_status() {
             return;
         }
 
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.y || my  > max.y ||
-            mmy < min.y || mmy > max.y ||
-            mz  < min.z || mz  > max.z ||
-            mmz < min.z || mmz > max.z)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
-
         send_reliable(peer_id, "addtask_status task_status:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + ":" + item + ":" + amount, 0);
     }
     else {
@@ -66,10 +55,10 @@ void buildtask_status() {
         string nums = "1234567890-";
         string mx, mmx, my, mmy, item, amount;
         form.create_window("task status", false);
-        int a = form.create_input_box("type the minimum &x of the task area");
-        int b = form.create_input_box("type the maximum &x of the task area");
-        int c = form.create_input_box("type the minimum &y of the task area");
-        int d = form.create_input_box("type the maximum &y of the task area");
+        int a = form.create_input_box("type the minimum &x of the task area",lx);
+        int b = form.create_input_box("type the maximum &x of the task area",rx);
+        int c = form.create_input_box("type the minimum &y of the task area",bz);
+        int d = form.create_input_box("type the maximum &y of the task area",tz);
         int e = form.create_input_box("enter the &item name", "", "", 0, false, false);
         int f = form.create_input_box("enter the item &amount");
         form.set_disallowed_chars(a, nums, true);
@@ -101,15 +90,6 @@ void buildtask_status() {
 
         if (mx == "" || mmx == "" || my == "" || mmy == "" || item == "" || amount == "") {
             speak("canceled");
-            return;
-        }
-
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.z || my  > max.z ||
-            mmy < min.z || mmy > max.z)
-        {
-            speak("error. Given coordinates are out of range");
             return;
         }
 

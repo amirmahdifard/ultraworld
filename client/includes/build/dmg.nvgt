@@ -2,12 +2,12 @@ void builddmg() {
 	string nums = "1234567890-";
 	string mx, mmx, my, mmy, mz, mmz, id;
 	form.create_window("dmg", false);
-	int a = form.create_input_box("type the minimum x of the death message");
-	int b = form.create_input_box("type the maximum x of the death message");
-	int c = form.create_input_box("type the minimum y of the death message");
-	int d = form.create_input_box("type the maximum y of the death message");
-	int e = form.create_input_box("type the minimum z of the death message");
-	int f = form.create_input_box("type the maximum z of the death message");
+	int a = form.create_input_box("type the minimum x of the death message",lx);
+	int b = form.create_input_box("type the maximum x of the death message",rx);
+	int c = form.create_input_box("type the minimum y of the death message",by);
+	int d = form.create_input_box("type the maximum y of the death message",fy);
+	int e = form.create_input_box("type the minimum z of the death message",bz);
+	int f = form.create_input_box("type the maximum z of the death message",tz);
 	int g = form.create_input_box("type the message of the death message (supports dynamic map variables)", "", "", 0, false, true, false);
 	form.set_disallowed_chars(a, nums, true);
 	form.set_disallowed_chars(b, nums, true);

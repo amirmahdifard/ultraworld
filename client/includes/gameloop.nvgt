@@ -1,3 +1,12 @@
+string gx;
+string gy;
+string gz;
+string lx;
+string rx;
+string by;
+string fy;
+string bz;
+string tz;
 void gameloop() {
 	if (onbag) return;
 	if (@invform != null) {
@@ -127,6 +136,9 @@ void gameloop() {
 	}
 	if (key_up(KEY_LMENU) and key_up(KEY_RMENU) and key_up(KEY_LSHIFT) and key_up(KEY_RSHIFT) and key_up(KEY_INSERT) and key_pressed(KEY_F1))
 		send_reliable(peer_id, "whoonline", 0);
+		if (alt_is_down() and key_pressed(KEY_F)) {
+		team_menu();
+		}
 	if (alt_is_down() and key_up(KEY_LSHIFT) and key_up(KEY_RSHIFT) and key_pressed(KEY_F1))
 		get_voice_menu();
 	if (key_up(KEY_LSHIFT) and key_up(KEY_RSHIFT) and key_up(KEY_LMENU) and key_up(KEY_RMENU) and key_pressed(KEY_F7)) {
@@ -500,6 +512,72 @@ void gameloop() {
 					else if (dcoordinates == 1) speak(tile + " " + what);
 				}
 			}
+			if (key_pressed(KEY_V))
+{
+lx = camera.x;
+gx = camera.x;
+rx = camera.x;
+by = camera.y;
+gy = camera.y;
+fy = camera.y;
+bz = camera.z;
+gz = camera.z;
+tz = camera.z;
+speak("markers set to " + gx + ", " + gy + ", " + gz);
+}
+			if (key_pressed(KEY_4))
+{
+lx = camera.x;
+gx = camera.x;
+speak("Left x marker set to " + lx);
+}
+			if (key_pressed(KEY_5))
+{
+rx = camera.x;
+gx = camera.x;
+speak("Right x marker set to " + rx);
+}
+			if (key_pressed(KEY_6))
+{
+by = camera.y;
+gy = camera.y;
+speak("backward y marker set to " + by);
+}
+			if (key_pressed(KEY_7))
+{
+fy = camera.y;
+gy = camera.y;
+speak("forward y marker set to " + fy);
+}
+			if (key_pressed(KEY_8))
+{
+bz = camera.z;
+gz = camera.z;
+speak("bottom z marker set to " + bz);
+}
+			if (key_pressed(KEY_9))
+{
+tz = camera.z;
+gz = camera.z;
+speak("top z marker set to " + tz);
+}
+			if (key_pressed(KEY_0))
+{
+speak("Selection points: Left x: " + lx + ". Right x: " + rx + ". Backward y: " + by + ". Forward y: " + fy + ". Bottom z: " + bz + ". Top z: " + tz);
+}
+			if (key_pressed(KEY_MINUS))
+{
+lx = "";
+gx = "";
+rx = "";
+by = "";
+gy = "";
+fy = "";
+bz = "";
+gz = "";
+tz = "";
+speak("The builder selection points have been cleared");
+}
 			if (key_pressed(KEY_T))
 				playcamera();
 			if (d2dsupport == 0) {
@@ -815,9 +893,9 @@ if(inv_q==1)
 			optionsmenu();
 			return;
 		}
-		if (trackx == -1 or tracky == -1 or trackz == -1 or tracking == "")
+		if (ztrackx == -1 or ztracky == -1 or ztrackz == -1 or ztracking == "")
 			speak("Nothing to track");
-		else tell_where(trackx, tracky, trackz, "loctrack", false);
+		else tell_where(ztrackx, ztracky, ztrackz, "loctrack", false);
 	}
 	if (shift_is_down() and key_pressed(KEY_N)) {
 		if (ttrackx == -1 or ttracky == -1 or ttrackz == -1 or ttracking == "")
@@ -881,6 +959,18 @@ if(inv_q==1)
 			send_reliable(peer_id, "combine (" + lefthand + ") (" + righthand + ")", 5);
 			return;
 		}
+		if (alt_is_down() and key_up(KEY_LSHIFT) and key_up(KEY_RSHIFT) and key_pressed(KEY_T) and key_up(KEY_G)) {
+			if (lefthand == "" and righthand == "") {
+					if (get_tile_at(me.x, me.y, me.z) == "underwater") {
+						rvp.play_stationary("underwaterclap.ogg", false);
+						send_reliable(peer_id, "draw underwaterclap.ogg", 7);
+					} else {
+						rvp.play_stationary("snap.ogg", false);
+						send_reliable(peer_id, "draw snap.ogg", 7);
+					}
+				}
+			}
+	
 	}
 	if (key_pressed(KEY_J) and key_up(KEY_LSHIFT) and key_up(KEY_RSHIFT) and key_up(KEY_LMENU) and key_up(KEY_RMENU))
 		send_reliable(peer_id, "energycheck", 0);
@@ -1155,16 +1245,15 @@ chat("public chat");
 		speak((winsound == 0 ? "enabled" : "disabled") + " muting audio when the game is not in focus");
 	}
 	if (key_up(KEY_LSHIFT) and key_up(KEY_RSHIFT)) {
-		if (key_pressed(KEY_HOME) == false and khome.pressing() and get_sound_master_volume() < 0) {
-			set_sound_master_volume(get_sound_master_volume() + 1);
+		if (key_pressed(KEY_HOME) == false and khome.pressing() and mvol < 0) {
+			change_master_volume(1);
 			p.play_stationary("volume_up.ogg", false);
-			mvol++;
 		}
-		if (key_pressed(KEY_END) == false and kend.pressing() and get_sound_master_volume() > -60) {
-			set_sound_master_volume(get_sound_master_volume() - 1);
+		if (key_pressed(KEY_END) == false and kend.pressing() and mvol > -60) {
+			change_master_volume(-1);
 			p.play_stationary("volume_down.ogg", false);
-			mvol--;
 		}
+		if (key_up(KEY_HOME) or key_up(KEY_END)) writeprefs();
 	} else if (shift_is_down()) {
 		if (key_pressed(KEY_HOME) == false and khome.pressing() and mmusic_volume <= 0)
 			change_music_volume(mmusic_volume + 1);

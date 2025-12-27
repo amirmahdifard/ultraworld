@@ -8,7 +8,7 @@ maxy:11
 minz:-1
 maxz:11
 tile:-1:11:-1:11:-1:11:wallcloth
-owner:NicoDiAngelo
+owner:%00owner00%
 litem:0
 starting_point:5:5:0:0:0:0
 deathpoint:5:5:0:0:0:0

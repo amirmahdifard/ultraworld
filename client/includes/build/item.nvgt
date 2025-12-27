@@ -4,12 +4,12 @@ void builditem() {
         string nums = "1234567890-";
         string mx, mmx, my, mmy, mz, mmz, itemt, itemm, itemo;
         form.create_window("item spawner", false);
-        int a = form.create_input_box("type the minimum &x of the item area");
-        int b = form.create_input_box("type the maximum &x of the item area");
-        int c = form.create_input_box("type the minimum &y of the item area");
-        int d = form.create_input_box("type the maximum &y of the item area");
-        int e = form.create_input_box("type the minimum &z of the item area");
-        int f = form.create_input_box("type the maximum &z of the item area");
+        int a = form.create_input_box("type the minimum &x of the item area",lx);
+        int b = form.create_input_box("type the maximum &x of the item area",rx);
+        int c = form.create_input_box("type the minimum &y of the item area",by);
+        int d = form.create_input_box("type the maximum &y of the item area",fy);
+        int e = form.create_input_box("type the minimum &z of the item area",bz);
+        int f = form.create_input_box("type the maximum &z of the item area",tz);
         int g = form.create_input_box("how many milliseconds should be waited for next item spawning?");
         int h = form.create_input_box("maximum amount of items");
         int i = form.create_input_box("item names. Use : to add new ones (e.g. coins : wood : metal)", "", "", 0, false, false);
@@ -48,16 +48,7 @@ void builditem() {
             speak("canceled");
             return;
         }
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.y || my  > max.y ||
-            mmy < min.y || mmy > max.y ||
-            mz  < min.z || mz  > max.z ||
-            mmz < min.z || mmz > max.z)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
+
         send_reliable(peer_id, "additem item:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + ":" + itemt + ":" + itemm + ":" + itemo, 0);
     }
     else {
@@ -65,10 +56,10 @@ void builditem() {
         string nums = "1234567890-";
         string mx, mmx, my, mmy, itemt, itemm, itemo;
         form.create_window("item spawner", false);
-        int a = form.create_input_box("type the minimum &x of the item area");
-        int b = form.create_input_box("type the maximum &x of the item area");
-        int c = form.create_input_box("type the minimum &y of the item area");
-        int d = form.create_input_box("type the maximum &y of the item area");
+        int a = form.create_input_box("type the minimum &x of the item area",lx);
+        int b = form.create_input_box("type the maximum &x of the item area",rx);
+        int c = form.create_input_box("type the minimum &y of the item area",bz);
+        int d = form.create_input_box("type the maximum &y of the item area",tz);
         int e = form.create_input_box("how many milliseconds should be waited for next item spawning?");
         int f = form.create_input_box("maximum amount of items");
         int g = form.create_input_box("item names. Use : to add new ones (e.g. coins : wood : metal)", "", "", 0, false, false);
@@ -103,14 +94,7 @@ void builditem() {
             speak("canceled");
             return;
         }
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.y || my  > max.y ||
-            mmy < min.y || mmy > max.y)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
+
         send_reliable(peer_id, "additem item:" + mx + ":" + mmx + ":0:0:" + my + ":" + mmy + ":" + itemt + ":" + itemm + ":" + itemo, 0);
     }
 }

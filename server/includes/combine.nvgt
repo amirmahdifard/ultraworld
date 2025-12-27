@@ -420,7 +420,7 @@ void combine(player@p, string message) {
 				}
 			}
 		} else if (lefthand == "cigarette" and righthand == "lighter" or lefthand == "lighter" and righthand == "cigarette") {
-			if (p.waitingtimer.elapsed >= 300) {
+			if (p.waitingtimer.elapsed >= 100) {
 				p.waitingtimer.restart();
 				if (p.gasswigs == 40)
 					send_packet(6, "play getlighter.ogg " + p.x + " " + p.y + " " + p.z, p.x, p.y, p.z, maps[get_map_index(p.map)]);
@@ -434,6 +434,7 @@ void combine(player@p, string message) {
 						p.gasswigs += 1;
 						send_packet(6, "play smoke.ogg " + p.x + " " + p.y + " " + p.z, p.x, p.y, p.z, maps[get_map_index(p.map)]);
 						p.inv_add_item("cigarette", -1);
+						p.inv_add_item("burning_cigarette", 30);
 						p.cigarrette++;
 						if (lefthand == "cigarette")
 							send_reliable(p, "hempty 1", 0);

@@ -211,28 +211,31 @@ void bufferleft() {
 	if (bufferpos <= 0) {
 		bufferpos = 0;
 		speakfocusedbuffer();
-	} else {
-		bufferpos -= 1;
-		if ((buffers[bufferpos].items.length() < 1 && buffers[bufferpos].hidezero) || !buffers[bufferpos].can_use) {
-			bufferleft();
-			return;
-		}
-		speakfocusedbuffer();
+		return;
 	}
+	bufferpos -= 1;
+	if (((buffers[bufferpos].hidezero && buffers[bufferpos].items.length() < 1 && !buffers[bufferpos].muted))|| !buffers[bufferpos].can_use) {
+		bufferleft();
+		return;
+	}
+
+	speakfocusedbuffer();
 }
 void bufferright() {
-	if (bufferpos >= (buffers.length() - 1)) {
+	if (bufferpos >= buffers.length() - 1) {
 		if (buffers.length() > 0)
 			bufferpos = buffers.length() - 1;
 		speakfocusedbuffer();
-	} else {
-		bufferpos += 1;
-		if ((buffers[bufferpos].items.length() < 1 && buffers[bufferpos].hidezero) || !buffers[bufferpos].can_use) {
-			bufferright();
-			return;
-		}
-		speakfocusedbuffer();
+		return;
 	}
+	bufferpos += 1;
+	if ((!buffers[bufferpos].muted &&buffers[bufferpos].items.length() < 1 &&buffers[bufferpos].hidezero)
+		|| !buffers[bufferpos].can_use
+	) {
+		bufferright();
+		return;
+	}
+	speakfocusedbuffer();
 }
 void nextbufferitem() {
 	if (buffers[bufferpos].pos < (buffers[bufferpos].items.length() - 1)) {
@@ -261,12 +264,18 @@ void bottombufferitem() {
 		play_buffer_item_sound(buffers[bufferpos].item_snd);
 		speak(buffers[bufferpos].items[buffers[bufferpos].pos].display);
 	}
-}
-void speakfocusedbuffer() {
+}void speakfocusedbuffer() {
 	play_buffer_sound(buffers[bufferpos].snd);
+
+	string muted_text = "";
+	if (buffers[bufferpos].muted)
+		muted_text = ", muted";
+
 	uint cl = buffers.length();
 	int cupos = bufferpos;
-	speak(dgets(buffer_text, "bufferi1", "%x%. %y% of %z% items. Buffer %ac% of %bc%").replace("%x%", buffers[bufferpos].name).replace("%y%", (buffers[bufferpos].pos + 1)).replace("%z%", buffers[bufferpos].items.length()).replace("%a%", (bufferpos + 1)).replace("%b%", buffers.length()).replace("%ac%", (cupos + 1)).replace("%bc%", cl));
+	string msg = dgets(buffer_text,"bufferi1","%x%%m%. %y% of %z% items. Buffer %ac% of %bc%");
+	msg = msg.replace("%x%", buffers[bufferpos].name).replace("%m%", muted_text).replace("%y%", (buffers[bufferpos].pos + 1)).replace("%z%", buffers[bufferpos].items.length()).replace("%ac%", (cupos + 1)).replace("%bc%", cl);
+	speak(msg);
 }
 void clear_all_buffers(string[] excludes = {}) {
 	foreach (buffer@ b: buffers) {

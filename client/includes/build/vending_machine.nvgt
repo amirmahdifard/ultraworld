@@ -4,9 +4,9 @@ void buildvending_machine() {
         string nums = "1234567890-";
         string vx, vy, vz;
         form.create_window("vending machine", false);
-        int a = form.create_input_box("enter the &x coordinate");
-        int b = form.create_input_box("enter the &y coordinate");
-        int c = form.create_input_box("enter the &z coordinate");
+        int a = form.create_input_box("enter the &x coordinate",gx);
+        int b = form.create_input_box("enter the &y coordinate",gy);
+        int c = form.create_input_box("enter the &z coordinate",gz);
         form.set_disallowed_chars(a, nums, true);
         form.set_disallowed_chars(b, nums, true);
         form.set_disallowed_chars(c, nums, true);
@@ -40,8 +40,8 @@ void buildvending_machine() {
         string nums = "1234567890-";
         string vx, vy;
         form.create_window("vending machine", false);
-        int a = form.create_input_box("enter the &x coordinate");
-        int b = form.create_input_box("enter the &y coordinate");
+        int a = form.create_input_box("enter the &x coordinate",gx);
+        int b = form.create_input_box("enter the &y coordinate",gz);
         form.set_disallowed_chars(a, nums, true);
         form.set_disallowed_chars(b, nums, true);
         int ok = form.create_button("finish", false);

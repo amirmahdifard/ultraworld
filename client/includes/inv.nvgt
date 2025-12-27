@@ -215,7 +215,7 @@ void inventorymenu(string cat, double maincount = 0) {
 					f.create_window("Auction", false);
 					nv_form_input@ am = f.add_input("amount", "am");
 					@am.shortcut = nv_shortcut(KEY_A, alt = true);
-					nv_form_input@ need = f.add_input("What do you want?", "need");
+					nv_form_input@ need = f.add_input("What do you want?", "need", "coins");
 					@need.shortcut = nv_shortcut(KEY_W, alt = true);
 					nv_form_input@ bid = f.add_input("minimum bid?", "bid");
 					@bid.shortcut = nv_shortcut(KEY_M, alt = true);

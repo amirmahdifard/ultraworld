@@ -4,12 +4,12 @@ void buildteleporter() {
         string nums = "1234567890-";
         string mx, mmx, my, mmy, mz, mmz;
         form.create_window("teleporter", false);
-        int a = form.create_input_box("type the minimum &x of the teleporter area");
-        int b = form.create_input_box("type the maximum &x of the teleporter area");
-        int c = form.create_input_box("type the minimum &y of the teleporter area");
-        int d = form.create_input_box("type the maximum &y of the teleporter area");
-        int e = form.create_input_box("type the minimum &z of the teleporter area");
-        int f = form.create_input_box("type the maximum &z of the teleporter area");
+        int a = form.create_input_box("type the minimum &x of the teleporter area",lx);
+        int b = form.create_input_box("type the maximum &x of the teleporter area",rx);
+        int c = form.create_input_box("type the minimum &y of the teleporter area",by);
+        int d = form.create_input_box("type the maximum &y of the teleporter area",fy);
+        int e = form.create_input_box("type the minimum &z of the teleporter area",bz);
+        int f = form.create_input_box("type the maximum &z of the teleporter area",tz);
         form.set_disallowed_chars(a, nums, true);
         form.set_disallowed_chars(b, nums, true);
         form.set_disallowed_chars(c, nums, true);
@@ -43,17 +43,6 @@ void buildteleporter() {
             return;
         }
 
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.y || my  > max.y ||
-            mmy < min.y || mmy > max.y ||
-            mz  < min.z || mz  > max.z ||
-            mmz < min.z || mmz > max.z)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
-
         send_reliable(peer_id, "addteleporter teleporter:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz, 0);
     }
     else {
@@ -61,10 +50,10 @@ void buildteleporter() {
         string nums = "1234567890-";
         string mx, mmx, my, mmy;
         form.create_window("teleporter", false);
-        int a = form.create_input_box("type the minimum &x of the teleporter area");
-        int b = form.create_input_box("type the maximum &x of the teleporter area");
-        int c = form.create_input_box("type the minimum &y of the teleporter area");
-        int d = form.create_input_box("type the maximum &y of the teleporter area");
+        int a = form.create_input_box("type the minimum &x of the teleporter area",lx);
+        int b = form.create_input_box("type the maximum &x of the teleporter area",rx);
+        int c = form.create_input_box("type the minimum &y of the teleporter area",bz);
+        int d = form.create_input_box("type the maximum &y of the teleporter area",tz);
         form.set_disallowed_chars(a, nums, true);
         form.set_disallowed_chars(b, nums, true);
         form.set_disallowed_chars(c, nums, true);
@@ -91,15 +80,6 @@ void buildteleporter() {
 
         if (mx == "" || mmx == "" || my == "" || mmy == "") {
             speak("canceled");
-            return;
-        }
-
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.y || my  > max.y ||
-            mmy < min.y || mmy > max.y)
-        {
-            speak("error. Given coordinates are out of range");
             return;
         }
 

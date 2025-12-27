@@ -4,12 +4,12 @@ void buildvanishing_platform() {
         string nums = "1234567890-";
         string mx, mmx, my, mmy, mz, mmz, vanishtime;
         form.create_window("vanishing platform", false);
-        int a = form.create_input_box("type the minimum &x of the platform area");
-        int b = form.create_input_box("type the maximum &x of the platform area");
-        int c = form.create_input_box("type the minimum &y of the platform area");
-        int d = form.create_input_box("type the maximum &y of the platform area");
-        int e = form.create_input_box("type the minimum &z of the platform area");
-        int f = form.create_input_box("type the maximum &z of the platform area");
+        int a = form.create_input_box("type the minimum &x of the platform area",lx);
+        int b = form.create_input_box("type the maximum &x of the platform area",rx);
+        int c = form.create_input_box("type the minimum &y of the platform area",by);
+        int d = form.create_input_box("type the maximum &y of the platform area",fy);
+        int e = form.create_input_box("type the minimum &z of the platform area",bz);
+        int f = form.create_input_box("type the maximum &z of the platform area",tz);
         int g = form.create_input_box("how many milliseconds should be waited before next vanish");
         form.set_disallowed_chars(a, nums, true);
         form.set_disallowed_chars(b, nums, true);
@@ -52,17 +52,6 @@ void buildvanishing_platform() {
         string vanishsound = list_ambiences();
         if (vanishsound == "") return;
 
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.y || my  > max.y ||
-            mmy < min.y || mmy > max.y ||
-            mz  < min.z || mz  > max.z ||
-            mmz < min.z || mmz > max.z)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
-
         send_reliable(peer_id, "addvanishing_platform vanishing_platform:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + ":" + vanishtime + ":" + vanishtile + ":" + vanishsound + ".ogg", 0);
     }
     else {
@@ -70,10 +59,10 @@ void buildvanishing_platform() {
         string nums = "1234567890-";
         string mx, mmx, my, mmy, vanishtime;
         form.create_window("vanishing platform", false);
-        int a = form.create_input_box("type the minimum &x of the platform area");
-        int b = form.create_input_box("type the maximum &x of the platform area");
-        int c = form.create_input_box("type the minimum &y of the platform area");
-        int d = form.create_input_box("type the maximum &y of the platform area");
+        int a = form.create_input_box("type the minimum &x of the platform area",lx);
+        int b = form.create_input_box("type the maximum &x of the platform area",rx);
+        int c = form.create_input_box("type the minimum &y of the platform area",bz);
+        int d = form.create_input_box("type the maximum &y of the platform area",tz);
         int e = form.create_input_box("how many milliseconds should be waited before next vanish");
         form.set_disallowed_chars(a, nums, true);
         form.set_disallowed_chars(b, nums, true);
@@ -111,15 +100,6 @@ void buildvanishing_platform() {
 
         string vanishsound = list_ambiences();
         if (vanishsound == "") return;
-
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.y || my  > max.y ||
-            mmy < min.y || mmy > max.y)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
 
         send_reliable(peer_id, "addvanishing_platform vanishing_platform:" + mx + ":" + mmx + ":0:0:" + my + ":" + mmy + ":" + vanishtime + ":" + vanishtile + ":" + vanishsound + ".ogg", 0);
     }

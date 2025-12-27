@@ -4,12 +4,12 @@ void builditdoor() {
         string nums = "1234567890-";
         string mx, mmx, my, mmy, mz, mmz, fx, fy, fz, text, item, amount, dtime;
         form.create_window("item-taking door", false);
-        int a = form.create_input_box("type the minimum &x of the door area");
-        int b = form.create_input_box("type the maximum &x of the door area");
-        int c = form.create_input_box("type the minimum &y of the door area");
-        int d = form.create_input_box("type the maximum &y of the door area");
-        int e = form.create_input_box("type the minimum &z of the door area");
-        int f = form.create_input_box("type the maximum &z of the door area");
+        int a = form.create_input_box("type the minimum &x of the door area",lx);
+        int b = form.create_input_box("type the maximum &x of the door area",rx);
+        int c = form.create_input_box("type the minimum &y of the door area",by);
+        int d = form.create_input_box("type the maximum &y of the door area",fy);
+        int e = form.create_input_box("type the minimum &z of the door area",bz);
+        int f = form.create_input_box("type the maximum &z of the door area",tz);
         int g = form.create_input_box("enter the destination &x");
         int h = form.create_input_box("enter the destination &y");
         int i = form.create_input_box("enter the destination &z");
@@ -67,20 +67,6 @@ void builditdoor() {
         string ds3 = list_ds3s(); if (ds3 == "") return;
         string ds4 = list_ds4s(); if (ds4 == "") return;
 
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.y || my  > max.y ||
-            mmy < min.y || mmy > max.y ||
-            mz  < min.z || mz  > max.z ||
-            mmz < min.z || mmz > max.z ||
-            fx  < min.x || fx  > max.x ||
-            fy  < min.y || fy  > max.y ||
-            fz  < min.z || fz  > max.z)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
-
         send_reliable(peer_id, "additdoor itdoor:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + ":" + fx + ":" + fy + ":" + fz + ":" + text + ":" + item + ":" + amount + ":" + dtime + ":" + ds1 + ".ogg:" + ds2 + ".ogg:" + ds3 + ".ogg:" + ds4 + ".ogg", 0);
     }
     else {
@@ -88,10 +74,10 @@ void builditdoor() {
         string nums = "1234567890-";
         string mx, mmx, mz, mmz, fx, fz, text, item, amount, dtime;
         form.create_window("item-taking door", false);
-        int a = form.create_input_box("type the minimum &x of the door area");
-        int b = form.create_input_box("type the maximum &x of the door area");
-        int c = form.create_input_box("type the minimum &y of the door area");
-        int d = form.create_input_box("type the maximum &y of the door area");
+        int a = form.create_input_box("type the minimum &x of the door area",lx);
+        int b = form.create_input_box("type the maximum &x of the door area",rx);
+        int c = form.create_input_box("type the minimum &y of the door area",bz);
+        int d = form.create_input_box("type the maximum &y of the door area",tz);
         int e = form.create_input_box("enter the destination &x");
         int f = form.create_input_box("enter the destination &y");
         int g = form.create_input_box("enter the &text shown when player presses enter to take the item", "", "", 0, false, false);
@@ -141,17 +127,6 @@ void builditdoor() {
         string ds2 = list_ds2s(); if (ds2 == "") return;
         string ds3 = list_ds3s(); if (ds3 == "") return;
         string ds4 = list_ds4s(); if (ds4 == "") return;
-
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            mz  < min.z || mz  > max.z ||
-            mmz < min.z || mmz > max.z ||
-            fx  < min.x || fx  > max.x ||
-            fz  < min.z || fz  > max.z)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
 
         send_reliable(peer_id, "additdoor itdoor:" + mx + ":" + mmx + ":0:0:" + mz + ":" + mmz + ":" + fx + ":0:" + fz + ":" + text + ":" + item + ":" + amount + ":" + dtime + ":" + ds1 + ".ogg:" + ds2 + ".ogg:" + ds3 + ".ogg:" + ds4 + ".ogg", 0);
     }

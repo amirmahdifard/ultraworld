@@ -4,12 +4,12 @@ void buildtimedsound() {
         string nums = "1234567890-";
         string mx, mmx, my, mmy, mz, mmz, soundtimer;
         form.create_window("timed sound", false);
-        int a = form.create_input_box("type the minimum &x of the sound area");
-        int b = form.create_input_box("type the maximum &x of the sound area");
-        int c = form.create_input_box("type the minimum &y of the sound area");
-        int d = form.create_input_box("type the maximum &y of the sound area");
-        int e = form.create_input_box("type the minimum &z of the sound area");
-        int f = form.create_input_box("type the maximum &z of the sound area");
+        int a = form.create_input_box("type the minimum &x of the sound area",lx);
+        int b = form.create_input_box("type the maximum &x of the sound area",rx);
+        int c = form.create_input_box("type the minimum &y of the sound area",by);
+        int d = form.create_input_box("type the maximum &y of the sound area",fy);
+        int e = form.create_input_box("type the minimum &z of the sound area",bz);
+        int f = form.create_input_box("type the maximum &z of the sound area",tz);
         int g = form.create_input_box("how many milliseconds should be waited before next sound play");
         form.set_disallowed_chars(a, nums, true);
         form.set_disallowed_chars(b, nums, true);
@@ -52,16 +52,7 @@ void buildtimedsound() {
         string temp = "";
         int amb = yesno("would you like this source to work as an ambience?");
         if (amb == 1) temp = ":1";
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.y || my  > max.y ||
-            mmy < min.y || mmy > max.y ||
-            mz  < min.z || mz  > max.z ||
-            mmz < min.z || mmz > max.z)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
+
         send_reliable(peer_id, "addtimedsound timedsound:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + ":" + soundtimer + ":" + volume + ":" + pitch + ":" + soundfile + ".ogg" + temp, 0);
     }
     else {
@@ -69,10 +60,10 @@ void buildtimedsound() {
         string nums = "1234567890-";
         string mx, mmx, my, mmy, soundtimer;
         form.create_window("timed sound", false);
-        int a = form.create_input_box("type the minimum &x of the sound area");
-        int b = form.create_input_box("type the maximum &x of the sound area");
-        int c = form.create_input_box("type the minimum &y of the sound area");
-        int d = form.create_input_box("type the maximum &y of the sound area");
+        int a = form.create_input_box("type the minimum &x of the sound area",lx);
+        int b = form.create_input_box("type the maximum &x of the sound area",rx);
+        int c = form.create_input_box("type the minimum &y of the sound area",bz);
+        int d = form.create_input_box("type the maximum &y of the sound area",tz);
         int e = form.create_input_box("how many milliseconds should be waited before next sound play");
         form.set_disallowed_chars(a, nums, true);
         form.set_disallowed_chars(b, nums, true);
@@ -111,14 +102,7 @@ void buildtimedsound() {
         string temp = "";
         int amb = yesno("would you like this source to work as an ambience?");
         if (amb == 1) temp = ":1";
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.y || my  > max.y ||
-            mmy < min.y || mmy > max.y)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
+
         send_reliable(peer_id, "addtimedsound timedsound:" + mx + ":" + mmx + ":0:0:" + my + ":" + mmy + ":" + soundtimer + ":" + volume + ":" + pitch + ":" + soundfile + ".ogg" + temp, 0);
     }
 }

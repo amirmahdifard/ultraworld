@@ -3,13 +3,13 @@ void buildzone() {
 						form.reset();
 						string nums = "1234567890-";
 						string mx, mmx, my, mmy, mz, mmz, t;
-						form.create_window("build zone", false);
-						int a = form.create_input_box("type the minimum &x of the zone");
-						int b = form.create_input_box("type the maximum &x of the zone");
-						int c = form.create_input_box("type the minimum &y of the zone");
-						int d = form.create_input_box("type the maximum &y of the zone");
-						int e = form.create_input_box("type the minimum &z of the zone");
-						int f = form.create_input_box("type the maximum &z of the zone");
+						form.create_window("zone", false);
+						int a = form.create_input_box("type the minimum &x of the zone",lx);
+						int b = form.create_input_box("type the maximum &x of the zone",rx);
+						int c = form.create_input_box("type the minimum &y of the zone",by);
+						int d = form.create_input_box("type the maximum &y of the zone",fy);
+						int e = form.create_input_box("type the minimum &z of the zone",bz);
+						int f = form.create_input_box("type the maximum &z of the zone",tz);
 						int g = form.create_input_box("type the &text of the zone", "", "", 0, false, false);
 						form.set_disallowed_chars(a, nums, true);
 						form.set_disallowed_chars(b, nums, true);
@@ -42,30 +42,20 @@ void buildzone() {
 							speak("canceled");
 							return;
 						}
-						string ha = "";
-						if (t != "") ha = ":" + t;
 						string extra = "";
 						int track = yesno("would you like this zone to be trackable via the zone tracker menu?");
 						if (track == 1) extra = ":trackme";
-						if (mx < min.x || mx > max.x ||
-							mmx < min.x || mmx > max.x ||
-							my < min.y || my > max.y ||
-							mmy < min.y || mmy > max.y ||
-							mz < min.z || mz > max.z ||
-							mmz < min.z || mmz > max.z) {
-							speak("error. Given coordinates are out of range");
-							return;
-						}
-						send_reliable(peer_id, "addzone zone:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + ha + extra, 0);
+
+						send_reliable(peer_id, "addzone zone:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + ":" + t + extra, 0);
 					} else {
 						form.reset();
 						string nums = "1234567890-";
 						string mx, mmx, my, mmy, t;
-						form.create_window("build zone", false);
-						int a = form.create_input_box("type the minimum &x of the zone");
-						int b = form.create_input_box("type the maximum &x of the zone");
-						int c = form.create_input_box("type the minimum &y of the zone");
-						int d = form.create_input_box("type the maximum &y of the zone");
+						form.create_window("zone", false);
+						int a = form.create_input_box("type the minimum &x of the zone",lx);
+						int b = form.create_input_box("type the maximum &x of the zone",rx);
+						int c = form.create_input_box("type the minimum &y of the zone",bz);
+						int d = form.create_input_box("type the maximum &y of the zone",tz);
 						int e = form.create_input_box("type the &text of the zone", "", "", 0, false, false);
 						form.set_disallowed_chars(a, nums, true);
 						form.set_disallowed_chars(b, nums, true);
@@ -94,18 +84,10 @@ void buildzone() {
 							speak("canceled");
 							return;
 						}
-						string ha = "";
-						if (t != "") ha = ":" + t;
 						string extra = "";
 						int track = yesno("would you like this zone to be trackable via the zone tracker menu?");
 						if (track == 1) extra = ":trackme";
-						if (mx < min.x || mx > max.x ||
-							mmx < min.x || mmx > max.x ||
-							my < min.y || my > max.y ||
-							mmy < min.y || mmy > max.y) {
-							speak("error. Given coordinates are out of range");
-							return;
-						}
-						send_reliable(peer_id, "addzone zone:" + mx + ":" + mmx + ":0:0:" + my + ":" + mmy + ha + extra, 0);
+
+						send_reliable(peer_id, "addzone zone:" + mx + ":" + mmx + ":0:0:" + my + ":" + mmy + ":" + t + extra, 0);
 					}
 }

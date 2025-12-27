@@ -4,12 +4,12 @@ void buildcalendar() {
         string nums = "1234567890-";
         string mx, mmx, my, mmy, mz, mmz, t;
         form.create_window("calendar", false);
-        int a = form.create_input_box("type the minimum &x of the calendar");
-        int b = form.create_input_box("type the maximum &x of the calendar");
-        int c = form.create_input_box("type the minimum &y of the calendar");
-        int d = form.create_input_box("type the maximum &y of the calendar");
-        int e = form.create_input_box("type the minimum &z of the calendar");
-        int f = form.create_input_box("type the maximum &z of the calendar");
+        int a = form.create_input_box("type the minimum &x of the calendar",lx);
+        int b = form.create_input_box("type the maximum &x of the calendar",rx);
+        int c = form.create_input_box("type the minimum &y of the calendar",by);
+        int d = form.create_input_box("type the maximum &y of the calendar",fy);
+        int e = form.create_input_box("type the minimum &z of the calendar",bz);
+        int f = form.create_input_box("type the maximum &z of the calendar",tz);
         int g = form.create_input_box("type the &text shown before date checking (optional)", "", "", 0, false, false);
         form.set_disallowed_chars(a, nums, true);
         form.set_disallowed_chars(b, nums, true);
@@ -38,33 +38,22 @@ void buildcalendar() {
                 return;
             }
         }
-        if (mx == "" || mmx == "" || my == "" || mmy == "" || mz == "" || mmz == "") {
+        if (mx == "" || mmx == "" || my == "" || mmy == "" || mz == "" || mmz == "" || t == "") {
             speak("canceled");
             return;
         }
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.y || my  > max.y ||
-            mmy < min.y || mmy > max.y ||
-            mz  < min.z || mz  > max.z ||
-            mmz < min.z || mmz > max.z)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
-        string ha = "";
-        if (t != "") ha = ":" + t;
-        send_reliable(peer_id, "addcalendar calendar:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + ha, 0);
+
+        send_reliable(peer_id, "addcalendar calendar:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + ":" + t, 0);
     }
     else {
         form.reset();
         string nums = "1234567890-";
         string mx, mmx, my, mmy, t;
         form.create_window("calendar", false);
-        int a = form.create_input_box("type the minimum &x of the calendar");
-        int b = form.create_input_box("type the maximum &x of the calendar");
-        int c = form.create_input_box("type the minimum &y of the calendar");
-        int d = form.create_input_box("type the maximum &y of the calendar");
+        int a = form.create_input_box("type the minimum &x of the calendar",lx);
+        int b = form.create_input_box("type the maximum &x of the calendar",rx);
+        int c = form.create_input_box("type the minimum &y of the calendar",bz);
+        int d = form.create_input_box("type the maximum &y of the calendar",tz);
         int e = form.create_input_box("type the &text shown before date checking (optional)", "", "", 0, false, false);
         form.set_disallowed_chars(a, nums, true);
         form.set_disallowed_chars(b, nums, true);
@@ -89,20 +78,11 @@ void buildcalendar() {
                 return;
             }
         }
-        if (mx == "" || mmx == "" || my == "" || mmy == "") {
+        if (mx == "" || mmx == "" || my == "" || mmy == "" || t == "") {
             speak("canceled");
             return;
         }
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.y || my  > max.y ||
-            mmy < min.y || mmy > max.y)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
-        string ha = "";
-        if (t != "") ha = ":" + t;
-        send_reliable(peer_id, "addcalendar calendar:" + mx + ":" + mmx + ":0:0:" + my + ":" + mmy + ha, 0);
+
+        send_reliable(peer_id, "addcalendar calendar:" + mx + ":" + mmx + ":0:0:" + my + ":" + mmy + ":" + t, 0);
     }
 }

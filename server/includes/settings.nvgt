@@ -1,0 +1,111 @@
+void loaddata() {
+	sd.load();
+	if (sd.d.exists("file_size_limit_kb"))
+		file_size_limit_kb = sd.readn("file_size_limit_kb");
+	if (sd.d.exists("can_upload_files"))
+		can_upload_files = sd.readn("can_upload_files");
+	if (sd.d.exists("gamewindow"))
+		gamewindow = sd.readn("gamewindow");
+	if (sd.d.exists("runbyadmin"))
+		runbyadmin = sd.readn("runbyadmin");
+	if (sd.d.exists("doublexp"))
+		doublexp = sd.readn("doublexp");
+	if (sd.d.exists("superxp"))
+		superxp = sd.readn("superxp");
+	if (sd.d.exists("megaxp"))
+		megaxp = sd.readn("megaxp");
+	if (sd.d.exists("gigaxp"))
+		gigaxp = sd.readn("gigaxp");
+	if (sd.d.exists("masterxp"))
+		masterxp = sd.readn("masterxp");
+	if (sd.d.exists("peak"))
+		peak = sd.readn("peak");
+	if (sd.d.exists("chatting"))
+		chatting = sd.readn("chatting");
+	if (sd.d.exists("activations"))
+		activations = sd.readn("activations");
+	if (sd.d.exists("peakreached"))
+		peakreached = sd.read("peakreached");
+	if (sd.d.exists("servermoney"))
+		servermoney = sd.readn("servermoney");
+	if (sd.d.exists("voteyes"))
+		voteyes = sd.readn("voteyes");
+	if (sd.d.exists("voteno"))
+		voteno = sd.readn("voteno");
+	if (sd.d.exists("record_uptime"))
+		record_uptime = sd.readn("record_uptime");
+	if (sd.d.exists("accumulated_uptimer"))
+		accumulated_uptimer.force(sd.readn("accumulated_uptimer"));
+	//if(sd.d.exists("meteoritespawntimer"))
+	//meteoritespawntimer.force(sd.readn("meteoritespawntimer"));
+	/*if (sd.d.exists("auctiontimer"))
+		auctiontimer.force(sd.readn("auctiontimer"));
+	if (sd.d.exists("auctiontime"))
+		auctiontime = sd.readn("auctiontime");
+	if (sd.d.exists("auctionamount"))
+		auctionamount = sd.readn("auctionamount");
+	if (sd.d.exists("auctionbid"))
+		auctionbid = sd.readn("auctionbid");
+	if (sd.d.exists("auctionwho"))
+		auctionwho = sd.read("auctionwho");
+	if (sd.d.exists("auctionwho2"))
+		auctionwho2 = sd.read("auctionwho2");
+	if (sd.d.exists("auctionitem"))
+		auctionitem = sd.read("auctionitem");
+	if (sd.d.exists("auctioncurrency"))
+		auctioncurrency = sd.read("auctioncurrency");*/
+	if (sd.d.exists("missiletime"))
+		missiletime = sd.readn("missiletime");
+	if (sd.d.exists("missilemax"))
+		missilemax = sd.readn("missilemax");
+}
+void writedata(string fv = "", int fvv = -55555) {
+	file f;
+	sd.d.delete_all();
+	sd.add("activations", activations);
+	sd.add("file_size_limit_kb", file_size_limit_kb);
+	sd.add("can_upload_files", can_upload_files);
+	sd.add("gamewindow", gamewindow);
+	sd.add("runbyadmin", runbyadmin);
+	sd.add("doublexp", doublexp);
+	sd.add("superxp", superxp);
+	sd.add("megaxp", megaxp);
+	sd.add("gigaxp", gigaxp);
+	sd.add("masterxp", masterxp);
+	sd.add("accumulated_uptimer", accumulated_uptimer.elapsed);
+	//sd.add("meteoritespawntimer",meteoritespawntimer.elapsed);
+	/*sd.add("auctiontimer", auctiontimer.elapsed);
+	sd.add("auctiontime", auctiontime);
+	sd.add("auctionamount", auctionamount);
+	sd.add("auctionbid", auctionbid);
+	sd.add("auctionwho", auctionwho);
+	sd.add("auctionwho2", auctionwho2);
+	sd.add("auctionitem", auctionitem);
+	sd.add("auctioncurrency", auctioncurrency);*/
+	sd.add("peak", peak);
+	sd.add("peakreached", peakreached);
+	sd.add("voteyes", voteyes);
+	sd.add("voteno", voteno);
+	if (uptimer.elapsed > record_uptime) record_uptime = uptimer.elapsed;
+	sd.add("record_uptime", record_uptime);
+	sd.add("servermoney", servermoney);
+	sd.add("chatting", chatting);
+	sd.add("missiletime", missiletime);
+	sd.add("missilemax", missilemax);
+	if (fv != "" and fvv != -55555)
+		sd.add(fv, fvv);
+	file_put("admin_log.svr", adminlog, 250);
+	string bandata;
+	bandata = serialize(compjails);
+	bandata = string_encrypt(bandata, "charbhoom");
+	f.open("jaildata.dat", "wb");
+	f.write(bandata);
+	f.close();
+	bandata = serialize(ipjails);
+	bandata = string_encrypt(bandata, "charbhoom");
+	f.open("jaildata2.dat", "wb");
+	f.write(bandata);
+	f.close();
+	save_xp_schedule();
+	sd.save();
+}

@@ -1,0 +1,96 @@
+void team_menu() {
+	audio_form f;
+	f.create_window("Team menu", false);
+	int list = f.create_list("Actions");
+	f.add_list_item(list, "Check the stats of your team", "stats");
+		f.add_list_item(list, "Check the members of your team", "members");
+	f.add_list_item(list, "Join a team", "join");
+	f.add_list_item(list, "Accept a team invitation", "yes");
+	f.add_list_item(list, "Decline a team invitation", "no");
+	f.add_list_item(list, "View all teams", "all");
+	f.add_list_item(list, "Leave the team", "leave");
+	f.add_list_item(list, "Delete your team", "cancel");
+	f.add_list_item(list, "Get team password", "password");
+	f.add_list_item(list, "Change team password", "change_password");
+	f.add_list_item(list, "Promote a player to leader", "new_leader");
+	f.add_list_item(list, "Kick a player from the team", "kick");
+	f.add_list_item(list, "Promote a player to the moderator position", "mod");
+	f.add_list_item(list, "Demote a player from the moderator position", "demote");
+	f.add_list_item(list, "Invite a player to the team", "invite");
+	int ok_button = f.create_button("&OK", true);
+	int close_button = f.create_button("&Close", false, true);
+	f.focus(list);
+	while(true) {
+		f.monitor();
+		wait(5);
+		mainloop();
+		if (f.is_pressed(ok_button)) {
+			int selected_index = f.get_list_position(list);
+			if (selected_index == -1) continue;
+			string selected_value = f.get_list_item_id(list, selected_index);
+			if (selected_value == "stats") {
+				send_reliable(peer_id, "/teamkills", 1);
+				send_reliable(peer_id, "/teampoints", 1);
+			} else if (selected_value == "join") {
+				string name = input("Team ID", "Type the team ID");
+				string pw = input("Team password", "Type the team password");
+				if (name != "" and pw != "") {
+					send_reliable(peer_id, "/jointeam " + name + " " + pw, 1);
+				} else {
+					speak("Canceled");
+				}
+			} else if (selected_value == "yes") {
+				send_reliable(peer_id, "/ati", 1);
+			} else if (selected_value == "no") {
+				send_reliable(peer_id, "/rti", 1);
+			}
+						else if (selected_value == "members") {
+						send_reliable(peer_id,"/teammembers",1);
+						}
+			else if (selected_value == "all") {
+				send_reliable(peer_id, "/teams", 1);
+				break;
+			} else if (selected_value == "leave") {
+				send_reliable(peer_id, "/teamleave", 1);
+			} else if (selected_value == "cancel") {
+				send_reliable(peer_id, "/teamcancel", 1);
+			} else if (selected_value == "password") {
+				send_reliable(peer_id, "/getteampass", 1);
+			} else if (selected_value == "change_password") {
+				string newpass = input("New password", "Enter your new team password", disallowed_chars=" ");
+				if (newpass != "") {
+					send_reliable(peer_id, "/changeteampass " + newpass, 1);
+				}
+			} else if (selected_value == "new_leader") {
+				string a = input("New team leader", "Enter the player name to promote to the leader position", disallowed_chars=" ");
+				if (a != "") {
+					send_reliable(peer_id, "/changeteamleader " + a, 1);
+				}
+			} else if (selected_value == "kick") {
+				string r = input("Input", "Enter the player name to remove from the team", disallowed_chars=" ");
+				if (r != "") {
+					send_reliable(peer_id, "/teamkick " + r, 1);
+				}
+			} else if (selected_value == "mod") {
+				string n = input("Team moderator", "Enter the player name to promote to the moderator position", disallowed_chars=" ");
+				if (n != "") {
+					send_reliable(peer_id, "/atmod " + n, 1);
+				}
+			} else if (selected_value == "demote") {
+				string name = input("Player name", "Enter the player name to remove from the moderators list", disallowed_chars=" ");
+				if (name != "") {
+					send_reliable(peer_id, "/rtmod " + name, 1);
+				}
+			} else if (selected_value == "invite") {
+				string b = input("Input", "Enter the player name to invite", disallowed_chars=" ");
+				if (b != "") {
+					send_reliable(peer_id, "/tinvite " + b, 1);
+				}
+			}
+		}
+		if (f.is_pressed(close_button)) {
+			speak("Closed");
+			break;
+		}
+	}
+}

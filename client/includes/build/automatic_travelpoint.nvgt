@@ -4,12 +4,12 @@ void buildautomatic_travelpoint() {
         string nums = "1234567890-";
         string mx, mmx, my, mmy, mz, mmz, map, fx, fy, fz, text;
         form.create_window("automatic travelpoint", false);
-        int a = form.create_input_box("type the minimum &x of the travelpoint area");
-        int b = form.create_input_box("type the maximum &x of the travelpoint area");
-        int c = form.create_input_box("type the minimum &y of the travelpoint area");
-        int d = form.create_input_box("type the maximum &y of the travelpoint area");
-        int e = form.create_input_box("type the minimum &z of the travelpoint area");
-        int f = form.create_input_box("type the maximum &z of the travelpoint area");
+        int a = form.create_input_box("type the minimum &x of the travelpoint area",lx);
+        int b = form.create_input_box("type the maximum &x of the travelpoint area",rx);
+        int c = form.create_input_box("type the minimum &y of the travelpoint area",by);
+        int d = form.create_input_box("type the maximum &y of the travelpoint area",fy);
+        int e = form.create_input_box("type the minimum &z of the travelpoint area",bz);
+        int f = form.create_input_box("type the maximum &z of the travelpoint area",tz);
         int g = form.create_input_box("enter the &map destination", "", "", 0, false, false);
         int h = form.create_input_box("enter the destination &x");
         int i = form.create_input_box("enter the destination &y");
@@ -60,17 +60,6 @@ void buildautomatic_travelpoint() {
         string ds2 = list_ds3s(); if (ds2 == "") return;
         string ds3 = list_ds4s(); if (ds3 == "") return;
 
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.y || my  > max.y ||
-            mmy < min.y || mmy > max.y ||
-            mz  < min.z || mz  > max.z ||
-            mmz < min.z || mmz > max.z)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
-
         send_reliable(peer_id, "addautomatic_travelpoint automatic_travelpoint:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + ":" + map + ":" + fx + ":" + fy + ":" + fz + ":" + text + ":" + ds1 + ".ogg:" + ds2 + ".ogg:" + ds3 + ".ogg", 0);
     }
     else {
@@ -78,10 +67,10 @@ void buildautomatic_travelpoint() {
         string nums = "1234567890-";
         string mx, mmx, my, mmy, map, fx, fy, text;
         form.create_window("automatic travelpoint", false);
-        int a = form.create_input_box("type the minimum &x of the travelpoint area");
-        int b = form.create_input_box("type the maximum &x of the travelpoint area");
-        int c = form.create_input_box("type the minimum &y of the travelpoint area");
-        int d = form.create_input_box("type the maximum &y of the travelpoint area");
+        int a = form.create_input_box("type the minimum &x of the travelpoint area",lx);
+        int b = form.create_input_box("type the maximum &x of the travelpoint area",rx);
+        int c = form.create_input_box("type the minimum &y of the travelpoint area",bz);
+        int d = form.create_input_box("type the maximum &y of the travelpoint area",tz);
         int e = form.create_input_box("enter the &map destination", "", "", 0, false, false);
         int f = form.create_input_box("enter the destination &x");
         int g = form.create_input_box("enter the destination &y");
@@ -124,15 +113,6 @@ void buildautomatic_travelpoint() {
         string ds1 = list_ds1s(); if (ds1 == "") return;
         string ds2 = list_ds3s(); if (ds2 == "") return;
         string ds3 = list_ds4s(); if (ds3 == "") return;
-
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.z || my  > max.z ||
-            mmy < min.z || mmy > max.z)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
 
         send_reliable(peer_id, "addautomatic_travelpoint automatic_travelpoint:" + mx + ":" + mmx + ":0:0:" + my + ":" + mmy + ":" + map + ":" + fx + ":0:" + fy + ":" + text + ":" + ds1 + ".ogg:" + ds2 + ".ogg:" + ds3 + ".ogg", 0);
     }

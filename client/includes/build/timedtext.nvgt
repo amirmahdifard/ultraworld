@@ -4,14 +4,14 @@ void buildtimedtext() {
         string nums = "1234567890-";
         string mx, mmx, my, mmy, mz, mmz, texttimer, t;
         form.create_window("timed text", false);
-        int a = form.create_input_box("type the minimum &x of the timed text area");
-        int b = form.create_input_box("type the maximum &x of the timed text area");
-        int c = form.create_input_box("type the minimum &y of the timed text area");
-        int d = form.create_input_box("type the maximum &y of the timed text area");
-        int e = form.create_input_box("type the minimum &z of the timed text area");
-        int f = form.create_input_box("type the maximum &z of the timed text area");
+        int a = form.create_input_box("type the minimum &x of the timed text area",lx);
+        int b = form.create_input_box("type the maximum &x of the timed text area",rx);
+        int c = form.create_input_box("type the minimum &y of the timed text area",by);
+        int d = form.create_input_box("type the maximum &y of the timed text area",fy);
+        int e = form.create_input_box("type the minimum &z of the timed text area",bz);
+        int f = form.create_input_box("type the maximum &z of the timed text area",tz);
         int g = form.create_input_box("how many milliseconds should be waited before next speak");
-        int h = form.create_input_box("type the &text (optional)", "", "", 0, false, false);
+        int h = form.create_input_box("type the &text", "", "", 0, false, false);
         form.set_disallowed_chars(a, nums, true);
         form.set_disallowed_chars(b, nums, true);
         form.set_disallowed_chars(c, nums, true);
@@ -41,35 +41,24 @@ void buildtimedtext() {
                 return;
             }
         }
-        if (mx == "" || mmx == "" || my == "" || mmy == "" || mz == "" || mmz == "" || texttimer == "") {
+        if (mx == "" || mmx == "" || my == "" || mmy == "" || mz == "" || mmz == "" || texttimer == "" || t == "") {
             speak("canceled");
             return;
         }
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.y || my  > max.y ||
-            mmy < min.y || mmy > max.y ||
-            mz  < min.z || mz  > max.z ||
-            mmz < min.z || mmz > max.z)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
-        string ha = "";
-        if (t != "") ha = ":" + t;
-        send_reliable(peer_id, "addtimedtext timedtext:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + ":" + texttimer + ha, 0);
+
+        send_reliable(peer_id, "addtimedtext timedtext:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + ":" + texttimer + ":" + t, 0);
     }
     else {
         form.reset();
         string nums = "1234567890-";
         string mx, mmx, my, mmy, texttimer, t;
         form.create_window("timed text", false);
-        int a = form.create_input_box("type the minimum &x of the timed text area");
-        int b = form.create_input_box("type the maximum &x of the timed text area");
-        int c = form.create_input_box("type the minimum &y of the timed text area");
-        int d = form.create_input_box("type the maximum &y of the timed text area");
+        int a = form.create_input_box("type the minimum &x of the timed text area",lx);
+        int b = form.create_input_box("type the maximum &x of the timed text area",rx);
+        int c = form.create_input_box("type the minimum &y of the timed text area",bz);
+        int d = form.create_input_box("type the maximum &y of the timed text area",tz);
         int e = form.create_input_box("how many milliseconds should be waited before next speak");
-        int f = form.create_input_box("type the &text (optional)", "", "", 0, false, false);
+        int f = form.create_input_box("type the &text", "", "", 0, false, false);
         form.set_disallowed_chars(a, nums, true);
         form.set_disallowed_chars(b, nums, true);
         form.set_disallowed_chars(c, nums, true);
@@ -95,20 +84,11 @@ void buildtimedtext() {
                 return;
             }
         }
-        if (mx == "" || mmx == "" || my == "" || mmy == "" || texttimer == "") {
+        if (mx == "" || mmx == "" || my == "" || mmy == "" || texttimer == "" || t == "") {
             speak("canceled");
             return;
         }
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.y || my  > max.y ||
-            mmy < min.y || mmy > max.y)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
-        string ha = "";
-        if (t != "") ha = ":" + t;
-        send_reliable(peer_id, "addtimedtext timedtext:" + mx + ":" + mmx + ":0:0:" + my + ":" + mmy + ":" + texttimer + ha, 0);
+
+        send_reliable(peer_id, "addtimedtext timedtext:" + mx + ":" + mmx + ":0:0:" + my + ":" + mmy + ":" + texttimer + ":" + t, 0);
     }
 }

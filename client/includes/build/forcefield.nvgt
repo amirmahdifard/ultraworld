@@ -4,12 +4,12 @@ void buildforcefield() {
         string nums = "1234567890-";
         string mx, mmx, my, mmy, mz, mmz, forcefieldtime, forcefieldhealth;
         form.create_window("forcefield", false);
-        int a = form.create_input_box("type the minimum &x of the forcefield area");
-        int b = form.create_input_box("type the maximum &x of the forcefield area");
-        int c = form.create_input_box("type the minimum &y of the forcefield area");
-        int d = form.create_input_box("type the maximum &y of the forcefield area");
-        int e = form.create_input_box("type the minimum &z of the forcefield area");
-        int f = form.create_input_box("type the maximum &z of the forcefield area");
+        int a = form.create_input_box("type the minimum &x of the forcefield area",lx);
+        int b = form.create_input_box("type the maximum &x of the forcefield area",rx);
+        int c = form.create_input_box("type the minimum &y of the forcefield area",by);
+        int d = form.create_input_box("type the maximum &y of the forcefield area",fy);
+        int e = form.create_input_box("type the minimum &z of the forcefield area",bz);
+        int f = form.create_input_box("type the maximum &z of the forcefield area",tz);
         int g = form.create_input_box("how many milliseconds should be waited before next forcefield appearance");
         int h = form.create_input_box("how much health should it take per each damage");
         form.set_disallowed_chars(a, nums, true);
@@ -55,17 +55,6 @@ void buildforcefield() {
         string forcefieldhitsound = list_forcefieldhitsounds();
         if (forcefieldhitsound == "") return;
 
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.y || my  > max.y ||
-            mmy < min.y || mmy > max.y ||
-            mz  < min.z || mz  > max.z ||
-            mmz < min.z || mmz > max.z)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
-
         send_reliable(peer_id, "addforcefield forcefield:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + ":" + forcefieldtime + ":" + forcefieldhealth + ":" + forcefieldsound + ".ogg:" + forcefieldhitsound + ".ogg", 0);
     }
     else {
@@ -73,10 +62,10 @@ void buildforcefield() {
         string nums = "1234567890-";
         string mx, mmx, my, mmy, forcefieldtime, forcefieldhealth;
         form.create_window("forcefield", false);
-        int a = form.create_input_box("type the minimum &x of the forcefield area");
-        int b = form.create_input_box("type the maximum &x of the forcefield area");
-        int c = form.create_input_box("type the minimum &y of the forcefield area");
-        int d = form.create_input_box("type the maximum &y of the forcefield area");
+        int a = form.create_input_box("type the minimum &x of the forcefield area",lx);
+        int b = form.create_input_box("type the maximum &x of the forcefield area",rx);
+        int c = form.create_input_box("type the minimum &y of the forcefield area",bz);
+        int d = form.create_input_box("type the maximum &y of the forcefield area",tz);
         int e = form.create_input_box("how many milliseconds should be waited before next forcefield appearance");
         int f = form.create_input_box("how much health should it take per each damage");
         form.set_disallowed_chars(a, nums, true);
@@ -117,15 +106,6 @@ void buildforcefield() {
 
         string forcefieldhitsound = list_forcefieldhitsounds();
         if (forcefieldhitsound == "") return;
-
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.y || my  > max.y ||
-            mmy < min.y || mmy > max.y)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
 
         send_reliable(peer_id, "addforcefield forcefield:" + mx + ":" + mmx + ":0:0:" + my + ":" + mmy + ":" + forcefieldtime + ":" + forcefieldhealth + ":" + forcefieldsound + ".ogg:" + forcefieldhitsound + ".ogg", 0);
     }

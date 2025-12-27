@@ -549,6 +549,8 @@ void cameramove(string dir) {
 		double ox = camera.x;
 		double oy = camera.y;
 		camera = move(camera.x, camera.y, camera.z, facing, north);
+		camera.x = round(camera.x, 0);
+		camera.y = round(camera.y, 0);
 		if (round(camera.x, 0)<min.x or round(camera.x, 0)>max.x or round(camera.y, 0)<min.y or round(camera.y, 0)>max.y) {
 			camera.x = ox;
 			camera.y = oy;
@@ -567,6 +569,8 @@ void cameramove(string dir) {
 		double ox = camera.x;
 		double oy = camera.y;
 		camera = move(camera.x, camera.y, camera.z, facing, south);
+		camera.x = round(camera.x, 0);
+		camera.y = round(camera.y, 0);
 		if (round(camera.x, 0)<min.x or round(camera.x, 0)>max.x or round(camera.y, 0)<min.y or round(camera.y, 0)>max.y) {
 			camera.x = ox;
 			camera.y = oy;
@@ -585,6 +589,8 @@ void cameramove(string dir) {
 		double ox = camera.x;
 		double oy = camera.y;
 		camera = move(camera.x, camera.y, camera.z, facing, west);
+		camera.x = round(camera.x, 0);
+		camera.y = round(camera.y, 0);
 		if (round(camera.x, 0)<min.x or round(camera.x, 0)>max.x or round(camera.y, 0)<min.y or round(camera.y, 0)>max.y) {
 			camera.x = ox;
 			camera.y = oy;
@@ -603,6 +609,8 @@ void cameramove(string dir) {
 		double ox = camera.x;
 		double oy = camera.y;
 		camera = move(camera.x, camera.y, camera.z, facing, east);
+		camera.x = round(camera.x, 0);
+		camera.y = round(camera.y, 0);
 		if (round(camera.x, 0)<min.x or round(camera.x, 0)>max.x or round(camera.y, 0)<min.y or round(camera.y, 0)>max.y) {
 			camera.x = ox;
 			camera.y = oy;

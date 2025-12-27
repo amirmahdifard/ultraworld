@@ -13,6 +13,11 @@ void scpmenu() {
 		c.add("Player Offense Repercussion Management System", "porms");
 		c.add("Item Description", "idesc");
 	}
+	if (admin) {
+		c.add("Foods and drinks", "fads");
+		c.add("Draw sounds", "draws");
+		c.add("item usage limit", "iulimit");
+	}
 	if (manager) {
 		c.add("Promote a new staff", "newstaff");
 		c.add("Demote a staff", "delstaff");
@@ -63,6 +68,15 @@ void scpmenu() {
 			break;
 		} else if (r == "idesc") {
 			send_reliable(peer_id, "buildobj desc_menu", 0);
+			break;
+		} else if (r == "fads") {
+			send_reliable(peer_id, "buildobj fad", 0);
+			break;
+		} else if (r == "draws") {
+			send_reliable(peer_id, "buildobj drawsounds", 0);
+			break;
+		} else if (r == "iulimit") {
+			send_reliable(peer_id, "buildobj itemusagelimit", 0);
 			break;
 		} else if (r == "check") {
 			scp::actions::misc::check();

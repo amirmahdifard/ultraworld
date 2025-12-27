@@ -1,6 +1,8 @@
 // Include files.
 // Getting tile.
 #include "includes/gettile.nvgt"
+#include "includes/netloop.nvgt"
+#include "includes/settings.nvgt"
 #include "bgt_compat.nvgt" // For BGT code compatibility.
 #include "includes/netfunct.nvgt"
 #include "includes/json.nvgt"
@@ -24,6 +26,7 @@
 #include"includes/char_data.nvgt"
 #include"includes/char_spam.nvgt"
 #include"includes/changelog_viewer.nvgt"
+#include"includes/xp_system.nvgt"
 #include"includes/clock.nvgt"
 #include"includes/combine.nvgt"
 #include"includes/commands.nvgt"
@@ -57,6 +60,7 @@
 #include"includes/locker.nvgt"
 #include"includes/log.nvgt"
 #include "includes/logfuncts.nvgt"
+#include "includes/admin_tools.nvgt"
 #include"includes/map.nvgt"
 #include"includes/map_spam.nvgt"
 #include"includes/meteorite.nvgt"

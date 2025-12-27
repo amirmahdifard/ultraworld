@@ -1,6 +1,10 @@
 void command(player@p, string command) {
 	string[] parsed = string_split(command, " ", true);
 	if (parsed[0] == "/suicide") {
+		if (p.pvp == 1) {
+			send_reliable(p, "you can't suicide while you are pvp", 2);
+			return;
+		}
 		for (uint i = 0; i < weapons.length(); i++) {
 			int rx = round(weapons[i].x, 0);
 			int ry = round(weapons[i].y, 0);
@@ -29,6 +33,7 @@ void command(player@p, string command) {
 			}
 			bsend(0, "maps", "", p.nickname + " has just committed suicide on " + p.map + " after being there for " + ms_to_readable_time(p.finishtasktimer.elapsed) + "", name = p.name);
 			move_player(p, "main_map", 5, 0, 0, true);
+			p.finishing_task = false;
 			p.finishtasktimer.force(0);
 			p.finishtasktimer.pause();
 		}
@@ -65,19 +70,59 @@ void command(player@p, string command) {
 		i.multiline = 1;
 		i.send(p.peer_id);
 		return;
-	} else if (parsed[0] == "/xpstatus") {
-		if (doublexp == 1)
-			send_reliable(p, "Double xp is enabled", 2);
-		else if (superxp == 1)
-			send_reliable(p, "Super xp is enabled", 2);
-		else if (megaxp == 1)
-			send_reliable(p, "mega xp is enabled", 2);
-		else if (gigaxp == 1)
-			send_reliable(p, "giga xp is enabled", 2);
-		else if (masterxp == 1)
-			send_reliable(p, "master xp is enabled", 2);
-		else
-			send_reliable(p, "special xp is not enabled", 2);
+	} else if (parsed[0] == "/xp") {
+		if (parsed.length() == 1 || parsed[1] == "status") {
+			p.sendpacket(get_xp_status_message(), 2);
+		} else if (p.is_dev() || p.is_manager() || p.is_admin()) {
+			string arg = string_to_lower_case(parsed[1]);
+			if (arg == "start") {
+				auto_xp = true;
+				override_mode = 0;
+				override_time_left = 0;
+				save_xp_schedule();
+				check_auto_xp();
+				p.sendpacket("Auto XP System ENABLED.", 2);
+				admintell(p.name + " ENABLED Auto XP System.");
+				send_reliable(0, "play_s notify_news2.ogg", 6);
+				send_reliable(0, "Auto XP Schedule is now ENABLED!", 2);
+			} else if (arg == "stop") {
+				auto_xp = false;
+				save_xp_schedule();
+				check_auto_xp();
+				p.sendpacket("Auto XP System DISABLED.", 2);
+				admintell(p.name + " DISABLED Auto XP System.");
+				send_reliable(0, "play_s notify_news2.ogg", 6);
+				send_reliable(0, "Auto XP Schedule is now DISABLED!", 2);
+			} else if (arg == "edit") {
+				cmenupage m;
+				m.intro = "Select a day to edit schedule:";
+				m.initial_packet = "xp_edit_day";
+				for(int i=0; i<7; i++) {
+					m.add(get_day_name(i) + ": " + get_xp_name(xp_schedule[i]), "" + i);
+				}
+				m.send(p.peer_id);
+			} else if (arg == "off" || arg == "cancel") {
+				start_xp_event(0, "", p.name);
+			} else {
+				int mode = -1;
+				if (arg == "double") mode = 1;
+				else if (arg == "super") mode = 2;
+				else if (arg == "mega") mode = 3;
+				else if (arg == "giga") mode = 4;
+				else if (arg == "master") mode = 5;
+				else if (arg == "normal") mode = 0;
+				
+				if (mode > -1) {
+					string duration = (parsed.length() > 2 ? parsed[2] : "");
+					start_xp_event(mode, duration, p.name);
+				} else {
+					p.sendpacket("Usage: /xp <mode|start|stop|edit> [duration]", 0);
+					p.sendpacket("Modes: double, super, mega, giga, master, normal", 0);
+				}
+			}
+		} else {
+			p.sendpacket(get_xp_status_message(), 2);
+		}
 	} else if (parsed[0] == "/xppotion") {
 		if (p.xppotion == 1)
 			send_reliable(p, "xp potion remaining time: " + ms_to_readable_time(p.xppotiontime - p.xppotiontimer.elapsed) + "", 2);
@@ -366,19 +411,54 @@ void command(player@p, string command) {
 	} else if (parsed[0] == "/t" and parsed.length() > 1) {
 		teamchat(p, string_trim_left(get_event_message(), 3));
 		return;
-	} else if (parsed[0] == "/teams") {
-		string mess;
-		team@[] ts = find_best_teams();
-		mess += "There are " + ts.length() + " teams:\n";
-		foreach (team@ l: ts)
-			mess += l.id + " (known as " + l.teamname + ") with " + (l.players.length()) + " members, " + l.teamkills + " kills, and " + l.points + " points, leader " + cn2n(l.teamleader) + ".\n";
-		send_reliable(p, "clip " + mess, 0);
-		p.sendpacket("Teams list copied to clipboard", 0);
+	} else if(parsed[0] == "/teams"){
+team@[] ts = find_best_teams();
+if (ts.length() < 1) {
+send_reliable(p, "There are currently no teams", 0);
+return;
+}
+cmenupage menu;
+menu.initial_packet = "teams";
+menu.intro = "There are " + ts.length() + " teams";
+menu.maxitem = 500;
+for(uint i = 0; i < ts.length(); i++){
+team@ t = ts[i];
+string item = t.id + " (known as " + t.teamname + ") with " + (t.players.length()) + " members, " + t.teamkills + " kills, and " + t.points + " points, leader is " + cn2n(t.teamleader);
+menu.add(item, "");
+}
+menu.send(p.peer_id);
 	} else if (parsed[0] == "/teammembers") {
 		int ist = is_in_team(p.name);
-		if (ist > -1)
-			send_reliable(p, teams[ist].list_members(), 2);
-		else {
+		if (ist > -1) {
+			team@ t = teams[ist];
+			cmenupage menu;
+			menu.initial_packet = "teammembers";
+			teamplayer@[] onps = t.online_players;
+			teamplayer@[] offps = t.offline_players;
+			menu.intro = "There are " + t.players.length() + " members in total: " + onps.length() + " online and " + offps.length() + " offline.";
+			menu.maxitem = 500;
+			menu.add("Online Members", "");
+			for(uint i = 0; i < onps.length(); i++){
+				teamplayer@ tp = onps[i];
+				string item = tp.name + " (online)";
+				if (tp.type == "owner") item += " - owner";
+				else if (tp.type == "mod") item += " - moderator";
+				menu.add(item, "");
+			}
+			if (offps.length() < 1) {
+				menu.add("there are currently no offline members.", "");
+			} else {
+				menu.add("Offline Members", "");
+				for (uint i = 0; i < offps.length(); i++) {
+					teamplayer@ tp = offps[i];
+					string item = tp.name + " (offline)";
+					if (tp.type == "owner") item += " - owner";
+					else if (tp.type == "mod") item += " - moderator";
+					menu.add(item, "");
+				}
+			}
+			menu.send(p.peer_id);
+		} else {
 			send_reliable(p, "You are not in a team", 0);
 			return;
 		}
@@ -1374,66 +1454,7 @@ void command(player@p, string command) {
 	} else if (parsed[0] == "/datasave" and p.is_manager()) {
 		svd::save();
 		send_reliable(e.peer_id, "data saved", 2);
-	} else if (parsed[0] == "/doublexp" and p.is_admin()) {
-		if (doublexp == 1 and runbyadmin == 1) {
-			doublexp = 0;
-			send_reliable(0, "play_s notify_news2.ogg", 6);
-			send_reliable(0, "double xp disabled by " + p.name + "!", 2);
-			runbyadmin = 0;
-		} else if (doublexp == 0 and runbyadmin == 0) {
-			doublexp = 1;
-			send_reliable(0, "play_s notify_news2.ogg", 6);
-			send_reliable(0, "double xp enabled by " + p.name + "!", 2);
-			runbyadmin = 1;
-		}
-	} else if (parsed[0] == "/superxp" and p.is_admin()) {
-		if (superxp == 1 and runbyadmin == 1) {
-			superxp = 0;
-			send_reliable(0, "play_s notify_news2.ogg", 6);
-			send_reliable(0, "super xp disabled by " + p.name + "!", 2);
-			runbyadmin = 0;
-		} else if (superxp == 0 and runbyadmin == 0) {
-			superxp = 1;
-			send_reliable(0, "play_s notify_news2.ogg", 6);
-			send_reliable(0, "super xp enabled by " + p.name + "!", 2);
-			runbyadmin = 1;
-		}
-	} else if (parsed[0] == "/megaxp" and p.is_admin()) {
-		if (megaxp == 1 and runbyadmin == 1) {
-			megaxp = 0;
-			send_reliable(0, "play_s notify_news2.ogg", 6);
-			send_reliable(0, "mega xp disabled by " + p.name + "!", 2);
-			runbyadmin = 0;
-		} else if (megaxp == 0 and runbyadmin == 0) {
-			megaxp = 1;
-			send_reliable(0, "play_s notify_news2.ogg", 6);
-			send_reliable(0, "mega xp enabled by " + p.name + "!", 2);
-			runbyadmin = 1;
-		}
-	} else if (parsed[0] == "/gigaxp" and p.is_admin()) {
-		if (gigaxp == 1 and runbyadmin == 1) {
-			gigaxp = 0;
-			send_reliable(0, "play_s notify_news2.ogg", 6);
-			send_reliable(0, "giga xp disabled by " + p.name + "!", 2);
-			runbyadmin = 0;
-		} else if (gigaxp == 0 and runbyadmin == 0) {
-			gigaxp = 1;
-			send_reliable(0, "play_s notify_news2.ogg", 6);
-			send_reliable(0, "giga xp enabled by " + p.name + "!", 2);
-			runbyadmin = 1;
-		}
-	} else if (parsed[0] == "/masterxp" and p.is_manager()) {
-		if (masterxp == 1 and runbyadmin == 1) {
-			masterxp = 0;
-			send_reliable(0, "play_s notify_news2.ogg", 6);
-			send_reliable(0, "master xp disabled by " + p.name + "!", 2);
-			runbyadmin = 0;
-		} else if (masterxp == 0 and runbyadmin == 0) {
-			masterxp = 1;
-			send_reliable(0, "play_s notify_news2.ogg", 6);
-			send_reliable(0, "master xp enabled by " + p.name + "!", 2);
-			runbyadmin = 1;
-		}
+
 	} else if (parsed[0] == "/votelist" and p.is_admin()) {
 		double totalvotes = 0;
 		string[] chars = find_directories("chars/*");
@@ -1502,6 +1523,135 @@ void command(player@p, string command) {
 	} else if (parsed[0] == "/stopprofile" and p.dev == true) {
 		generate_profile("profile.log");
 		p.packet(file_get_contents("profile.log"));
+	} else if (parsed[0] == "/profile" and p.is_dev()) {
+		bool reset = false;
+		if (parsed.length() > 1 and parsed[1] == "reset") reset = true;
+		string prof = generate_profile(reset);
+		serverinput i;
+		i.title = "Server Profile Report";
+		i.text = "Generated Profile:";
+		i.default_text = prof;
+		i.button1 = "";
+		i.button2 = "&Close";
+		i.button2cancel = 1;
+		i.readonly = 1;
+		i.multiline = 1;
+		i.send(p.peer_id);
+		p.sendpacket("Server profile report generated and displayed.", 2);
+	} else if (parsed[0] == "/objs" and p.is_dev()) {
+		string r = "Object Counts:\n";
+		r += "Players: " + players.length() + "\n";
+		r += "AI: " + ais.length() + "\n";
+		r += "Maps: " + maps.length() + "\n";
+		r += "Houses: " + houses.length() + "\n";
+		r += "Apartments: " + apartments.length() + "\n";
+		r += "Tents: " + tents.length() + "\n";
+		r += "Player Stores: " + playerstores.length() + "\n";
+		r += "Weapons: " + weapons.length() + "\n";
+		r += "Objects (Items): " + objs.length() + "\n";
+		r += "Fires: " + fires.length() + "\n";
+		r += "Fire Starters: " + fire_starters.length() + "\n";
+		r += "Firemaps: " + firemaps.length() + "\n";
+		r += "Grenades: " + grenades.length() + "\n";
+		r += "Mines: " + mines.length() + "\n";
+		r += "Time Bombs: " + time_bombs.length() + "\n";
+		r += "Censor Bombs: " + censor_bombs.length() + "\n";
+		r += "RPGs: " + rpgs.length() + "\n";
+		r += "Rockets: " + rockets.length() + "\n";
+		r += "Washbasins: " + washbasins.length() + "\n";
+		r += "Showers: " + showers.length() + "\n";
+		r += "Lockers: " + lockers.length() + "\n";
+		r += "Fridges: " + fridges.length() + "\n";
+		r += "Vending Machines: " + vending_machines.length() + "\n";
+		r += "Microwaves: " + microwaves.length() + "\n";
+		r += "Robots: " + robots.length() + "\n";
+		r += "Bodyfalls: " + bodyfalls.length() + "\n";
+		r += "Item Carriers: " + item_cariers.length() + "\n";
+		r += "Snares: " + snares.length() + "\n";
+		r += "Canisters: " + canisters.length() + "\n";
+		r += "Time Items: " + timeitems.length() + "\n";
+		r += "Time Packets: " + timepackets.length() + "\n";
+		r += "Auto Healers: " + auto_healers.length() + "\n";
+		r += "Teams: " + teams.length() + "\n";
+		serverinput i;
+		i.title = "Object Counts";
+		i.text = "Count of dynamic objects:";
+		i.default_text = r;
+		i.button1 = "";
+		i.button2 = "&Close";
+		i.button2cancel = 1;
+		i.readonly = 1;
+		i.multiline = 1;
+		i.send(p.peer_id);
+	} else if (parsed[0] == "/clearobjs" and p.is_dev()) {
+		int count = 0;
+		for (uint i = 0; i < washbasins.length(); i++) {
+			if (get_map_index(washbasins[i].map) == -1) {
+				washbasins.remove_at(i);
+				i--;
+				count++;
+			}
+		}
+		for (uint i = 0; i < showers.length(); i++) {
+			if (get_map_index(showers[i].map) == -1) {
+				showers.remove_at(i);
+				i--;
+				count++;
+			}
+		}
+		for (uint i = 0; i < ovens.length(); i++) {
+			if (get_map_index(ovens[i].map) == -1) {
+				ovens.remove_at(i);
+				i--;
+				count++;
+			}
+		}
+		for (uint i = 0; i < toilets.length(); i++) {
+			if (get_map_index(toilets[i].map) == -1) {
+				toilets.remove_at(i);
+				i--;
+				count++;
+			}
+		}
+		for (uint i = 0; i < beds.length(); i++) {
+			if (get_map_index(beds[i].map) == -1) {
+				beds.remove_at(i);
+				i--;
+				count++;
+			}
+		}
+		for (uint i = 0; i < clocks.length(); i++) {
+			if (get_map_index(clocks[i].map) == -1) {
+				clocks.remove_at(i);
+				i--;
+				count++;
+			}
+		}
+		for (uint i = 0; i < ccalendars.length(); i++) {
+			if (get_map_index(ccalendars[i].map) == -1) {
+				ccalendars.remove_at(i);
+				i--;
+				count++;
+			}
+		}
+		for (uint i = 0; i < trashcans.length(); i++) {
+			if (get_map_index(trashcans[i].map) == -1) {
+				trashcans.remove_at(i);
+				i--;
+				count++;
+			}
+		}
+		for (uint i = 0; i < vending_machines.length(); i++) {
+			if (get_map_index(vending_machines[i].map) == -1) {
+				destroy_moving_sound(vending_machines[i].mid);
+				vending_machines.remove_at(i);
+				i--;
+				count++;
+			}
+		}
+		string msg = "Cleared " + count + " orphaned objects.";
+		send_reliable(p, msg, 0);
+		admintell(p.name + " cleared " + count + " orphaned objects.");
 	} else if (parsed[0] == "/adminlog" and p.is_admin()) {
 		if (adminlog == "") {
 			p.sendpacket("Nothing to display", 0);
@@ -1530,7 +1680,7 @@ void command(player@p, string command) {
 			return;
 		}
 		if (p.looking != "") {
-			send_reliable(p, "you can't do this while your looking at someone", 2);
+			send_reliable(p, "you can't do this while you're looking at someone", 2);
 			return;
 		}
 		if (p.pvp == 1) {
@@ -1589,6 +1739,8 @@ void command(player@p, string command) {
 			send_reliable(0, "the admin note has been updated to: " + string_replace(get_event_message(), "/addanote", "", true), 2);
 		} else
 			send_reliable(e.peer_id, "you must be at least a developer to use this command", 2);
+	} else if (parsed[0] == "/cleanmapowners" and p.is_admin()) {
+		remove_duplicate_map_owners(p);
 	} else if (parsed[0] == "/getmyinv") {
 		string message = string_encrypt(p.get_inv(), "asdf$(_*~$~*$!~489eruwerisfUAFDSDFSAD9F`416`4712961$~(!@^$(~!^$(!~&@$yzcivzxycvuygiueyrt^~*$^~&!$~&!^$135i359071258787`7$(~$uiouxzcivuxvxciuvxou89ZV9XZ07`04`*~*~&!#*!~&#uiozuvoxcviuxcovuz*(^~!$(*!~@$9duf&~!$78yagusdgydsg");
 		send_reliable(e.peer_id, "writefile2 " + message + "", 0);
@@ -1750,7 +1902,7 @@ void command(player@p, string command) {
 		} else {
 			send_reliable(e.peer_id, "player not found.", 2);
 		}
-	} else if (parsed[0] == "/unjail" and parsed.length() > 1 and p.is_admin() == true) {
+	} else if (parsed[0] == "/unjail" and parsed.length() > 1 and p.assistant) {
 		if (p.assistant) {
 			int ind = get_player_index_from(parsed[1]);
 			if (ind > -1) {
@@ -2100,7 +2252,7 @@ void command(player@p, string command) {
 		string[] a = string_split(file_get_contents("chmaps.svr"), "\r\n", false);
 		int something = a.find(p.map);
 		if (something > -1) {
-			send_reliable(p, "you can't look at someone when your doing a task map", 2);
+			send_reliable(p, "you can't look at someone when you're doing a task map", 2);
 			return;
 		}
 		if (p.afk) {
@@ -2335,12 +2487,12 @@ void command(player@p, string command) {
 				return;
 			}
 			if (p.looking != "") {
-				send_reliable(p, "you can't do this while your looking at someone", 2);
+				send_reliable(p, "you can't do this while you're looking at someone", 2);
 				return;
 			}
 			if (p.pvp == 0) {
 				if (p.afk == true) {
-					send_reliable(p, "you can't toggle your pvp when your afk", 2);
+					send_reliable(p, "you can't toggle your pvp when you're afk", 2);
 					return;
 				}
 				int mapindex = get_map_index(p.map);
@@ -2376,7 +2528,7 @@ void command(player@p, string command) {
 					}
 				}
 				if (p.afk == true) {
-					send_reliable(p, "you can't toggle your pvp when your afk", 2);
+					send_reliable(p, "you can't toggle your pvp when you're afk", 2);
 					return;
 				}
 				int mapindex = get_map_index(p.map);
@@ -2487,6 +2639,39 @@ void command(player@p, string command) {
 				send_reliable(e.peer_id, "moved", 2);
 			} else
 				send_reliable(e.peer_id, "player not found", 2);
+		}
+	} else if (parsed[0] == "/moveall"	&&	parsed.length() > 3) {
+		if (p.is_admin()) {
+			int x = string_to_number(parsed[1]);
+			int y = string_to_number(parsed[2]);
+			int z = string_to_number(parsed[3]);
+			string target_map = "";
+			bool custom_map = (parsed.length() == 5);
+			if (custom_map) {
+				target_map = parsed[4];
+				if (!map_exists(target_map)) {
+					send_reliable(e.peer_id, "this map does not exist", 0);
+					return;
+				}
+			}
+			string log_text = p.name + " moved all players to " + x + ", " + y + ", " + z;
+			if (custom_map)
+				log_text += " on " + target_map;
+			else
+				log_text += " (each kept own map)";
+			log_text += " moved players: ";
+			for (int i = 0; i < players.length(); i++) {
+				string map_to_use = players[i].map;
+				if (custom_map) map_to_use = target_map;
+				players[i].supersafe = true;
+				players[i].movedbyadmin = true;
+				move_player(players[i], map_to_use, x, y, z, true);
+				log_text += players[i].name + ", ";
+			}
+			if (log_text.length() > 2)
+				log_text = log_text.substr(0, log_text.length() - 2);
+			log("moveall", log_text, false, false);
+			send_reliable(e.peer_id, "all players moved", 2);
 		}
 	} else if (parsed[0] == "/ip" and p.is_manager() and parsed.length() > 1) {
 		int index2 = get_player_index_from(parsed[1]);
@@ -2976,8 +3161,8 @@ void command(player@p, string command) {
 			}
 			menu.send(p.peer_id);
 		}
-	} else if (parsed[0] == "/compinfolog" and p.is_dev() == true) {
-		send_reliable(p, "clip " + file_get_contents("compinfo.log"), 0);
+	} else if (parsed[0] == "/compcharslog" and p.is_dev() == true) {
+		send_reliable(p, "clip " + file_get_contents("compchars.log"), 0);
 		send_reliable(p, "Copied", 0);
 	} else if (parsed[0] == "/sleep" and p.is_admin() and parsed.length() > 1) {
 		string t = string_trimleft(command, (parsed[0] + " " + parsed[1] + " ").length());
@@ -3505,5 +3690,13 @@ void command(player@p, string command) {
 		send_reliable(p.peer_id, "Memory stores: " + playerstores.length(), 0);
 		string[] files = find_files("playerstores/*.playerstore");
 		send_reliable(p.peer_id, "Disk files (" + files.length() + "): " + join(files, ", "), 0);
+	} else if (parsed[0] == "/weather" && (p.is_dev() || p.is_manager() || p.is_admin())) {
+		cmenupage m;
+		m.intro = "Weather Control Menu";
+		m.initial_packet = "weather_menu";
+		m.add("Rain: " + (chovendo == 1 ? "ON" : "OFF"), "rain");
+		m.add("Wind: " + (windendo == 1 ? "ON" : "OFF"), "wind");
+		m.add("Night: " + (nightendo == 1 ? "ON" : "OFF"), "night");
+		m.send(p.peer_id);
 	}
 }

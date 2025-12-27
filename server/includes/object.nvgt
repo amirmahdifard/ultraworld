@@ -30,13 +30,27 @@ void spawn_obj(int x, int y, int z, mapdata@m, string name, double amount = 1, b
 void spawn_rand_obj(int minx, int maxx, int miny, int maxy, int minz, int maxz, mapdata@m, string[] choices) {
 	int x, y, z;
 	string tile;
-	do {
+	int attempts = 0;
+	while(attempts < 100) {
+		attempts++;
 		x = random(minx, maxx);
 		y = random(miny, maxy);
 		z = random(minz, maxz);
 		tile = get_tile_at(x, y, z, maps[get_map_index(m.name)]);
-	} while (tile == "" || string_left(tile, 4) == "wall");
-	spawn_obj(x, y, z, maps[get_map_index(m.name)], choices[random(0, (choices.length() - 1))]);
+		if (tile == "") {
+			for (int d = 1; d <= 50; d++) {
+				if (z - d < minz) break;
+				string dtile = get_tile_at(x, y, z - d, maps[get_map_index(m.name)]);
+				if (dtile != "" && string_left(dtile, 4) != "wall") {
+					spawn_obj(x, y, z - d, maps[get_map_index(m.name)], choices[random(0, (choices.length() - 1))]);
+					return;
+				}
+			}
+		} else if (string_left(tile, 4) != "wall") {
+			spawn_obj(x, y, z, maps[get_map_index(m.name)], choices[random(0, (choices.length() - 1))]);
+			return;
+		}
+	}
 }
 void move_all_objs_to(int x, int y, int z, mapdata@m) {
 	for (uint i = 0; i < objs.length(); i++) {
@@ -130,13 +144,27 @@ void spawn_silenceobj(int x, int y, int z, mapdata@m, string name, double amount
 void spawn_rand_silenceobj(int minx, int maxx, int miny, int maxy, int minz, int maxz, mapdata@m, string[] choices) {
 	int x, y, z;
 	string tile;
-	do {
+	int attempts = 0;
+	while(attempts < 100) {
+		attempts++;
 		x = random(minx, maxx);
 		y = random(miny, maxy);
 		z = random(minz, maxz);
 		tile = get_tile_at(x, y, z, maps[get_map_index(m.name)]);
-	} while (tile == "" || string_left(tile, 4) == "wall");
-	spawn_silenceobj(x, y, z, maps[get_map_index(m.name)], choices[random(0, (choices.length() - 1))]);
+		if (tile == "") {
+			for (int d = 1; d <= 50; d++) {
+				if (z - d < minz) break;
+				string dtile = get_tile_at(x, y, z - d, maps[get_map_index(m.name)]);
+				if (dtile != "" && string_left(dtile, 4) != "wall") {
+					spawn_silenceobj(x, y, z - d, maps[get_map_index(m.name)], choices[random(0, (choices.length() - 1))]);
+					return;
+				}
+			}
+		} else if (string_left(tile, 4) != "wall") {
+			spawn_silenceobj(x, y, z, maps[get_map_index(m.name)], choices[random(0, (choices.length() - 1))]);
+			return;
+		}
+	}
 }
 void move_all_silenceobjs_to(int x, int y, int z, mapdata@m) {
 	for (uint i = 0; i < silenceobjs.length(); i++) {

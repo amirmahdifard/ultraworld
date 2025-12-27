@@ -1,0 +1,10 @@
+void lgs() {
+	dictionary sounds;
+	sounds.set("The sound of a player beacon who is not in the same team as you.","beacon");
+	sounds.set("A chat message was sent by you or an other player.", chatsound);
+	sounds.set("You send or receive a private message.",pmsound);
+	sounds.set("You or a player has disconnected from the server.",offlinesound);
+	sounds.set("You or a player has connected to the server.",onlinesound);
+	learn_game_sounds lg(sounds,"");
+	lg.run();
+}

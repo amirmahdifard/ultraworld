@@ -1,6 +1,7 @@
 #include "includes/appinfo.nvgt"
 class application: appinfo {
 	string website = "https://uw.posix.live";
+	string donate = "https://www.paypal.com/paypalme/patricusprod";
 	application() {
 		super();
 		this.name = "Ultra World";

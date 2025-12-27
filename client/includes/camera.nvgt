@@ -1,0 +1,175 @@
+void playcamera() {
+	for (uint i = 0; i < players.length(); i++) {
+		if (dcameraplayer == 0 and players[i].x == camera.x and players[i].y == camera.y and players[i].z == camera.z) {
+			if (mfwc == 1) rvp.play_stationary("beacon.ogg", false);
+			else rvp.play_3d("beacon.ogg", me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < mapitems.length(); i++) {
+		if (dcameraitem == 0 and mapitems[i].map == mapname and mapitems[i].x == camera.x and mapitems[i].y == camera.y and mapitems[i].z == camera.z) {
+			if (mfwc == 1) rvp.play_stationary("item.ogg", false);
+			else rvp.play_3d("item.ogg", me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < doors.length(); i++) {
+		if (dcameradoor == 0 and camera.x >= doors[i].mindx and camera.x <= doors[i].maxdx and camera.y >= doors[i].mindy and camera.y <= doors[i].maxdy and camera.z >= doors[i].mindz and camera.z <= doors[i].maxdz) {
+			if (mfwc == 1) rvp.play_stationary(doors[i].ds, false);
+			else rvp.play_3d(doors[i].ds, me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < pdoors.length(); i++) {
+		if (dcamerapdoor == 0 and camera.x >= pdoors[i].mindx and camera.x <= pdoors[i].maxdx and camera.y >= pdoors[i].mindy and camera.y <= pdoors[i].maxdy and camera.z >= pdoors[i].mindz and camera.z <= pdoors[i].maxdz) {
+			if (mfwc == 1) rvp.play_stationary(pdoors[i].ds, false);
+			else rvp.play_3d(pdoors[i].ds, me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < icdoors.length(); i++) {
+		if (dcameraicdoor == 0 and camera.x >= icdoors[i].mindx and camera.x <= icdoors[i].maxdx and camera.y >= icdoors[i].mindy and camera.y <= icdoors[i].maxdy and camera.z >= icdoors[i].mindz and camera.z <= icdoors[i].maxdz) {
+			if (mfwc == 1) rvp.play_stationary(icdoors[i].ds, false);
+			else rvp.play_3d(icdoors[i].ds, me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < itdoors.length(); i++) {
+		if (dcameraitdoor == 0 and camera.x >= itdoors[i].mindx and camera.x <= itdoors[i].maxdx and camera.y >= itdoors[i].mindy and camera.y <= itdoors[i].maxdy and camera.z >= itdoors[i].mindz and camera.z <= itdoors[i].maxdz) {
+			if (mfwc == 1) rvp.play_stationary(itdoors[i].ds, false);
+			else rvp.play_3d(itdoors[i].ds, me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < igdoors.length(); i++) {
+		if (dcameraigdoor == 0 and camera.x >= igdoors[i].mindx and camera.x <= igdoors[i].maxdx and camera.y >= igdoors[i].mindy and camera.y <= igdoors[i].maxdy and camera.z >= igdoors[i].mindz and camera.z <= igdoors[i].maxdz) {
+			if (mfwc == 1) rvp.play_stationary(igdoors[i].ds, false);
+			else rvp.play_3d(igdoors[i].ds, me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < automovers.length(); i++) {
+		if (dcameraautomover == 0 and camera.x >= automovers[i].mindx and camera.x <= automovers[i].maxdx and camera.y >= automovers[i].mindy and camera.y <= automovers[i].maxdy and camera.z >= automovers[i].mindz and camera.z <= automovers[i].maxdz) {
+			if (mfwc == 1) rvp.play_stationary(automovers[i].ds, false);
+			else rvp.play_3d(automovers[i].ds, me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < pautomovers.length(); i++) {
+		if (dcamerapautomover == 0 and camera.x >= pautomovers[i].mindx and camera.x <= pautomovers[i].maxdx and camera.y >= pautomovers[i].mindy and camera.y <= pautomovers[i].maxdy and camera.z >= pautomovers[i].mindz and camera.z <= pautomovers[i].maxdz) {
+			if (mfwc == 1) rvp.play_stationary(pautomovers[i].ds, false);
+			else rvp.play_3d(pautomovers[i].ds, me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < icautomovers.length(); i++) {
+		if (dcameraicautomover == 0 and camera.x >= icautomovers[i].mindx and camera.x <= icautomovers[i].maxdx and camera.y >= icautomovers[i].mindy and camera.y <= icautomovers[i].maxdy and camera.z >= icautomovers[i].mindz and camera.z <= icautomovers[i].maxdz) {
+			if (mfwc == 1) rvp.play_stationary(icautomovers[i].ds, false);
+			else rvp.play_3d(icautomovers[i].ds, me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < itautomovers.length(); i++) {
+		if (dcameraitautomover == 0 and camera.x >= itautomovers[i].mindx and camera.x <= itautomovers[i].maxdx and camera.y >= itautomovers[i].mindy and camera.y <= itautomovers[i].maxdy and camera.z >= itautomovers[i].mindz and camera.z <= itautomovers[i].maxdz) {
+			if (mfwc == 1) rvp.play_stationary(itautomovers[i].ds, false);
+			else rvp.play_3d(itautomovers[i].ds, me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < igautomovers.length(); i++) {
+		if (dcameraigautomover == 0 and camera.x >= igautomovers[i].mindx and camera.x <= igautomovers[i].maxdx and camera.y >= igautomovers[i].mindy and camera.y <= igautomovers[i].maxdy and camera.z >= igautomovers[i].mindz and camera.z <= igautomovers[i].maxdz) {
+			if (mfwc == 1) rvp.play_stationary(igautomovers[i].ds, false);
+			else rvp.play_3d(igautomovers[i].ds, me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < automatic_travelpoints.length(); i++) {
+		if (dcameraautomatic_travelpoint == 0 and camera.x >= automatic_travelpoints[i].mindx and camera.x <= automatic_travelpoints[i].maxdx and camera.y >= automatic_travelpoints[i].mindy and camera.y <= automatic_travelpoints[i].maxdy and camera.z >= automatic_travelpoints[i].mindz and camera.z <= automatic_travelpoints[i].maxdz) {
+			if (mfwc == 1) rvp.play_stationary(automatic_travelpoints[i].ds, false);
+			else rvp.play_3d(automatic_travelpoints[i].ds, me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < pautomatic_travelpoints.length(); i++) {
+		if (dcamerapautomatic_travelpoint == 0 and camera.x >= pautomatic_travelpoints[i].mindx and camera.x <= pautomatic_travelpoints[i].maxdx and camera.y >= pautomatic_travelpoints[i].mindy and camera.y <= pautomatic_travelpoints[i].maxdy and camera.z >= pautomatic_travelpoints[i].mindz and camera.z <= pautomatic_travelpoints[i].maxdz) {
+			if (mfwc == 1) rvp.play_stationary(pautomatic_travelpoints[i].ds, false);
+			else rvp.play_3d(pautomatic_travelpoints[i].ds, me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < icautomatic_travelpoints.length(); i++) {
+		if (dcameraicautomatic_travelpoint == 0 and camera.x >= icautomatic_travelpoints[i].mindx and camera.x <= icautomatic_travelpoints[i].maxdx and camera.y >= icautomatic_travelpoints[i].mindy and camera.y <= icautomatic_travelpoints[i].maxdy and camera.z >= icautomatic_travelpoints[i].mindz and camera.z <= icautomatic_travelpoints[i].maxdz) {
+			if (mfwc == 1) rvp.play_stationary(icautomatic_travelpoints[i].ds, false);
+			else rvp.play_3d(icautomatic_travelpoints[i].ds, me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < itautomatic_travelpoints.length(); i++) {
+		if (dcameraitautomatic_travelpoint == 0 and camera.x >= itautomatic_travelpoints[i].mindx and camera.x <= itautomatic_travelpoints[i].maxdx and camera.y >= itautomatic_travelpoints[i].mindy and camera.y <= itautomatic_travelpoints[i].maxdy and camera.z >= itautomatic_travelpoints[i].mindz and camera.z <= itautomatic_travelpoints[i].maxdz) {
+			if (mfwc == 1) rvp.play_stationary(itautomatic_travelpoints[i].ds, false);
+			else rvp.play_3d(itautomatic_travelpoints[i].ds, me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < igautomatic_travelpoints.length(); i++) {
+		if (dcameraigautomatic_travelpoint == 0 and camera.x >= igautomatic_travelpoints[i].mindx and camera.x <= igautomatic_travelpoints[i].maxdx and camera.y >= igautomatic_travelpoints[i].mindy and camera.y <= igautomatic_travelpoints[i].maxdy and camera.z >= igautomatic_travelpoints[i].mindz and camera.z <= igautomatic_travelpoints[i].maxdz) {
+			if (mfwc == 1) rvp.play_stationary(igautomatic_travelpoints[i].ds, false);
+			else rvp.play_3d(igautomatic_travelpoints[i].ds, me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < travelpoints.length(); i++) {
+		if (dcameratravelpoint == 0 and camera.x >= travelpoints[i].mindx and camera.x <= travelpoints[i].maxdx and camera.y >= travelpoints[i].mindy and camera.y <= travelpoints[i].maxdy and camera.z >= travelpoints[i].mindz and camera.z <= travelpoints[i].maxdz) {
+			if (mfwc == 1) rvp.play_stationary(travelpoints[i].ds, false);
+			else rvp.play_3d(travelpoints[i].ds, me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < ptravelpoints.length(); i++) {
+		if (dcameraptravelpoint == 0 and camera.x >= ptravelpoints[i].mindx and camera.x <= ptravelpoints[i].maxdx and camera.y >= ptravelpoints[i].mindy and camera.y <= ptravelpoints[i].maxdy and camera.z >= ptravelpoints[i].mindz and camera.z <= ptravelpoints[i].maxdz) {
+			if (mfwc == 1) rvp.play_stationary(ptravelpoints[i].ds, false);
+			else rvp.play_3d(ptravelpoints[i].ds, me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < ictravelpoints.length(); i++) {
+		if (dcameraictravelpoint == 0 and camera.x >= ictravelpoints[i].mindx and camera.x <= ictravelpoints[i].maxdx and camera.y >= ictravelpoints[i].mindy and camera.y <= ictravelpoints[i].maxdy and camera.z >= ictravelpoints[i].mindz and camera.z <= ictravelpoints[i].maxdz) {
+			if (mfwc == 1) rvp.play_stationary(ictravelpoints[i].ds, false);
+			else rvp.play_3d(ictravelpoints[i].ds, me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < ittravelpoints.length(); i++) {
+		if (dcameraittravelpoint == 0 and camera.x >= ittravelpoints[i].mindx and camera.x <= ittravelpoints[i].maxdx and camera.y >= ittravelpoints[i].mindy and camera.y <= ittravelpoints[i].maxdy and camera.z >= ittravelpoints[i].mindz and camera.z <= ittravelpoints[i].maxdz) {
+			if (mfwc == 1) rvp.play_stationary(ittravelpoints[i].ds, false);
+			else rvp.play_3d(ittravelpoints[i].ds, me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < igtravelpoints.length(); i++) {
+		if (dcameraigtravelpoint == 0 and camera.x >= igtravelpoints[i].mindx and camera.x <= igtravelpoints[i].maxdx and camera.y >= igtravelpoints[i].mindy and camera.y <= igtravelpoints[i].maxdy and camera.z >= igtravelpoints[i].mindz and camera.z <= igtravelpoints[i].maxdz) {
+			if (mfwc == 1) rvp.play_stationary(igtravelpoints[i].ds, false);
+			else rvp.play_3d(igtravelpoints[i].ds, me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < vanishing_platforms.length(); i++) {
+		if (dcameravp == 0 and vanishing_platforms[i].vanished == true and camera.x >= vanishing_platforms[i].minx and camera.x <= vanishing_platforms[i].maxx and camera.y >= vanishing_platforms[i].miny and camera.y <= vanishing_platforms[i].maxy and camera.z >= vanishing_platforms[i].minz and camera.z <= vanishing_platforms[i].maxz) {
+			if (mfwc == 1) rvp.play_stationary("cameratile.ogg", false);
+			else rvp.play_3d("cameratile.ogg", me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < forcefields.length(); i++) {
+		if (dcameraff == 0 and forcefields[i].forcefielded == true and camera.x >= forcefields[i].minx and camera.x <= forcefields[i].maxx and camera.y >= forcefields[i].miny and camera.y <= forcefields[i].maxy and camera.z >= forcefields[i].minz and camera.z <= forcefields[i].maxz) {
+			if (mfwc == 1) rvp.play_stationary("cameratile.ogg", false);
+			else rvp.play_3d("cameratile.ogg", me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < teleporters.length(); i++) {
+		if (dcameratp == 0 and camera.x >= teleporters[i].minx and camera.x <= teleporters[i].maxx and camera.y >= teleporters[i].miny and camera.y <= teleporters[i].maxy and camera.z >= teleporters[i].minz and camera.z <= teleporters[i].maxz) {
+			if (mfwc == 1) rvp.play_stationary("cameratile.ogg", false);
+			else rvp.play_3d("cameratile.ogg", me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	for (uint i = 0; i < signs.length(); i++) {
+		if (dcamerasign == 0 and camera.x >= signs[i].minx and camera.x <= signs[i].maxx and camera.y >= signs[i].miny and camera.y <= signs[i].maxy and camera.z >= signs[i].minz and camera.z <= signs[i].maxz) {
+			if (mfwc == 1) rvp.play_stationary(signs[i].signsound, false);
+			else rvp.play_3d(signs[i].signsound, me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+		}
+	}
+	if (me.x == camera.x and me.y == camera.y and me.z == camera.z) {
+		if (mfwc == 1) rvp.play_stationary("beacon.ogg", false);
+		else rvp.play_3d("beacon.ogg", me.x, me.y, me.z, camera.x, camera.y, camera.z, calculate_theta(facing), false);
+	}
+	if (get_tile_at(camera.x, camera.y, camera.z) == "" or get_tile_at(camera.x, camera.y, camera.z) == "air") {
+		if (mfwc == 1) rvp.play_stationary("cameraair.ogg", false);
+		else rvp.play_3d("cameraair.ogg", me.x, me.y, me.z, round(camera.x, 0), round(camera.y, 0), camera.z, calculate_theta(facing), false);
+	} else if (get_tile_at(camera.x, camera.y, camera.z) == "hazard") {
+		if (mfwc == 1) rvp.play_stationary("camerahazard.ogg", false);
+		else rvp.play_3d("camerahazard.ogg", me.x, me.y, me.z, round(camera.x, 0), round(camera.y, 0), camera.z, calculate_theta(facing), false);
+	} else if (string_contains(get_tile_at(camera.x, camera.y, camera.z), "wall", 1) > -1 or string_contains(get_tile_at(camera.x, camera.y, camera.z), "breakable", 1) > -1) {
+		if (mfwc == 1) rvp.play_stationary(get_tile_at(camera.x, camera.y, camera.z) + ".ogg", false);
+		else rvp.play_3d(get_tile_at(camera.x, camera.y, camera.z) + ".ogg", me.x, me.y, me.z, round(camera.x, 0), round(camera.y, 0), camera.z, calculate_theta(facing), false);
+	} else {
+		if (mfwc == 1) rvp.play_stationary(get_tile_at(camera.x, camera.y, camera.z) + "step" + random(1, 5) + ".ogg", false);
+		else rvp.play_3d(get_tile_at(camera.x, camera.y, camera.z) + "step" + random(1, 5) + ".ogg", me.x, me.y, me.z, round(camera.x, 0), round(camera.y, 0), camera.z, calculate_theta(facing), false);
+	}
+}

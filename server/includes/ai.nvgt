@@ -1,7 +1,7 @@
 uint aiid=0;
 ai_template@[] aitemps(0);
 class ai_template {
-	double xp, health, range, damage, shoottime, voicetime, speed, amount, stepsoundpitch = 100, stepsoundvolume = 0, painsoundpitch = 100, painsoundvolume = 0, killsoundpitch = 100, killsoundvolume = 0, shootsoundpitch = 100, shootsoundvolume = 0, hitsoundpitch = 100, hitsoundvolume = 0, voicepitch = 100, voicevolume = 0, fallsoundpitch = 100, fallsoundvolume = 0;
+	double xp, health, health_max, range, damage, damage_max, shoottime, voicetime, speed, amount, stepsoundpitch = 100, stepsoundvolume = 0, painsoundpitch = 100, painsoundvolume = 0, killsoundpitch = 100, killsoundvolume = 0, shootsoundpitch = 100, shootsoundvolume = 0, hitsoundpitch = 100, hitsoundvolume = 0, voicepitch = 100, voicevolume = 0, fallsoundpitch = 100, fallsoundvolume = 0;
 	string name, stepsound, painsound, killsound, shootsound, hitsound, voice, item, fallsound;
 	bool rapidvoice, treeclimb, maddable, needwater, nuclearbomb, mine;
 	int gender;
@@ -29,9 +29,9 @@ class ai : ai_template {
 		this.gender = ait.gender;
 		if (this.gender != 0 && this.gender!= 1) this.gender = random(0, 1);
 		this.xp = ait.xp;
-		this.health = ait.health;
+		this.health = random(ait.health, ait.health_max);
 		this.range = ait.range;
-		this.damage = ait.damage;
+		this.damage = random(ait.damage, ait.damage_max);
 		this.shoottime = ait.shoottime;
 		this.voicetime = ait.voicetime;
 		this.speed = ait.speed;
@@ -73,7 +73,7 @@ class ai : ai_template {
 	}
 	~ai() {
 		if (this.voice != "") {
-			destroy_moving_sound(this.voice);
+destroy_moving_sound(this.voice);
 			this.voice = "";
 		}
 	}
@@ -89,7 +89,10 @@ class ai : ai_template {
 			send_packet(6, "playpavap " + voicesound + " " + x + " " + y + " " + z + " 0, " + voicevolume + " " + voicepitch, x, y, z, maps[get_map_index(map.name)]);
 		}
 		if (health <= 0) {
-			if (voice != "") destroy_moving_sound(voice);
+			if (voice != "") {
+				destroy_moving_sound(voice);
+				voice = "";
+			}
 			if (killsound != "") send_packet(6, "playpavap " + killsound + " " + x + " " + y + " " + z + " 0 " + killsoundvolume + " " + killsoundpitch, x, y, z, maps[get_map_index(map.name)]);
 			send_reliable(0, "kills " + death_message(vector(x, y, z), map.name, name, name, hitby, this.gender), 0);
 			string hb;
@@ -265,12 +268,16 @@ void load_ais() {
 				ai.gender = gg;
 			} else if (parsed[0] == "health") {
 				health = string_split(parsed[1], ",", true);
-				if (health.length() == 1)
+				if (health.length() == 1) {
 					ai.health = string_to_number(health[0]);
-				else if (health.length() > 1)
-					ai.health = random(string_to_number(health[0]), string_to_number(health[1]));
-				else
+					ai.health_max = ai.health;
+				} else if (health.length() > 1) {
+					ai.health = string_to_number(health[0]);
+					ai.health_max = string_to_number(health[1]);
+				} else {
 					ai.health = 0;
+					ai.health_max = 0;
+				}
 			} else if (parsed[0] == "range") {
 				range = string_split(parsed[1], ",", true);
 				if (range.length() == 1)
@@ -281,12 +288,16 @@ void load_ais() {
 					ai.range = 0;
 			} else if (parsed[0] == "damage") {
 				damage = string_split(parsed[1], ",", true);
-				if (damage.length() == 1)
+				if (damage.length() == 1) {
 					ai.damage = string_to_number(damage[0]);
-				else if (damage.length() > 1)
-					ai.damage = random(string_to_number(damage[0]), string_to_number(damage[1]));
-				else
+					ai.damage_max = ai.damage;
+				} else if (damage.length() > 1) {
+					ai.damage = string_to_number(damage[0]);
+					ai.damage_max = string_to_number(damage[1]);
+				} else {
 					ai.damage = 0;
+					ai.damage_max = 0;
+				}
 			} else if (parsed[0] == "shoottime") {
 				shoottime = string_split(parsed[1], ",", true);
 				if (shoottime.length() == 1)

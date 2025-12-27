@@ -215,6 +215,7 @@ class player {
 	bool burned = false;
 	int burnlosses = 0;
 	string burnowner = "";
+	bool finishing_task = false;
 	double air;
 	int voted = 0;
 	bool wandlocked = false;
@@ -1891,6 +1892,8 @@ void spawn_player(int x, int y, int z, string map, string name, int pi, string c
 	calendar d;
 	writeto(name, "data", "", "lastseen", join({d.year, d.month, d.day, d.hour, d.minute, d.second}, "/"));
 	players.insert_last(p1);
+	players_by_peer_id.set("" + pi, players.length() - 1);
+	players_by_name.set(name, players.length() - 1);
 	int index = get_player_index_from(name);
 	players[index].statchangetimer.force(100000);
 	if (hid == 0)
@@ -2092,8 +2095,14 @@ void remove_player(string name, bool got_kicked = false, bool lost = false) {
 			}
 		}
 	}
+	players_by_peer_id.delete("" + players[i].peer_id);
+	players_by_name.delete(players[i].name);
 	@players[i] = null;
 	players.remove_at(i);
+	for (uint j = i; j < players.length(); j++) {
+		players_by_peer_id.set("" + players[j].peer_id, j);
+		players_by_name.set(players[j].name, j);
+	}
 	if (oldid != 4294967294) send_reliable(oldid, "killclient", 0);
 	return;
 }

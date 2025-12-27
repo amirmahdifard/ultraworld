@@ -4,12 +4,12 @@ void buildbed() {
         string nums = "1234567890-";
         string mx, mmx, my, mmy, mz, mmz;
         form.create_window("bed", false);
-        int a = form.create_input_box("type the minimum &x of the bed");
-        int b = form.create_input_box("type the maximum &x of the bed");
-        int c = form.create_input_box("type the minimum &y of the bed");
-        int d = form.create_input_box("type the maximum &y of the bed");
-        int e = form.create_input_box("type the minimum &z of the bed");
-        int f = form.create_input_box("type the maximum &z of the bed");
+        int a = form.create_input_box("type the minimum &x of the bed",lx);
+        int b = form.create_input_box("type the maximum &x of the bed",rx);
+        int c = form.create_input_box("type the minimum &y of the bed",by);
+        int d = form.create_input_box("type the maximum &y of the bed",fy);
+        int e = form.create_input_box("type the minimum &z of the bed",bz);
+        int f = form.create_input_box("type the maximum &z of the bed",tz);
         form.set_disallowed_chars(a, nums, true);
         form.set_disallowed_chars(b, nums, true);
         form.set_disallowed_chars(c, nums, true);
@@ -40,16 +40,7 @@ void buildbed() {
             speak("canceled");
             return;
         }
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.y || my  > max.y ||
-            mmy < min.y || mmy > max.y ||
-            mz  < min.z || mz  > max.z ||
-            mmz < min.z || mmz > max.z)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
+
         send_reliable(peer_id, "addbed bed:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz, 0);
     }
     else {
@@ -57,10 +48,10 @@ void buildbed() {
         string nums = "1234567890-";
         string mx, mmx, my, mmy;
         form.create_window("bed", false);
-        int a = form.create_input_box("type the minimum &x of the bed");
-        int b = form.create_input_box("type the maximum &x of the bed");
-        int c = form.create_input_box("type the minimum &y of the bed");
-        int d = form.create_input_box("type the maximum &y of the bed");
+        int a = form.create_input_box("type the minimum &x of the bed",lx);
+        int b = form.create_input_box("type the maximum &x of the bed",rx);
+        int c = form.create_input_box("type the minimum &y of the bed",bz);
+        int d = form.create_input_box("type the maximum &y of the bed",tz);
         form.set_disallowed_chars(a, nums, true);
         form.set_disallowed_chars(b, nums, true);
         form.set_disallowed_chars(c, nums, true);
@@ -87,14 +78,7 @@ void buildbed() {
             speak("canceled");
             return;
         }
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.y || my  > max.y ||
-            mmy < min.y || mmy > max.y)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
+
         send_reliable(peer_id, "addbed bed:" + mx + ":" + mmx + ":0:0:" + my + ":" + mmy, 0);
     }
 }

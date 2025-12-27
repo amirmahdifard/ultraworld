@@ -1,33 +1,30 @@
 namespace scp::actions::server {
 void pntfy() {
-    nv_form f;
-    f.create_window("Send a notification", false);
-
-    nv_form_input@ text = f.add_input("Text", "text");
-    nv_form_button@ ok = f.add_button("Send", "ok", primary = true);
-    nv_form_button@ can = f.add_button("Cancel", "can", cancel = true);
-
-    f.focus_control(text, false, false);
-
-    while (f.monitor()) {
-        wait(5);
-        mainloop();
-
-        if (f.is_pressed(can))
-            break;
-
-        if (f.is_pressed(ok)) {
-            if (text.text == "") {
-                speak("Message is required");
-                f.focus_control(text, false, false);
-                continue;
-            }
-
-            send_reliable(peer_id, "/notify "+text.text, 1);
-            break;
-        }
-    }
-
-    f.reset();
+nv_form f;
+f.create_window("Send a notification", false);
+nv_form_input@ text = f.add_input("Text", "text");
+nv_form_input@ soundfile = f.add_input("enter the sound file here with its extension (e.g., hello.ogg) (optional)", "soundfile");
+nv_form_button@ ok = f.add_button("Send", "ok", primary = true);
+nv_form_button@ can = f.add_button("Cancel", "can", cancel = true);
+f.focus_control(text, false, false);
+while (f.monitor()) {
+wait(5);
+mainloop();
+if (f.is_pressed(can))
+break;
+if (f.is_pressed(ok)) {
+if (text.text == "") {
+speak("Message is required");
+f.focus_control(text, false, false);
+continue;
+}
+if (soundfile.text != "") {
+send_reliable(peer_id, "/pnotify "+soundfile.text+" "+text.text, 1);
+} else
+send_reliable(peer_id, "/notify "+text.text, 1);
+break;
+}
+}
+f.reset();
 }
 }

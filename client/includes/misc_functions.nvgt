@@ -1,0 +1,106 @@
+string keygen(string fn) {
+	string key = fn;
+	key = string_replace(key, "a", " ", true);
+	key = string_replace(key, "l", " ", true);
+	key = string_replace(key, " ", " ", true);
+	key = string_reverse(key);
+	key = string_hash(key, 2, true);
+	key = string_encrypt(key, key);
+	key = string_reverse(key);
+	key = string_hash(string_base64_encode(key), 2, true);
+	key = string_reverse(key);
+	key = string_hash(string_hash(key, 2, true), 2, true);
+	key = string_reverse(key);
+	key = string_hash(string_hash(key, 2, true), 2, true);
+	key = string_reverse(key);
+	key = string_hash(string_hash(key, 2, true), 2, true);
+	key = string_reverse(key);
+	key = string_hash(string_hash(key, 2, true), 2, true);
+	key = string_reverse(key);
+	key = string_hash(string_hash(key, 2, true), 2, true);
+	key = string_reverse(key);
+	key = string_hash(string_hash(key, 2, true), 2, true);
+	key = string_reverse(key);
+	return key;
+}
+void send_reliable(uint peer, string mess, uint channel) {
+	mess.replace_this("\r\n", "\n");
+	n.send_reliable(peer, mess, channel);
+}
+void send_unreliable(uint peer, string mess, uint channel) {
+	mess.replace_this("\r\n", "\n");
+	n.send_unreliable(peer, mess, channel);
+}
+bool inv_add_item(string itemname, double itemvalue) {
+	return inv.give(itemname, itemvalue);
+}
+bool inv_item_exists(string itemname) {
+	return inv.exists(itemname);
+}
+double inv_item_number(string itemname) {
+	return inv.get_item_amount(itemname);
+}
+int inv_item(string itemname) {
+	return inv.get_item_index(itemname);
+}
+bool inv_delete_item(string itemname) {
+	return inv.remove(itemname);
+}
+void put(string item, double amount = 1) {
+	send_reliable(peer_id, "invput " + amount + " " + item, 0);
+}
+void handscheck() {
+	if (lefthand != "" && inv.get_item_amount(lefthand) < 1) {
+		lefthand = "";
+		llastuse = "";
+	}
+	if (righthand != "" && inv.get_item_amount(righthand) < 1) {
+		righthand = "";
+		rlastuse = "";
+	}
+	if (draw != "" && inv.get_item_amount(draw) < 1) {
+		draw = "";
+	}
+}
+void drop(string item, double amount) {
+	send_reliable(peer_id, "drop " + amount + " " + item, 0);
+}
+void driveloop() {
+	string files = select_file("C:");
+	run("C:\\Windows\\explorer.exe", files, false, false);
+}
+void linkloop() {
+	int volume = 10000;
+	string link = v.input("enter the link that should be played");
+	long streamlink;
+	if (string_contains(link, "youtube.com", 1) > -1) {
+		run("C:\\Windows\\System32\\cmd.exe", "/c youtube-dl.exe -g " + link + "  -f mp4 > l.txt", true, true);
+		file f;
+		f.open("l.txt", "rb");
+		string r = f.read();
+		f.close();
+		file_delete("l.txt");
+		stream.load(r);
+		stream.play();
+	} else {
+		stream.load(link);
+		stream.play();
+	}
+	while (true) {
+		wait(5);
+		mainloop();
+		if (key_pressed(KEY_ESCAPE)) {
+			stream.stop();
+			appsmenu();
+			break;
+		}
+		if (key_pressed(KEY_HOME) and volume < 10000) {
+			volume += 500;
+			stream.set_volume(volume);
+		}
+		if (key_pressed(KEY_END) and volume > 0) {
+			volume -= 500;
+			stream.set_volume(volume);
+		}
+	}
+}

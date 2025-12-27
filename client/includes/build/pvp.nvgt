@@ -4,12 +4,12 @@ void buildpvp() {
         string nums = "1234567890-";
         string mx, mmx, my, mmy, mz, mmz, mode;
         form.create_window("PVP zone", false);
-        int a = form.create_input_box("type the minimum &x of the PVP area");
-        int b = form.create_input_box("type the maximum &x of the PVP area");
-        int c = form.create_input_box("type the minimum &y of the PVP area");
-        int d = form.create_input_box("type the maximum &y of the PVP area");
-        int e = form.create_input_box("type the minimum &z of the PVP area");
-        int f = form.create_input_box("type the maximum &z of the PVP area");
+        int a = form.create_input_box("type the minimum &x of the PVP area",lx);
+        int b = form.create_input_box("type the maximum &x of the PVP area",rx);
+        int c = form.create_input_box("type the minimum &y of the PVP area",by);
+        int d = form.create_input_box("type the maximum &y of the PVP area",fy);
+        int e = form.create_input_box("type the minimum &z of the PVP area",bz);
+        int f = form.create_input_box("type the maximum &z of the PVP area",tz);
         int g = form.create_input_box("type 0 to disable, 1 to force PVP on, 2 to force PVP off", "", "", 0, false, false);
         form.set_disallowed_chars(a, nums, true);
         form.set_disallowed_chars(b, nums, true);
@@ -46,17 +46,6 @@ void buildpvp() {
             return;
         }
 
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.y || my  > max.y ||
-            mmy < min.y || mmy > max.y ||
-            mz  < min.z || mz  > max.z ||
-            mmz < min.z || mmz > max.z)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
-
         send_reliable(peer_id, "addpvp pvp:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + ":" + mode, 0);
     }
     else {
@@ -64,10 +53,10 @@ void buildpvp() {
         string nums = "1234567890-";
         string mx, mmx, my, mmy, mode;
         form.create_window("PVP zone", false);
-        int a = form.create_input_box("type the minimum &x of the PVP area");
-        int b = form.create_input_box("type the maximum &x of the PVP area");
-        int c = form.create_input_box("type the minimum &y of the PVP area");
-        int d = form.create_input_box("type the maximum &y of the PVP area");
+        int a = form.create_input_box("type the minimum &x of the PVP area",lx);
+        int b = form.create_input_box("type the maximum &x of the PVP area",rx);
+        int c = form.create_input_box("type the minimum &y of the PVP area",bz);
+        int d = form.create_input_box("type the maximum &y of the PVP area",tz);
         int e = form.create_input_box("type 0 to disable, 1 to force PVP on, 2 to force PVP off", "", "", 0, false, false);
         form.set_disallowed_chars(a, nums, true);
         form.set_disallowed_chars(b, nums, true);
@@ -97,15 +86,6 @@ void buildpvp() {
 
         if (mx == "" || mmx == "" || my == "" || mmy == "" || mode == "") {
             speak("canceled");
-            return;
-        }
-
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.z || my  > max.z ||
-            mmy < min.z || mmy > max.z)
-        {
-            speak("error. Given coordinates are out of range");
             return;
         }
 

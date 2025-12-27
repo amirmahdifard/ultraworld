@@ -2,12 +2,12 @@ void buildreverb() {
 	string nums = "1234567890-";
 	string mx, mmx, my, mmy, mz, mmz, id, dry, wet, rooms, damp, width;
 	form.create_window("Reverb", false);
-	int a = form.create_input_box("type the minimum x of the Reverb");
-	int b = form.create_input_box("type the maximum x of the Reverb");
-	int c = form.create_input_box("type the minimum y of the Reverb");
-	int d = form.create_input_box("type the maximum y of the Reverb");
-	int e = form.create_input_box("type the minimum z of the Reverb");
-	int f = form.create_input_box("type the maximum z of the Reverb");
+	int a = form.create_input_box("type the minimum x of the Reverb",lx);
+	int b = form.create_input_box("type the maximum x of the Reverb",rx);
+	int c = form.create_input_box("type the minimum y of the Reverb",by);
+	int d = form.create_input_box("type the maximum y of the Reverb",fy);
+	int e = form.create_input_box("type the minimum z of the Reverb",bz);
+	int f = form.create_input_box("type the maximum z of the Reverb",tz);
 	int g = form.create_input_box("type the ID of the Reverb");
 	int dm = form.create_input_box("type the dry value of the Reverb (0.0 to 1.0)", "1.0");
 	int wm = form.create_input_box("type the wet value of the Reverb (0.0 to 1.0)", "1.0");

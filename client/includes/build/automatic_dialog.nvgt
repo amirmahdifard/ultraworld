@@ -4,12 +4,12 @@ void buildautomatic_dialog() {
         string nums = "1234567890-";
         string mx, mmx, my, mmy, mz, mmz, t;
         form.create_window("automatic dialog", false);
-        int a = form.create_input_box("type the minimum &x of the automatic dialog area");
-        int b = form.create_input_box("type the maximum &x of the automatic dialog area");
-        int c = form.create_input_box("type the minimum &y of the automatic dialog area");
-        int d = form.create_input_box("type the maximum &y of the automatic dialog area");
-        int e = form.create_input_box("type the minimum &z of the automatic dialog area");
-        int f = form.create_input_box("type the maximum &z of the automatic dialog area");
+        int a = form.create_input_box("type the minimum &x of the automatic dialog area",lx);
+        int b = form.create_input_box("type the maximum &x of the automatic dialog area",rx);
+        int c = form.create_input_box("type the minimum &y of the automatic dialog area",by);
+        int d = form.create_input_box("type the maximum &y of the automatic dialog area",fy);
+        int e = form.create_input_box("type the minimum &z of the automatic dialog area",bz);
+        int f = form.create_input_box("type the maximum &z of the automatic dialog area",tz);
         int g = form.create_input_box("enter automatic dialog texts, separate them with == (e.g. hi == how are you)", "", "", 0, false, false);
         form.set_disallowed_chars(a, nums, true);
         form.set_disallowed_chars(b, nums, true);
@@ -38,33 +38,22 @@ void buildautomatic_dialog() {
                 return;
             }
         }
-        if (mx == "" || mmx == "" || my == "" || mmy == "" || mz == "" || mmz == "") {
+        if (mx == "" || mmx == "" || my == "" || mmy == "" || mz == "" || mmz == "" || t == "") {
             speak("canceled");
             return;
         }
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.y || my  > max.y ||
-            mmy < min.y || mmy > max.y ||
-            mz  < min.z || mz  > max.z ||
-            mmz < min.z || mmz > max.z)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
-        string ha = "";
-        if (t != "") ha = ":" + t;
-        send_reliable(peer_id, "addautomatic_dialog automatic_dialog:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + ha, 0);
+
+        send_reliable(peer_id, "addautomatic_dialog automatic_dialog:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz + ":" + t, 0);
     }
     else {
         form.reset();
         string nums = "1234567890-";
         string mx, mmx, my, mmy, t;
         form.create_window("automatic dialog", false);
-        int a = form.create_input_box("type the minimum &x of the automatic dialog area");
-        int b = form.create_input_box("type the maximum &x of the automatic dialog area");
-        int c = form.create_input_box("type the minimum &y of the automatic dialog area");
-        int d = form.create_input_box("type the maximum &y of the automatic dialog area");
+        int a = form.create_input_box("type the minimum &x of the automatic dialog area",lx);
+        int b = form.create_input_box("type the maximum &x of the automatic dialog area",rx);
+        int c = form.create_input_box("type the minimum &y of the automatic dialog area",bz);
+        int d = form.create_input_box("type the maximum &y of the automatic dialog area",tz);
         int e = form.create_input_box("enter automatic dialog texts, separate them with == (e.g. hi == how are you)", "", "", 0, false, false);
         form.set_disallowed_chars(a, nums, true);
         form.set_disallowed_chars(b, nums, true);
@@ -89,20 +78,11 @@ void buildautomatic_dialog() {
                 return;
             }
         }
-        if (mx == "" || mmx == "" || my == "" || mmy == "") {
+        if (mx == "" || mmx == "" || my == "" || mmy == "" || t == "") {
             speak("canceled");
             return;
         }
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.y || my  > max.y ||
-            mmy < min.y || mmy > max.y)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
-        string ha = "";
-        if (t != "") ha = ":" + t;
-        send_reliable(peer_id, "addautomatic_dialog automatic_dialog:" + mx + ":" + mmx + ":0:0:" + my + ":" + mmy + ha, 0);
+
+        send_reliable(peer_id, "addautomatic_dialog automatic_dialog:" + mx + ":" + mmx + ":0:0:" + my + ":" + mmy + ":" + t, 0);
     }
 }

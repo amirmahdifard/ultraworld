@@ -171,6 +171,9 @@ void mainmenu(bool fromgame = false) {
 	s.add_sub_menu_item("settings", "" + (dreaming == 1 ? "disable" : "enable") + " dreaming");
 	s.add_sub_menu_item("settings", "reset settings to factory defaults");
 	if (fromgame) s.add_sub_menu_item("settings", "go back");
+		s.add_sub_menu_item("misc","Restart the game");
+			s.add_sub_menu_item("misc","Learn game sounds menu");
+	s.add_sub_menu_item("misc","donate");
 	s.add_sub_menu_item("misc","open website");
 	s.add_sub_menu_item("misc","Check for updates");
 	if (!SCRIPT_COMPILED) s.add_sub_menu_item("misc", "Alternate between main and local host");
@@ -855,10 +858,36 @@ void mainmenu(bool fromgame = false) {
 		if (fromgame) mainmenu(true);
 		else mainmenu();
 	}
+	else if(result=="misc:donate") {
+		urlopen(app.donate);
+		mainmenu();
+	}
+		else if(result=="misc:Learn game sounds menu") {
+		lgs();
+		}
 	else if(result=="misc:open website") {
 		urlopen(app.website);
 		mainmenu();
 	}
+		else if(result=="misc:Restart the game")
+{
+if (!SCRIPT_COMPILED)
+{
+writeprefs();
+wait(50);
+speak("Restarting.");
+run("C:/nvgt/nvgtw.exe","uw.nvgt",false, false);
+exit();
+}
+else
+{
+writeprefs();
+wait(50);
+speak("Restarting.");
+run("uw.exe","",false, false);
+exit();
+}
+		}
 	else if(result=="misc:Check for updates") {
 		s.fade_music(20);
 		if (check_updates() != 0) mainmenu();
@@ -1462,11 +1491,26 @@ int yesno(string question) {
 void musicmenu() {
 	setupmenu(false, true);
 	string[] ambs = string_split(musictypes, "\r\n", false);
-	for (uint i = 0; i < ambs.length(); i++)
-		m.add_item(ambs[i] + ".ogg", ambs[i], ambs[i], true);
+	#if plugin_legacy_sound
+		pack@ musicpack = cast<pack>(sound_default_pack);
+	#endif
+	#if_not plugin_legacy_sound
+		pack_file@ musicpack = cast<pack_file>(sound_default_pack);
+	#endif
+	if (@musicpack == null) {
+		speak("Error. Unable to load game musics.");
+		return;
+	}
+	string[] all_pack_files = musicpack.list_files();
+	for (uint i = 0; i < ambs.length(); i++) {
+		string name = ambs[i];
+		string filename = name + ".ogg";
+		if (all_pack_files.find(filename) > -1)
+			m.add_item(filename, name, name, true);
+	}
 	m.add_item_tts("go back", "back");
 	int mres = m.run("Select a music track to be played in the main menu", true);
-	if (m.get_item_name(mres) != "back" and mres != 0) {
+	if (m.get_item_name(mres) != "back" && mres != 0) {
 		string newtrack = m.get_item_name(mres) + ".ogg";
 		speak("done");
 		musictrack = newtrack;
@@ -2878,17 +2922,17 @@ void checkarroundmenu() {
 	string mres = menu("Find what?", cs);
 	if (mres == "" or mres == "stoptrack") {
 		speak("Stopped tracking");
-		trackx = -1; tracky = -1; trackz = -1; tracking = "";
+		ztrackx = -1; ztracky = -1; ztrackz = -1; ztracking = "";
 		return;
 	} else {
 		int zz = get_zone_index(mres);
 		if (zz > -1) {
 			zone@ z = zones[zz];
-			trackx = z.minx;
-			tracky = z.miny;
-			trackz = z.minz;
-			tracking = z.text;
-			tell_where(trackx, tracky, trackz, "loctrack", false);
+			ztrackx = z.minx;
+			ztracky = z.miny;
+			ztrackz = z.minz;
+			ztracking = z.text;
+			tell_where(ztrackx, ztracky, ztrackz, "loctrack", false);
 		} else {
 			if (SCRIPT_COMPILED == false) speak("That zone could not be found");
 		}

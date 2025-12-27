@@ -4,12 +4,12 @@ void buildsafezone() {
         string nums = "1234567890-";
         string mx, mmx, my, mmy, mz, mmz;
         form.create_window("safe zone", false);
-        int a = form.create_input_box("type the minimum &x of the safe zone");
-        int b = form.create_input_box("type the maximum &x of the safe zone");
-        int c = form.create_input_box("type the minimum &y of the safe zone");
-        int d = form.create_input_box("type the maximum &y of the safe zone");
-        int e = form.create_input_box("type the minimum &z of the safe zone");
-        int f = form.create_input_box("type the maximum &z of the safe zone");
+        int a = form.create_input_box("type the minimum &x of the safe zone",lx);
+        int b = form.create_input_box("type the maximum &x of the safe zone",rx);
+        int c = form.create_input_box("type the minimum &y of the safe zone",by);
+        int d = form.create_input_box("type the maximum &y of the safe zone",fy);
+        int e = form.create_input_box("type the minimum &z of the safe zone",bz);
+        int f = form.create_input_box("type the maximum &z of the safe zone",tz);
         form.set_disallowed_chars(a, nums, true);
         form.set_disallowed_chars(b, nums, true);
         form.set_disallowed_chars(c, nums, true);
@@ -40,16 +40,7 @@ void buildsafezone() {
             speak("canceled");
             return;
         }
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.y || my  > max.y ||
-            mmy < min.y || mmy > max.y ||
-            mz  < min.z || mz  > max.z ||
-            mmz < min.z || mmz > max.z)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
+
         send_reliable(peer_id, "addsafezone safezone:" + mx + ":" + mmx + ":" + my + ":" + mmy + ":" + mz + ":" + mmz, 0);
     }
     else {
@@ -57,10 +48,10 @@ void buildsafezone() {
         string nums = "1234567890-";
         string mx, mmx, my, mmy;
         form.create_window("safe zone", false);
-        int a = form.create_input_box("type the minimum &x of the safe zone");
-        int b = form.create_input_box("type the maximum &x of the safe zone");
-        int c = form.create_input_box("type the minimum &y of the safe zone");
-        int d = form.create_input_box("type the maximum &y of the safe zone");
+        int a = form.create_input_box("type the minimum &x of the safe zone",lx);
+        int b = form.create_input_box("type the maximum &x of the safe zone",rx);
+        int c = form.create_input_box("type the minimum &y of the safe zone",bz);
+        int d = form.create_input_box("type the maximum &y of the safe zone",tz);
         form.set_disallowed_chars(a, nums, true);
         form.set_disallowed_chars(b, nums, true);
         form.set_disallowed_chars(c, nums, true);
@@ -87,14 +78,7 @@ void buildsafezone() {
             speak("canceled");
             return;
         }
-        if (mx  < min.x || mx  > max.x ||
-            mmx < min.x || mmx > max.x ||
-            my  < min.y || my  > max.y ||
-            mmy < min.y || mmy > max.y)
-        {
-            speak("error. Given coordinates are out of range");
-            return;
-        }
+
         send_reliable(peer_id, "addsafezone safezone:" + mx + ":" + mmx + ":0:0:" + my + ":" + mmy, 0);
     }
 }

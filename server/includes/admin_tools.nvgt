@@ -1,0 +1,55 @@
+void remove_duplicate_map_owners(player@ p) {
+    string[] map_dirs = find_directories("maps/*");
+    int total_removed = 0;
+    int maps_cleaned = 0;
+
+    for (uint i = 0; i < map_dirs.length(); i++) {
+        string map_name = map_dirs[i];
+        string map_file_path = "maps/" + map_name + "/!.map";
+
+        if (!file_exists(map_file_path)) {
+            continue;
+        }
+
+        file f;
+        if (!f.open(map_file_path, "r")) {
+            continue;
+        }
+        string raw_map_data = f.read().replace("\r\n", "\n").replace("\r", "");
+        f.close();
+
+        string[] map_lines = string_split(raw_map_data, "\n", false);
+        string[] new_map_lines;
+        string[] unique_owners;
+        int removed_in_this_map = 0;
+
+        for (uint j = 0; j < map_lines.length(); j++) {
+            string line = map_lines[j];
+            if (line.starts_with("owner:")) {
+                string owner_name = string_trim_left(line, "owner:".length());
+                if (unique_owners.find(owner_name) == -1) {
+                    unique_owners.insert_last(owner_name);
+                    new_map_lines.insert_last(line);
+                } else {
+                    removed_in_this_map++;
+                }
+            } else {
+                new_map_lines.insert_last(line);
+            }
+        }
+        
+        if (removed_in_this_map > 0) {
+            if (!f.open(map_file_path, "w")) {
+                continue;
+            }
+            f.write(join(new_map_lines, "\n"));
+            f.close();
+            total_removed += removed_in_this_map;
+            maps_cleaned++;
+        }
+    }
+    init_mapsystem();
+    if (@p != null) {
+        send_reliable(p, "Clean complete. Removed " + total_removed + " duplicates in " + maps_cleaned + " maps.", 2);
+    }
+}

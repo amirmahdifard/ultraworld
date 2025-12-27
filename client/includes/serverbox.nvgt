@@ -1,0 +1,62 @@
+void serverbox(int mode=0, int maxlength=-1, int autosend=0, int keypresses=-1, string sendtext="server_box", string text="enter text")
+{
+inbox=true;
+string disallowed="";
+bool only_disallowed=false;
+string description="";
+	if(mode==1)
+{
+		disallowed="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 -";
+		only_disallowed=true;
+description="Only letters and numbers are allowed";
+}
+else if(mode==2)
+{
+disallowed="-0123456789";
+only_disallowed=true;
+description="Only numbers are allowed";
+}
+form.create_window();
+int message=form.create_input_box("&"+text,"","",maxlength,false,true,false);
+if (disallowed.length() > 0)
+{
+    form.set_disallowed_chars(message, disallowed, only_disallowed, description);
+}
+int send=form.create_button("&Send");
+int cancel=form.create_button("&Cancel");
+form.focus(message);
+form.set_button_attributes(send, true, false);
+form.set_button_attributes(cancel, false, true);
+while(true)
+{
+form.monitor();
+wait(5);
+mainloop();
+if(form.is_pressed(cancel))
+{
+send_reliable(peer_id, sendtext + " [cncel]", 0);
+keys_pressed();
+get_characters();
+inbox=false;
+form.reset();
+break;
+}
+else if(form.is_pressed(send))
+{
+if(form.get_text(message)=="")
+{
+speak("you can't send an empty chat");
+form.reset();
+break;
+}
+else
+{
+send_reliable(peer_id, sendtext+" "+form.get_text(message), 0);
+get_characters();
+inbox=false;
+form.reset();
+break;
+}
+}
+}
+}

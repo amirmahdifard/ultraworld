@@ -162,15 +162,16 @@ class team {
 			::bsend(l.obj.peer_id, buffer, snd, msg);
 		}
 	}
-	void transmit(string t, bool chat = false, int channel = 2, string snd = "teamchat.ogg") {
+	void transmit(string t, bool chat = false, int channel = 0, string snd = "teamchat.ogg") {
 		if (chat) {
 			this.transmit2(t, snd = snd);
 			return;
 		}
+		string packet = "teamevent " + t;
 		foreach (teamplayer@ l: this.online_players) {
 			player@ dex = @l.obj;
 			if (@dex == null) continue;
-			send_reliable(dex, t, channel);
+			send_reliable(dex, packet, channel);
 		}
 	}
 	bool put(string pname) {
