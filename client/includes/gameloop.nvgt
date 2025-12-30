@@ -688,10 +688,29 @@ speak("The builder selection points have been cleared");
 			else if (get_tile_at(me.x, me.y, me.z) == "" or get_tile_at(me.x, me.y, me.z) == "air")
 				speak("you can't delete your inventory in the air");
 			else {
-				rvp.play_stationary("invdelete.ogg", false);
-				send_reliable(peer_id, "draw invdelete.ogg", 7);
-				send_reliable(peer_id, "invdrop", 0);
-				speak("Inventory dropped");
+				speak("Are you sure you want to drop your inventory? Press Y for yes or N for no");
+				timer t;
+				t.restart();
+				bool answered = false;
+				bool confirmed = false;
+				while (t.elapsed < 5000 and !answered) { // 5 second timeout
+					wait(5);
+					mainloop();
+					if (key_pressed(KEY_Y)) {
+						answered = true;
+						confirmed = true;
+					} else if (key_pressed(KEY_N) || key_pressed(KEY_ESCAPE)) {
+						answered = true;
+						confirmed = false;
+					}
+				}
+				if (confirmed) {
+					rvp.play_stationary("invdelete.ogg", false);
+					send_reliable(peer_id, "draw invdelete.ogg", 7);
+					send_reliable(peer_id, "invdrop", 0);
+					speak("Inventory dropped");
+				} else
+					speak("Canceled");
 			}
 		}
 		if (get_tile_at(me.x, me.y, me.z) != "underwater") {
