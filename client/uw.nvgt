@@ -1240,9 +1240,9 @@ void entercheck() {
 					dmoving = true;
 					send_reliable(peer_id, "iamdmoving " + pdoors[i].ds2, 0);
 				} else
-					speak("rong password");
+					speak("wrong password");
 			} else
-				speak("rong password");
+				speak("wrong password");
 		}
 	}
 	for (uint i = 0; i < icdoors.length(); i++) {
@@ -1325,9 +1325,9 @@ void travelcheck() {
 					if (ptravelpoints[i].ds3 != "silence" and sleepmode != 0) send_reliable(0, "draw " + ptravelpoints[i].ds3, 7);
 					if (ptravelpoints[i].ds3 != "silence") rvp.play_stationary(ptravelpoints[i].ds3, false);
 				} else
-					speak("rong password");
+					speak("wrong password");
 			} else
-				speak("rong password");
+				speak("wrong password");
 		}
 	}
 	for (uint i = 0; i < ictravelpoints.length(); i++) {
@@ -1397,9 +1397,9 @@ void movecheck() {
 					if (pautomatic_travelpoints[i].ds3 != "silence" and sleepmode != 0) send_reliable(0, "draw " + pautomatic_travelpoints[i].ds3, 7);
 					if (pautomatic_travelpoints[i].ds3 != "silence") rvp.play_stationary(pautomatic_travelpoints[i].ds3, false);
 				} else
-					speak("rong password");
+					speak("wrong password");
 			} else
-				speak("rong password");
+				speak("wrong password");
 		}
 	}
 	for (uint i = 0; i < icautomatic_travelpoints.length(); i++) {
@@ -1464,9 +1464,9 @@ void movecheck() {
 					amoving = true;
 					send_reliable(peer_id, "iamamoving " + pautomovers[i].ds2, 0);
 				} else
-					speak("rong password");
+					speak("wrong password");
 			} else
-				speak("rong password");
+				speak("wrong password");
 		}
 	}
 	for (uint i = 0; i < icautomovers.length(); i++) {
@@ -1561,9 +1561,9 @@ void movecheck2() {
 					if (pautomatic_travelpoints[i].ds3 != "silence" and sleepmode != 0) send_reliable(0, "draw " + pautomatic_travelpoints[i].ds3, 7);
 					if (pautomatic_travelpoints[i].ds3 != "silence") rvp.play_stationary(pautomatic_travelpoints[i].ds3, false);
 				} else
-					speak("rong password");
+					speak("wrong password");
 			} else
-				speak("rong password");
+				speak("wrong password");
 		}
 	}
 	for (uint i = 0; i < icautomatic_travelpoints.length(); i++) {
@@ -1628,9 +1628,9 @@ void movecheck2() {
 					amoving = true;
 					send_reliable(peer_id, "iamamoving " + pautomovers[i].ds2, 0);
 				} else
-					speak("rong password");
+					speak("wrong password");
 			} else
-				speak("rong password");
+				speak("wrong password");
 		}
 	}
 	for (uint i = 0; i < icautomovers.length(); i++) {
