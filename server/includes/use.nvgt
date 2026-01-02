@@ -102,6 +102,7 @@ void use(player@p, string message) {
 				menuitems += another_p[0] + ", you have " + another_p[1] + ":" + another_p[0] + "[]";
 			}
 			send_menu(p.peer_id, "Select the item you would like to send", "icstart", menuitems);
+			send_reliable(p, "hempty " + parsed[2], 0);
 		} else if (parsed[1] == "antibiotic") {
 			send_packet(6, "play antibiotic.ogg " + p.x + " " + p.y + " " + p.z, p.x, p.y, p.z, maps[get_map_index(p.map)]);
 			p.sick -= 10.5;

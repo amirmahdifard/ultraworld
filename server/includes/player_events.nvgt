@@ -2317,12 +2317,16 @@ void player_event(player@p, string event) {
 			send_reliable(p, "Operation canceled!", 0);
 			return;
 		} else {
-			p.inv_add_item("carrier_missile", -1);
+			p.inv_add_item("item_carier", -1);
 			p.missilez = string_to_number(parsed[1]);
 			if (can_spawn_item_at(p.missilex, p.missiley, p.missilez, maps[get_map_index(p.map)], p.launchitem) == false) {
 				send_reliable(p, "play_s error.ogg", 6);
 				send_reliable(p, p.launchitem + "s are not allowed there!", 0);
-				p.inv_add_item("carrier_missile", 1);
+				p.inv_add_item("item_carier", 1);
+				return;
+			} if (p.inv_item_number(p.launchitem) <= 1) {
+				send_reliable(p, "You don't have any " + p.launchitem + " to send with.", 0);
+				p.inv_add_item("item_carier", 1);
 				return;
 			}
 			send_packet(6, "play carrier_missile_start.ogg " + p.x + " " + p.y + " " + p.z, p.x, p.y, p.z, maps[get_map_index(p.map)]);

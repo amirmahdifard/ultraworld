@@ -826,7 +826,7 @@ void setupserver() {
 	add_to_paid_store("chocolate_boy", 500, "paid_store");
 	add_to_paid_store("item_grabber", 2000, "paid_store");
 	add_to_paid_store("chocolate_girl", 600, "paid_store");
-	add_to_paid_store("starter_pack", 50, "paid_store");
+	//add_to_paid_store("starter_pack", 50, "paid_store");
 	add_to_paid_store("protein_ball", 500, "paid_store");
 	add_to_store("egg", 15, "grocery_store");
 	add_to_store("cream", 47, "grocery_store");
