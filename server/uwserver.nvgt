@@ -26,8 +26,10 @@ int writeprefs = 1;
 int chatting = 1;
 int guessthenumber_active = 0, guessthenumber_minutes = 5;
 int szx = 5;
-int szy = 1;
 int szminx = 5;
+washbasin@[] active_washbasins;
+shower@[] active_showers;
+int szy = 1;
 int szmaxx = 5;
 int szy2 = 0;
 string szmap = "main_map";
@@ -175,6 +177,7 @@ void main() {
 	println("Connecting...");
 	println(cwdir());
 	netsetup = n.setup_server(port, 20, 500);
+	n.receive_timeout_event = true;
 	if (!netsetup) {
 		#if_not linux
 		alert("Error", "Can't set up server.");
@@ -190,6 +193,8 @@ void main() {
 	garbage_collect();
 	setupserver();
 	garbage_collect();
+	auction::load();
+	guess_game::load();
 	init_mapsystem();
 	init_feedback();
 	log("svr", "server started.");
@@ -951,7 +956,8 @@ void move_player(player@p, string map, int x, int y, int z, bool command = false
 		p.mapavoltar = map;
 		playermapupdate(map, x, y, z, p);
 	}
-	send_reliable(p, "move " + p.x + " " + p.y + " " + p.z, 7);
+	if (p.looking != "") send_reliable(p, "move " + p.real_x + " " + p.real_y + " " + p.real_z, 7);
+	else send_reliable(p, "move " + p.x + " " + p.y + " " + p.z, 7);
 }
 void send_vpacket(int channel, string packet, string mapname, bool map_required = true, string name = "") {
 	for (uint i = 0; i < players.length(); i++) {
@@ -1068,6 +1074,11 @@ void login(string u, string p, string yv, uint id, string compid, string node_id
 	//}
 	for (uint i = 0; i < players.length(); i++) {
 		if (string_to_lower_case(players[i].name) == string_to_lower_case(u)) {
+			if (players[i].disconnected) {
+				remove_player(players[i].name);
+				can_login = true;
+				break;
+			}
 			if (u == "kannadiga" or u == "RachelK" or u == "patricus" or u == "powermon" or u == "kiwi-james") {
 				remove_player(players[i].name);
 				can_login = true;

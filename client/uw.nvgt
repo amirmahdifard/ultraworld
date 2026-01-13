@@ -1100,7 +1100,9 @@ void checarjanela() {
 	else set_sound_master_volume(-100);
 }
 void exitgame(bool return_to_menu = true) {
-	send_reliable(0, "close", 0);
+	send_reliable(peer_id, "close", 0);
+}
+void final_exit(bool return_to_menu = true) {
 	client::destruct();
 	reset_network();
 	m.reset(true);

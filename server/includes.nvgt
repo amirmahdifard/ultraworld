@@ -39,6 +39,7 @@
 #include "includes/drawwep.nvgt"
 #include"includes/espionage_camera.nvgt"
 #include "includes/auction.nvgt"
+#include "includes/guess_game.nvgt"
 #include "application.nvgt"
 #include "includes/serverinput.nvgt"
 #include "includes/dvar.nvgt"

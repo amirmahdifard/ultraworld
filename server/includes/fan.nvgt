@@ -15,6 +15,7 @@ class fan {
 		if (on == 1) mid = spawn_moving_sound("fan6.ogg", x, y, z, map);
 	}
 	void loop(int i) {
+		if (on == 0) return;
 		if (health <= 0) {
 			send_packet(6, "play base_fridge_dest.ogg " + x + " " + y + " " + z, x, y, z, maps[get_map_index(map)]);
 			send_dpacket(6, "distsound explode18 " + x + " " + y + " " + z + " " + map, maps[get_map_index(map)]);

@@ -16,7 +16,8 @@ class candle {
 			candles.remove_at(i);
 			return;
 		}
-		if (on == 1 and stimer.elapsed >= 2234) {
+		if (on == 0) return;
+		if (stimer.elapsed >= 2234) {
 			send_packet(6, "play mineloop.ogg " + x + " " + y + " " + z, x, y, z, maps[get_map_index(map.name)]);
 			stimer.restart();
 		}

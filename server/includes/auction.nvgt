@@ -6,8 +6,10 @@ class Auction {
 	string need;
 	double minbid;
 	player@ owner;
+	string owner_name;
 	double bid;
 	player@ bidder;
+	string bidder_name;
 	timer t;
 	Auction(int i, string it, double am, string n, double mb, player@ o) {
 		id = i;
@@ -15,20 +17,54 @@ class Auction {
 		amount = am;
 		need = n;
 		minbid = mb;
-		@owner = o;
+		if (@o != null) {
+			@owner = o;
+			owner_name = o.name;
+		}
 		bid = -1;
 		@bidder = null;
+		bidder_name = "";
 		t.restart();
 	}
 	string info() {
-		string r = "Auction from " + owner.nickname + ": " + amount + " " + item + ", minimum bid " + minbid + " " + need + ". Remaining time: " + ms_to_readable_time(auctiontime - t.elapsed);
-		if(@bidder != null) r += ". Last bid: " + bid + " " + need + " by " + bidder.nickname;
+		string r = "Auction from " + (owner != null ? owner.nickname : owner_name) + ": " + amount + " " + item + ", minimum bid " + minbid + " " + need + ". Remaining time: " + ms_to_readable_time(auctiontime - t.elapsed);
+		if(bidder_name != "") r += ". Last bid: " + bid + " " + need + " by " + (bidder != null ? bidder.nickname : bidder_name);
 		return r;
+	}
+	string pack() {
+		return id + "|" + item + "|" + amount + "|" + need + "|" + minbid + "|" + owner_name + "|" + bid + "|" + bidder_name + "|" + t.elapsed;
 	}
 }
 namespace auction {
 	Auction@[] list;
 	int next_id = 1;
+	void save() {
+		string data = next_id + "\n";
+		for (uint i = 0; i < list.length(); i++) {
+			data += list[i].pack() + "\n";
+		}
+		file_put_contents("auctions.dat", data);
+	}
+	void load() {
+		list.resize(0);
+		if (!file_exists("auctions.dat")) return;
+		string[] lines = string_split(file_get_contents("auctions.dat"), "\n", false);
+		if (lines.length() < 1) return;
+		next_id = string_to_number(lines[0]);
+		for (uint i = 1; i < lines.length(); i++) {
+			if (lines[i] == "") continue;
+			string[] p = string_split(lines[i], "|", false);
+			if (p.length() < 9) continue;
+			Auction a(string_to_number(p[0]), p[1], string_to_number(p[2]), p[3], string_to_number(p[4]), null);
+			a.owner_name = p[5];
+			a.bid = string_to_number(p[6]);
+			a.bidder_name = p[7];
+			a.t.force(string_to_number(p[8]));
+			@a.owner = get_player_obj_from(a.owner_name);
+			if (a.bidder_name != "") @a.bidder = get_player_obj_from(a.bidder_name);
+			list.insert_last(a);
+		}
+	}
 	bool doing {
 		get {
 			return list.length() > 0;
@@ -54,7 +90,7 @@ namespace auction {
 	}
 	void start(string what, double am, string whatget, double mbid, player@ p) {
 		for(uint i=0; i<list.length(); i++) {
-			if(list[i].owner.name == p.name) {
+			if(list[i].owner_name == p.name) {
 				p.sendpacket("You already have an auction in progress", 0);
 				return;
 			}
@@ -69,6 +105,7 @@ namespace auction {
 		Auction a(next_id, what, am, whatget, mbid, p);
 		next_id++;
 		list.insert_last(a);
+		save();
 		snotify(0, "A new auction from " + p.nickname + "! " + am + " " + what + ", minimum bid " + mbid + " " + whatget, "auction" + sndtype, true, "auctions");
 	}
 	void make_bid(player@ p, double b, int id) {
@@ -84,7 +121,7 @@ namespace auction {
 			p.sendpacket("Auction not found", 0);
 			return;
 		}
-		if(a.owner.name == p.name) {
+		if(a.owner_name == p.name) {
 			p.sendpacket("You cannot bid in your own auction", 0);
 			return;
 		}
@@ -102,9 +139,11 @@ namespace auction {
 		}
 		a.bid = b;
 		@a.bidder = p;
+		a.bidder_name = p.name;
 		a.t.restart();
+		save();
 		string msg = p.nickname + " has bid " + b + " " + a.need;
-		if (list.length() > 1) msg += " on " + a.owner.nickname + "'s auction!";
+		if (list.length() > 1) msg += " on " + (a.owner != null ? a.owner.nickname : a.owner_name) + "'s auction!";
 		else msg += "!";
 		snotify(0, msg, "bid" + sndtype, true, "auctions");
 	}
@@ -118,21 +157,15 @@ namespace auction {
 	void loop() {
 		for(uint i=0; i<list.length(); i++) {
 			Auction@ a = list[i];
+			if (@a.owner == null) @a.owner = get_player_obj_from(a.owner_name);
+			if (a.bidder_name != "" && @a.bidder == null) @a.bidder = get_player_obj_from(a.bidder_name);
 			bool ended = false;
 			string endmsg = "";
 			player@ own = a.owner;
-			if(@own == null) {
-				endmsg = "Owner offline";
+			if(a.t.elapsed >= auctiontime) {
 				ended = true;
-			} else if(own.inv.get_item_amount(a.item) < a.amount) {
-				endmsg = "One or more items required are not met";
-				ended = true;
-			} else if(a.t.elapsed >= auctiontime) {
-				ended = true;
-				if(@a.bidder == null) {
-					endmsg = "Auction returned to " + own.nickname;
-				} else if(@a.bidder == null) {
-					endmsg = "Last bidder offline";
+				if(a.bidder_name == "") {
+					endmsg = "Auction returned to " + (own != null ? own.nickname : a.owner_name);
 				}
 			}
 			if(ended) {
@@ -140,28 +173,41 @@ namespace auction {
 					string m = endmsg;
 					if (endmsg.find("Auction returned to") == -1) {
 						m = "Auction reset: " + endmsg;
-						if (list.length() > 1) m += " (Auction from " + a.owner.nickname + ")";
+						if (list.length() > 1) m += " (Auction from " + (own != null ? own.nickname : a.owner_name) + ")";
 					}
 					bsend(0, "auctions", "auctionwon" + sndtype, m);
 				} else {
-					if(a.bidder.inv.get_item_amount(a.need) < a.bid) {
-						bsend(0, "auctions", "auctionwon" + sndtype, "Auction canceled: Bidder does not have enough currency");
+					if(@a.bidder == null || a.bidder.inv.get_item_amount(a.need) < a.bid || @own == null || own.inv.get_item_amount(a.item) < a.amount) {
+						bsend(0, "auctions", "auctionwon" + sndtype, "Auction canceled: Conditions not met (player offline or insufficient items)");
 					} else {
-						a.owner.inv_add_item(a.item, -a.amount, false);
-						a.owner.inv_add_item(a.need, a.bid);
+						own.inv_add_item(a.item, -a.amount, false);
+						own.inv_add_item(a.need, a.bid);
 						a.bidder.inv_add_item(a.need, -a.bid, false);
 						a.bidder.inv_add_item(a.item, a.amount);
-						bsend(0, "auctions", "auctionwon" + sndtype, "Auction ended. " + a.owner.nickname + " sold " + a.amount + " " + a.item + " to " + a.bidder.nickname + " for " + a.bid + " " + a.need);
+						bsend(0, "auctions", "auctionwon" + sndtype, "Auction ended. " + own.nickname + " sold " + a.amount + " " + a.item + " to " + a.bidder.nickname + " for " + a.bid + " " + a.need);
 					}
 				}
 				list.remove_at(i);
 				i--;
+				save();
 			}
 		}
 	}
-	void reset(string msg) {
+	void cancel(int id, string msg = "By staff") {
+		for(uint i=0; i<list.length(); i++) {
+			if(list[i].id == id) {
+				string m = "Auction from " + list[i].owner_name + " canceled: " + msg;
+				bsend(0, "auctions", "auctionwon" + sndtype, m);
+				list.remove_at(i);
+				save();
+				return;
+			}
+		}
+	}
+	void cancel_all(string msg = "By staff") {
 		list.resize(0);
-		if(msg != "") bsend(0, "auctions", "auctionwon" + sndtype, "All auctions reset: " + msg);
+		save();
+		if(msg != "") bsend(0, "auctions", "auctionwon" + sndtype, "All auctions canceled: " + msg);
 	}
 	Auction@ get_auction(int id) {
 		for(uint i=0; i<list.length(); i++) {

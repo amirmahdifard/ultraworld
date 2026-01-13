@@ -1204,6 +1204,8 @@ void weaponloop() {
 								send_packet(6, "play " + hitsound + ".ogg " + players[x].x + " " + players[x].y + " " + players[x].z, players[x].x, players[x].y, players[x].z, maps[get_map_index(players[x].map)]);
 							}
 							players[x].health -= weapons[i].damage;
+							players[x].last_hit_timer.restart();
+							players[x].last_attacker_name = weapons[i].owner.name;
 							send_packet(6, "play v" + string_to_number(players[x].voice) + "hit" + random(1, 5) + ".ogg " + players[x].x + " " + players[x].y + " " + players[x].z, players[x].x, players[x].y, players[x].z, maps[get_map_index(players[x].map)]);
 							players[x].statchangetimer.restart();
 						}

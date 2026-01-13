@@ -29,9 +29,17 @@ class fire {
 			fires.remove_at(i);
 			return;
 		}
-		if (hurttimer.elapsed >= hurttime) {
-			hurttimer.restart();
-			for (uint p = 0; p < players.length(); p++) {
+		if (hurttimer.elapsed < hurttime) {
+			if (lifetimer.elapsed >= lifetime) {
+				destroy_moving_sound(smid);
+				send_packet(6, "play fireout.ogg " + x + " " + y + " " + z, x, y, z, maps[get_map_index(map.name)]);
+				@fires[i] = null;
+				fires.remove_at(i);
+			}
+			return;
+		}
+		hurttimer.restart();
+		for (uint p = 0; p < players.length(); p++) {
 				if (players[p].is_dead or is_safe(players[p].x, players[p].y, players[p].z, maps[get_map_index(players[p].map)]) or players[p].safe or players[p].pvp == 0 or players[p].away or players[p].afk or players[p].newb == 1 or players[p].looking != "" or players[p].looker != "") continue;
 				if (players[p].map == map.name and get_3d_distance(players[p].x, players[p].y, players[p].z, x, y, z) <= spread) {
 					players[p].health -= dam;
@@ -95,7 +103,6 @@ class fire {
 				fires.remove_at(i);
 				return;
 			}
-		}
 	}
 }
 void spawn_fire(int x, int y, int z, mapdata@m, int dam) {

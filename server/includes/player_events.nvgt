@@ -217,6 +217,25 @@ void player_event(player@p, string event) {
 		} else {
 			p.sendpacket("Auction not found.", 0);
 		}
+	} else if (string_left(parsed[0], 21) == "cancel_auction_select") {
+		if (!p.assistant) return;
+		string raw = string_replace(event, "cancel_auction_select ", "", false);
+		string[] parts = string_split(raw, "|", false);
+		string reason = (parts.length() > 0 ? parts[0] : "By staff");
+		string id_str = (parts.length() > 1 ? parts[1] : "");
+		if (id_str == "all") {
+			auction::cancel_all(reason);
+		} else {
+			auction::cancel(string_to_number(id_str), reason);
+		}
+	} else if (parsed[0] == "confirm_pvp_on" and parsed.length() >= 2) {
+		if (parsed[1] == "yes") {
+			p.pvp = 1;
+			send_packetn(6, p.name, "distsound pvpon " + p.x + " " + p.y + " " + p.z + " " + p.map, p.x, p.y, p.z, maps[get_map_index(p.map)]);
+			pesend(0, "" + p.nickname + " is now pvp!", "pvpon.ogg");
+			write_to(p.name, "pvp.usr", p.pvp);
+			titlecheck(p);
+		}
 	} else if (parsed[0] == "xp_edit_day") {
 		if (!p.is_admin() && !p.is_manager() && !p.is_dev()) return;
 		int day = string_to_number(parsed[1]);
@@ -4461,9 +4480,9 @@ void player_event(player@p, string event) {
 		string n = "";
 		if (ind > -1) {
 			n = players[ind].name;
-			x = players[ind].x;
-			y = players[ind].y;
-			z = players[ind].z;
+			x = players[ind].real_x;
+			y = players[ind].real_y;
+			z = players[ind].real_z;
 			string[] playernames = nearest_player_sorted_array(players[ind]);
 			finaltext += linear(playernames);
 			send_reliable(p, finaltext, 0);
@@ -4477,9 +4496,9 @@ void player_event(player@p, string event) {
 		string n = "";
 		if (ind > -1) {
 			n = players[ind].name;
-			x = players[ind].x;
-			y = players[ind].y;
-			z = players[ind].z;
+			x = players[ind].real_x;
+			y = players[ind].real_y;
+			z = players[ind].real_z;
 			string[] playernames = nearest_player_sorted_arrayto(players[ind]);
 			finaltext += linear(playernames);
 			send_reliable(p, finaltext, 0);
@@ -4538,9 +4557,8 @@ void player_event(player@p, string event) {
 		file f;
 		int mapindex = get_map_index(p.map);
 		if (mapindex > -1) {
-			{
-				if (maps[mapindex].owners.find(p.name) > -1 or maps[mapindex].owners.find(p.partner) > -1 or p.is_admin()) {
-					if (what == "tile")
+			if (maps[mapindex].owners.find(p.name) > -1 or maps[mapindex].owners.find(p.partner) > -1 or p.is_admin()) {
+				if (what == "tile")
 						send_reliable(p, "buildtile", 0);
 					else if (what == "zone")
 						send_reliable(p, "buildzone", 0);
@@ -4910,13 +4928,11 @@ void player_event(player@p, string event) {
 						//send_reliable(p, "Not working. Use /rawdata <data> command", 0);
 					} else if (what == "specified_air_temperature")
 						send_reliable(p, "buildspecified_air_temperature", 0);
-						else buildobj_perform(p, what);
-				}
-				return;
-			}
-		}
-	} else if (parsed[0] == "build") {
-		build_menu(p);
+															else buildobj_perform(p, what);
+														}
+														return;
+													}
+											} else if (parsed[0] == "build") {		build_menu(p);
 	} else if (parsed[0] == "bAI" and parsed.length() > 1) {
 		int mapindex = get_map_index(p.map);
 		if (mapindex > -1) {
@@ -9298,6 +9314,7 @@ void player_event(player@p, string event) {
 				washbasins[i].fechando.restart();
 				washbasins[i].fechar.restart();
 				washbasins[i].aberta = true;
+				active_washbasins.insert_last(@washbasins[i]);
 			}
 		}
 		for (uint i = 0; i < showers.length(); i++) {
@@ -9307,6 +9324,7 @@ void player_event(player@p, string event) {
 				showers[i].fechando.restart();
 				showers[i].fechar.restart();
 				showers[i].aberta = true;
+				active_showers.insert_last(@showers[i]);
 			}
 		}
 		for (uint i = 0; i < objs.length(); i++) {
@@ -10028,6 +10046,23 @@ void player_event(player@p, string event) {
 		m.multiline = 1;
 		m.send(p.peer_id);
 	} else if (parsed[0] == "close") {
+		if (p.should_finalize_close == false) {
+			if (p.last_attacker_name != "" and p.last_hit_timer.elapsed < 300000) {
+				player@ enemy = get_player_obj_from(p.last_attacker_name);
+				if (@enemy != null and enemy.map == p.map and get_3d_distance(p.x, p.y, p.z, enemy.x, enemy.y, enemy.z) < 100) {
+					send_reliable(p, "You can't log out right now! " + enemy.nickname + " is too close and recently attacked you.", 2);
+					return;
+				}
+			}
+			p.logout_requested = true;
+			p.logout_timer.restart();
+			p.logout_x = p.x;
+			p.logout_y = p.y;
+			p.logout_z = p.z;
+			send_reliable(p, "Logging out in 10 seconds. Don't move!", 2);
+			return;
+		}
+		p.should_finalize_close = false;
 		log("disconnections", p.name + " offline", true);
 		for (uint i2 = 0; i2 < arenas.length(); i2++) {
 			if (p.map == arenas[i2].map) {

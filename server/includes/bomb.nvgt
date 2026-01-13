@@ -21,9 +21,13 @@ class censor_bomb {
 		bool ret = false;
 		if (@this.owner == null) return false;
 		for (uint i2 = 0; i2 < players.length(); i2++) {
-			if (are_teamed(owner.name, players[i2].name) or players[i2].is_dead or is_safe(players[i2].x, players[i2].y, players[i2].z, maps[get_map_index(players[i2].map)]) or players[i2].safe or players[i2].pvp == 0 or players[i2].away or players[i2].afk or players[i2].newb == 1 or players[i2].looking != "") continue;
-			if (owner.pvp == 1 and players[i2].map == map.name and players[i2].name != owner.name and get_3d_distance(x, y, z, players[i2].x, players[i2].y, players[i2].z) <= 15)
+			if (players[i2].map != map.name) continue;
+			if (get_3d_distance(x, y, z, players[i2].x, players[i2].y, players[i2].z) > 15) continue;
+			if (are_teamed(owner.name, players[i2].name) or players[i2].is_dead or is_safe(players[i2].x, players[i2].y, players[i2].z, map) or players[i2].safe or players[i2].pvp == 0 or players[i2].away or players[i2].afk or players[i2].newb == 1 or players[i2].looking != "") continue;
+			if (owner.pvp == 1 and players[i2].name != owner.name) {
 				ret = true;
+				break;
+			}
 		}
 		return ret;
 	}
@@ -34,7 +38,7 @@ class censor_bomb {
 		}
 		if (scantimer.elapsed >= 1000) {
 			scantimer.restart();
-			send_packet(6, "play censor_bombscan.ogg " + x + " " + y + " " + z, x, y, z, maps[get_map_index(map.name)]);
+			send_packet(6, "play censor_bombscan.ogg " + x + " " + y + " " + z, x, y, z, map);
 			bool t = d;
 			d = censorcheck();
 			if (t == false and d == true) {beeptimer.restart(); bombtimer.restart();}
@@ -44,19 +48,21 @@ class censor_bomb {
 			if (beeptimer.elapsed >= beeptime) {
 				if (seconds > 300) d = censorcheck();
 				beeptimer.restart();
-				send_packet(6, "play censor_bombbeep.ogg " + x + " " + y + " " + z, x, y, z, maps[get_map_index(map.name)]);
+				send_packet(6, "play censor_bombbeep.ogg " + x + " " + y + " " + z, x, y, z, map);
 			}
 			if (seconds <= 0) {
-				send_packet(6, "play censor_bomb.ogg " + x + " " + y + " " + z, x, y, z, maps[get_map_index(map.name)]);
-				send_packet(6, "play censor_bombhit.ogg " + x + " " + y + " " + z, x, y, z, maps[get_map_index(map.name)]);
+				send_packet(6, "play censor_bomb.ogg " + x + " " + y + " " + z, x, y, z, map);
+				send_packet(6, "play censor_bombhit.ogg " + x + " " + y + " " + z, x, y, z, map);
 				send_dpacket(6, "distsound censor_bombdist " + x + " " + y + " " + z + " " + map.name, maps[get_map_index(map.name)]);
 				for (uint i2 = 0; i2 < players.length(); i2++) {
-					if (are_teamed(owner.name, players[i2].name) or players[i2].is_dead or is_safe(players[i2].x, players[i2].y, players[i2].z, maps[get_map_index(players[i2].map)]) or players[i2].safe or players[i2].pvp == 0 or players[i2].away or players[i2].afk or players[i2].newb == 1 or players[i2].looking != "") continue;
-					if (owner.pvp == 1 and players[i2].map == map.name and get_3d_distance(x, y, z, players[i2].x, players[i2].y, players[i2].z) <= 20) {
+					if (players[i2].map != map.name) continue;
+					if (get_3d_distance(x, y, z, players[i2].x, players[i2].y, players[i2].z) > 20) continue;
+					if (are_teamed(owner.name, players[i2].name) or players[i2].is_dead or is_safe(players[i2].x, players[i2].y, players[i2].z, map) or players[i2].safe or players[i2].pvp == 0 or players[i2].away or players[i2].afk or players[i2].newb == 1 or players[i2].looking != "") continue;
+					if (owner.pvp == 1) {
 						players[i2].hit(2000, 8000);
 						players[i2].should_subtract = false;
 						players[i2].hitby = owner.name + "'s censor bomb";
-						send_packet(6, "play censor_bombhit.ogg " + players[i2].x + " " + players[i2].y + " " + players[i2].z, players[i2].x, players[i2].y, players[i2].z, maps[get_map_index(players[i2].map)]);
+						send_packet(6, "play censor_bombhit.ogg " + players[i2].x + " " + players[i2].y + " " + players[i2].z, players[i2].x, players[i2].y, players[i2].z, map);
 					}
 				}
 				for (uint i2 = 0; i2 < ais.length(); i2++) {
@@ -176,7 +182,7 @@ class nuclear_bomb {
 		z = cz;
 		@map = m;
 		@owner = p;
-		send_packet(6, "play nuclearbombplace.ogg " + x + " " + y + " " + z, x, y, z, maps[get_map_index(map.name)]);
+		send_packet(6, "play nuclearbombplace.ogg " + x + " " + y + " " + z, x, y, z, map);
 	}
 	void loop(int i) {
 		if (@map == null or @owner == null) {
@@ -195,18 +201,20 @@ class nuclear_bomb {
 		if (tbipar1.elapsed >= 10000 && bombaatomicatimer.elapsed < 50000) {
 			tbipar1.restart();
 			tbipar2.restart();
-			send_packet(6, "play nuclearbombbeep.ogg " + x + " " + y + " " + z, x, y, z, maps[get_map_index(map.name)]);
+			send_packet(6, "play nuclearbombbeep.ogg " + x + " " + y + " " + z, x, y, z, map);
 		}
 		if (tbipar2.elapsed >= 1000 && bombaatomicatimer.elapsed >= 50000) {
-			send_packet(6, "play nuclearbombbeep.ogg " + x + " " + y + " " + z, x, y, z, maps[get_map_index(map.name)]);
+			send_packet(6, "play nuclearbombbeep.ogg " + x + " " + y + " " + z, x, y, z, map);
 			tbipar2.restart();
 		}
 		if (bombaatomicatimer.elapsed >= bombaatomicatime) {
-			send_packet(6, "play nuclearbombexplode.ogg " + x + " " + y + " " + z, x, y, z, maps[get_map_index(map.name)]);
+			send_packet(6, "play nuclearbombexplode.ogg " + x + " " + y + " " + z, x, y, z, map);
 			send_dpacket(6, "distsound nuclearbombexplode " + x + " " + y + " " + z + " " + map.name, maps[get_map_index(map.name)]);
 			for (uint p = 0; p < players.length(); p++) {
-				if (are_teamed(owner.name, players[p].name) or players[p].is_dead or is_safe(players[p].x, players[p].y, players[p].z, maps[get_map_index(players[p].map)]) or players[p].safe or players[p].pvp == 0 or players[p].away or players[p].afk or players[p].newb == 1 or players[p].looking != "") continue;
-				if (owner.pvp == 1 and players[p].map == map.name) {
+				if (players[p].map != map.name) continue;
+				if (are_teamed(owner.name, players[p].name) or players[p].is_dead or is_safe(players[p].x, players[p].y, players[p].z, map) or players[p].safe or players[p].pvp == 0 or players[p].away or players[p].afk or players[p].newb == 1 or players[p].looking != "") continue;
+				if (players[p].name == owner.name) continue;
+				if (owner.pvp == 1) {
 					players[p].health -= random(5000, 10000);
 					players[p].hitby = "nuclear_bomb_of_" + owner.name;
 				}
@@ -351,6 +359,12 @@ class nuclear_bomb {
 	}
 }
 void spawn_nuclear_bomb(int x, int y, int z, mapdata@m, player@p) {
+	if (p.nuke_cooldown.elapsed < 60000) {
+		int rem = (60000 - p.nuke_cooldown.elapsed) / 1000;
+		send_reliable(p, "You must wait " + rem + " seconds before spawning another nuclear bomb.", 0);
+		return;
+	}
+	p.nuke_cooldown.restart();
 	nuclear_bomb bomb(x, y, z, m, p);
 	if (@bomb.map == null or @bomb.owner == null) return;
 	else nuclear_bombs.insert_last(bomb);
@@ -368,7 +382,7 @@ class small_nuclear_bomb {
 		z = cz;
 		@map = m;
 		@owner = p;
-		send_packet(6, "play nuclearbombplace.ogg " + x + " " + y + " " + z, x, y, z, maps[get_map_index(map.name)]);
+		send_packet(6, "play nuclearbombplace.ogg " + x + " " + y + " " + z, x, y, z, map);
 	}
 	void loop(int i) {
 		if (@map == null or @owner == null) {
@@ -387,18 +401,19 @@ class small_nuclear_bomb {
 		if (tbipar1.elapsed >= 10000 && bombaatomicatimer.elapsed < 50000) {
 			tbipar1.restart();
 			tbipar2.restart();
-			send_packet(6, "play nuclearbombbeep.ogg " + x + " " + y + " " + z, x, y, z, maps[get_map_index(map.name)]);
+			send_packet(6, "play nuclearbombbeep.ogg " + x + " " + y + " " + z, x, y, z, map);
 		}
 		if (tbipar2.elapsed >= 1000 && bombaatomicatimer.elapsed >= 50000) {
-			send_packet(6, "play nuclearbombbeep.ogg " + x + " " + y + " " + z, x, y, z, maps[get_map_index(map.name)]);
+			send_packet(6, "play nuclearbombbeep.ogg " + x + " " + y + " " + z, x, y, z, map);
 			tbipar2.restart();
 		}
 		if (bombaatomicatimer.elapsed >= bombaatomicatime) {
-			send_packet(6, "play nuclearbombexplode.ogg " + x + " " + y + " " + z, x, y, z, maps[get_map_index(map.name)]);
+			send_packet(6, "play nuclearbombexplode.ogg " + x + " " + y + " " + z, x, y, z, map);
 			send_dpacket(6, "distsound nuclearbombexplode " + x + " " + y + " " + z + " " + map.name, maps[get_map_index(map.name)]);
 			for (uint p = 0; p < players.length(); p++) {
-				if (are_teamed(owner.name, players[p].name) or players[p].is_dead or is_safe(players[p].x, players[p].y, players[p].z, maps[get_map_index(players[p].map)]) or players[p].safe or players[p].pvp == 0 or players[p].away or players[p].afk or players[p].newb == 1 or players[p].looking != "") continue;
-				if (owner.pvp == 1 and players[p].map == map.name) {
+				if (players[p].map != map.name) continue;
+				if (are_teamed(owner.name, players[p].name) or players[p].is_dead or is_safe(players[p].x, players[p].y, players[p].z, map) or players[p].safe or players[p].pvp == 0 or players[p].away or players[p].afk or players[p].newb == 1 or players[p].looking != "") continue;
+				if (owner.pvp == 1) {
 					players[p].health -= random(5000, 10000);
 					players[p].hitby = "small_nuclear_bomb_of_" + owner.name;
 				}
@@ -545,6 +560,12 @@ class small_nuclear_bomb {
 	}
 }
 void spawn_small_nuclear_bomb(int x, int y, int z, mapdata@m, player@p) {
+	if (p.nuke_cooldown.elapsed < 60000) {
+		int rem = (60000 - p.nuke_cooldown.elapsed) / 1000;
+		send_reliable(p, "You must wait " + rem + " seconds before spawning another nuclear bomb.", 0);
+		return;
+	}
+	p.nuke_cooldown.restart();
 	small_nuclear_bomb bomb(x, y, z, m, p);
 	if (@bomb.map == null or @bomb.owner == null) return;
 	else small_nuclear_bombs.insert_last(bomb);
@@ -562,7 +583,7 @@ class large_nuclear_bomb {
 		z = cz;
 		@map = m;
 		@owner = p;
-		send_packet(6, "play nuclearbombplace.ogg " + x + " " + y + " " + z, x, y, z, maps[get_map_index(map.name)]);
+		send_packet(6, "play nuclearbombplace.ogg " + x + " " + y + " " + z, x, y, z, map);
 	}
 	void loop(int i) {
 		if (@map == null or @owner == null) {
@@ -581,19 +602,21 @@ class large_nuclear_bomb {
 		if (tbipar1.elapsed >= 10000 && bombaatomicatimer.elapsed < 50000) {
 			tbipar1.restart();
 			tbipar2.restart();
-			send_packet(6, "play nuclearbombbeep.ogg " + x + " " + y + " " + z, x, y, z, maps[get_map_index(map.name)]);
+			send_packet(6, "play nuclearbombbeep.ogg " + x + " " + y + " " + z, x, y, z, map);
 		}
 		if (tbipar2.elapsed >= 1000 && bombaatomicatimer.elapsed >= 50000) {
-			send_packet(6, "play nuclearbombbeep.ogg " + x + " " + y + " " + z, x, y, z, maps[get_map_index(map.name)]);
+			send_packet(6, "play nuclearbombbeep.ogg " + x + " " + y + " " + z, x, y, z, map);
 			tbipar2.restart();
 		}
 		if (bombaatomicatimer.elapsed >= bombaatomicatime) {
-			send_packet(6, "play nuclearbombexplode.ogg " + x + " " + y + " " + z, x, y, z, maps[get_map_index(map.name)]);
+			send_packet(6, "play nuclearbombexplode.ogg " + x + " " + y + " " + z, x, y, z, map);
 			send_dpacket(6, "distsound nuclearbombexplode " + x + " " + y + " " + z + " " + map.name, maps[get_map_index(map.name)]);
 			for (uint p = 0; p < players.length(); p++) {
-				if (are_teamed(owner.name, players[p].name) or players[p].is_dead or is_safe(players[p].x, players[p].y, players[p].z, maps[get_map_index(players[p].map)]) or players[p].safe or players[p].pvp == 0 or players[p].away or players[p].afk or players[p].newb == 1 or players[p].looking != "") continue;
-				if (owner.pvp == 1 and players[p].map == map.name) {
-					players[p].health -= random(5000, 10000);
+				if (players[p].map != map.name) continue;
+				if (are_teamed(owner.name, players[p].name) or players[p].is_dead or is_safe(players[p].x, players[p].y, players[p].z, map) or players[p].safe or players[p].pvp == 0 or players[p].away or players[p].afk or players[p].newb == 1 or players[p].looking != "") continue;
+				if (players[p].name == owner.name) continue;
+				if (owner.pvp == 1) {
+					players[p].health -= random(20000, 50000);
 					players[p].hitby = "large_nuclear_bomb_of_" + owner.name;
 				}
 			}
@@ -737,6 +760,12 @@ class large_nuclear_bomb {
 	}
 }
 void spawn_large_nuclear_bomb(int x, int y, int z, mapdata@m, player@p) {
+	if (p.nuke_cooldown.elapsed < 60000) {
+		int rem = (60000 - p.nuke_cooldown.elapsed) / 1000;
+		send_reliable(p, "You must wait " + rem + " seconds before spawning another nuclear bomb.", 0);
+		return;
+	}
+	p.nuke_cooldown.restart();
 	large_nuclear_bomb bomb(x, y, z, m, p);
 	if (@bomb.map == null or @bomb.owner == null) return;
 	else large_nuclear_bombs.insert_last(bomb);
@@ -756,7 +785,7 @@ class time_bomb {
 		y = by;
 		z = bz;
 		@map = m;
-		send_packet(6, "play timebombdrop.ogg " + x + " " + y + " " + z, x, y, z, maps[get_map_index(map.name)]);
+		send_packet(6, "play timebombdrop.ogg " + x + " " + y + " " + z, x, y, z, map);
 	}
 	void loop(int i) {
 		if (@map == null or @owner == null) {
@@ -767,92 +796,114 @@ class time_bomb {
 		beeptime = seconds / 5 + 50;
 		if (beeptimer.elapsed >= beeptime) {
 			beeptimer.restart();
-			send_packet(6, "play timebombbeep.ogg " + x + " " + y + " " + z, x, y, z, maps[get_map_index(map.name)]);
+			send_packet(6, "play timebombbeep.ogg " + x + " " + y + " " + z, x, y, z, map);
 		}
 		if (seconds <= 0) {
-			send_packet(6, "play timebombexplode.ogg " + x + " " + y + " " + z, x, y, z, maps[get_map_index(map.name)]);
+			send_packet(6, "play timebombexplode.ogg " + x + " " + y + " " + z, x, y, z, map);
 			send_dpacket(6, "distsound timebombdist " + x + " " + y + " " + z + " " + map.name, maps[get_map_index(map.name)]);
 			for (uint i2 = 0; i2 < players.length(); i2++) {
-				if (are_teamed(owner.name, players[i2].name) or players[i2].is_dead or is_safe(players[i2].x, players[i2].y, players[i2].z, maps[get_map_index(players[i2].map)]) or players[i2].safe or players[i2].pvp == 0 or players[i2].away or players[i2].afk or players[i2].newb == 1 or players[i2].looking != "") continue;
-				if (owner.pvp == 1 and players[i2].map == map.name and get_3d_distance(x, y, z, players[i2].x, players[i2].y, players[i2].z) <= 25) {
+				if (players[i2].map != map.name) continue;
+				if (get_3d_distance(x, y, z, players[i2].x, players[i2].y, players[i2].z) > 25) continue;
+				if (are_teamed(owner.name, players[i2].name) or players[i2].is_dead or is_safe(players[i2].x, players[i2].y, players[i2].z, map) or players[i2].safe or players[i2].pvp == 0 or players[i2].away or players[i2].afk or players[i2].newb == 1 or players[i2].looking != "") continue;
+				if (owner.pvp == 1) {
 					players[i2].health -= random(2500, 6500);
 					players[i2].hitby = owner.name + "'s time bomb";
-					send_packet(6, "play timebombhit.ogg " + players[i2].x + " " + players[i2].y + " " + players[i2].z, players[i2].x, players[i2].y, players[i2].z, maps[get_map_index(players[i2].map)]);
+					send_packet(6, "play timebombhit.ogg " + players[i2].x + " " + players[i2].y + " " + players[i2].z, players[i2].x, players[i2].y, players[i2].z, map);
 				}
 			}
 			for (uint i2 = 0; i2 < ais.length(); i2++) {
-				if (ais[i2].map.name == map.name and get_3d_distance(x, y, z, ais[i2].x, ais[i2].y, ais[i2].z) <= 25) {
-					ais[i2].health -= random(600, 1800);
-					ais[i2].hitby = owner.name + "'s time bomb";
-					send_packet(6, "play hit" + random(1, 5), ais[i2].x, ais[i2].y, ais[i2].z, maps[get_map_index(ais[i2].map.name)]);
-				}
+				if (ais[i2].map.name != map.name) continue;
+				if (get_3d_distance(x, y, z, ais[i2].x, ais[i2].y, ais[i2].z) > 25) continue;
+				ais[i2].health -= random(600, 1800);
+				ais[i2].hitby = owner.name + "'s time bomb";
+				send_packet(6, "play hit" + random(1, 5), ais[i2].x, ais[i2].y, ais[i2].z, map);
 			}
 			for (uint i2 = 0; i2 < houses.length(); i2++) {
-				if (owner.pvp == 1 and houses[i2].map == map.name and get_3d_distance(x, y, z, houses[i2].x, houses[i2].y, houses[i2].z) <= 25) {
-					send_packet(6, "play base_impact_ext.ogg " + houses[i2].x + " " + houses[i2].y + " " + houses[i2].z, houses[i2].x, houses[i2].y, houses[i2].z, maps[get_map_index(houses[i2].map)]);
+				if (houses[i2].map != map.name) continue;
+				if (get_3d_distance(x, y, z, houses[i2].x, houses[i2].y, houses[i2].z) > 25) continue;
+				if (owner.pvp == 1) {
+					send_packet(6, "play base_impact_ext.ogg " + houses[i2].x + " " + houses[i2].y + " " + houses[i2].z, houses[i2].x, houses[i2].y, houses[i2].z, map);
 					houses[i2].health -= random(2500, 6500);
 					houses[i2].hitby = owner.name + "'s time bomb";
 				}
 			}
 			for (uint i2 = 0; i2 < lockers.length(); i2++) {
-				if (owner.pvp == 1 and lockers[i2].map == map.name and get_3d_distance(x, y, z, lockers[i2].x, lockers[i2].y, lockers[i2].z) <= 25) {
-					send_packet(6, "play locker_hit" + random(1, 6) + ".ogg " + lockers[i2].x + " " + lockers[i2].y + " " + lockers[i2].z, lockers[i2].x, lockers[i2].y, lockers[i2].z, maps[get_map_index(lockers[i2].map)]);
+				if (lockers[i2].map != map.name) continue;
+				if (get_3d_distance(x, y, z, lockers[i2].x, lockers[i2].y, lockers[i2].z) > 25) continue;
+				if (owner.pvp == 1) {
+					send_packet(6, "play locker_hit" + random(1, 6) + ".ogg " + lockers[i2].x + " " + lockers[i2].y + " " + lockers[i2].z, lockers[i2].x, lockers[i2].y, lockers[i2].z, map);
 					lockers[i2].health -= random(2500, 6500);
 					lockers[i2].hitby = owner.name + "'s time bomb";
 				}
 			}
 			for (uint i2 = 0; i2 < fridges.length(); i2++) {
-				if (owner.pvp == 1 and fridges[i2].map == map.name and get_3d_distance(x, y, z, fridges[i2].x, fridges[i2].y, fridges[i2].z) <= 25) {
-					send_packet(6, "play base_fridge_impact" + random(1, 3) + "", fridges[i2].x, fridges[i2].y, fridges[i2].z, maps[get_map_index(fridges[i2].map)]);
+				if (fridges[i2].map != map.name) continue;
+				if (get_3d_distance(x, y, z, fridges[i2].x, fridges[i2].y, fridges[i2].z) > 25) continue;
+				if (owner.pvp == 1) {
+					send_packet(6, "play base_fridge_impact" + random(1, 3) + "", fridges[i2].x, fridges[i2].y, fridges[i2].z, map);
 					fridges[i2].health -= random(2500, 6500);
 					fridges[i2].hitby = owner.name + "'s time bomb";
 				}
 			}
 			for (uint i2 = 0; i2 < robots.length(); i2++) {
-				if (owner.pvp == 1 and robots[i2].map.name == map.name and get_3d_distance(x, y, z, robots[i2].x, robots[i2].y, robots[i2].z) <= 25) {
-					send_packet(6, "play locker_hit" + random(1, 6) + ".ogg " + robots[i2].x + " " + robots[i2].y + " " + robots[i2].z, robots[i2].x, robots[i2].y, robots[i2].z, maps[get_map_index(robots[i2].map.name)]);
+				if (robots[i2].map.name != map.name) continue;
+				if (get_3d_distance(x, y, z, robots[i2].x, robots[i2].y, robots[i2].z) > 25) continue;
+				if (owner.pvp == 1) {
+					send_packet(6, "play locker_hit" + random(1, 6) + ".ogg " + robots[i2].x + " " + robots[i2].y + " " + robots[i2].z, robots[i2].x, robots[i2].y, robots[i2].z, map);
 					robots[i2].health -= random(2500, 6500);
 					robots[i2].hitby = owner.name + "'s time bomb";
 				}
 			}
 			for (uint i2 = 0; i2 < microwaves.length(); i2++) {
-				if (owner.pvp == 1 and microwaves[i2].map == map.name and get_3d_distance(x, y, z, microwaves[i2].x, microwaves[i2].y, microwaves[i2].z) <= 25) {
-					send_packet(6, "play locker_hit" + random(1, 6) + ".ogg " + microwaves[i2].x + " " + microwaves[i2].y + " " + microwaves[i2].z, microwaves[i2].x, microwaves[i2].y, microwaves[i2].z, maps[get_map_index(microwaves[i2].map)]);
+				if (microwaves[i2].map != map.name) continue;
+				if (get_3d_distance(x, y, z, microwaves[i2].x, microwaves[i2].y, microwaves[i2].z) > 25) continue;
+				if (owner.pvp == 1) {
+					send_packet(6, "play locker_hit" + random(1, 6) + ".ogg " + microwaves[i2].x + " " + microwaves[i2].y + " " + microwaves[i2].z, microwaves[i2].x, microwaves[i2].y, microwaves[i2].z, map);
 					microwaves[i2].health -= random(2500, 6500);
 					microwaves[i2].hitby = owner.name + "'s time bomb";
 				}
 			}
 			for (uint i2 = 0; i2 < air_conditioners.length(); i2++) {
-				if (owner.pvp == 1 and air_conditioners[i2].map == map.name and get_3d_distance(x, y, z, air_conditioners[i2].x, air_conditioners[i2].y, air_conditioners[i2].z) <= 25) {
-					send_packet(6, "play locker_hit" + random(1, 6) + ".ogg " + air_conditioners[i2].x + " " + air_conditioners[i2].y + " " + air_conditioners[i2].z, air_conditioners[i2].x, air_conditioners[i2].y, air_conditioners[i2].z, maps[get_map_index(air_conditioners[i2].map)]);
+				if (air_conditioners[i2].map != map.name) continue;
+				if (get_3d_distance(x, y, z, air_conditioners[i2].x, air_conditioners[i2].y, air_conditioners[i2].z) > 25) continue;
+				if (owner.pvp == 1) {
+					send_packet(6, "play locker_hit" + random(1, 6) + ".ogg " + air_conditioners[i2].x + " " + air_conditioners[i2].y + " " + air_conditioners[i2].z, air_conditioners[i2].x, air_conditioners[i2].y, air_conditioners[i2].z, map);
 					air_conditioners[i2].health -= random(2500, 6500);
 					air_conditioners[i2].hitby = owner.name + "'s time bomb";
 				}
 			}
 			for (uint i2 = 0; i2 < steams.length(); i2++) {
-				if (owner.pvp == 1 and steams[i2].map == map.name and get_3d_distance(x, y, z, steams[i2].x, steams[i2].y, steams[i2].z) <= 25) {
-					send_packet(6, "play locker_hit" + random(1, 6) + ".ogg " + steams[i2].x + " " + steams[i2].y + " " + steams[i2].z, steams[i2].x, steams[i2].y, steams[i2].z, maps[get_map_index(steams[i2].map)]);
+				if (steams[i2].map != map.name) continue;
+				if (get_3d_distance(x, y, z, steams[i2].x, steams[i2].y, steams[i2].z) > 25) continue;
+				if (owner.pvp == 1) {
+					send_packet(6, "play locker_hit" + random(1, 6) + ".ogg " + steams[i2].x + " " + steams[i2].y + " " + steams[i2].z, steams[i2].x, steams[i2].y, steams[i2].z, map);
 					steams[i2].health -= random(2500, 6500);
 					steams[i2].hitby = owner.name + "'s time bomb";
 				}
 			}
 			for (uint i2 = 0; i2 < fans.length(); i2++) {
-				if (owner.pvp == 1 and fans[i2].map == map.name and get_3d_distance(x, y, z, fans[i2].x, fans[i2].y, fans[i2].z) <= 25) {
-					send_packet(6, "play locker_hit" + random(1, 6) + ".ogg " + fans[i2].x + " " + fans[i2].y + " " + fans[i2].z, fans[i2].x, fans[i2].y, fans[i2].z, maps[get_map_index(fans[i2].map)]);
+				if (fans[i2].map != map.name) continue;
+				if (get_3d_distance(x, y, z, fans[i2].x, fans[i2].y, fans[i2].z) > 25) continue;
+				if (owner.pvp == 1) {
+					send_packet(6, "play locker_hit" + random(1, 6) + ".ogg " + fans[i2].x + " " + fans[i2].y + " " + fans[i2].z, fans[i2].x, fans[i2].y, fans[i2].z, map);
 					fans[i2].health -= random(2500, 6500);
 					fans[i2].hitby = owner.name + "'s time bomb";
 				}
 			}
 			for (uint i2 = 0; i2 < playerstores.length(); i2++) {
-				if (owner.pvp == 1 and playerstores[i2].map == map.name and get_3d_distance(x, y, z, playerstores[i2].x, playerstores[i2].y, playerstores[i2].z) <= 25) {
-					send_packet(6, "play base_impact_ext.ogg " + playerstores[i2].x + " " + playerstores[i2].y + " " + playerstores[i2].z, playerstores[i2].x, playerstores[i2].y, playerstores[i2].z, maps[get_map_index(playerstores[i2].map)]);
+				if (playerstores[i2].map != map.name) continue;
+				if (get_3d_distance(x, y, z, playerstores[i2].x, playerstores[i2].y, playerstores[i2].z) > 25) continue;
+				if (owner.pvp == 1) {
+					send_packet(6, "play base_impact_ext.ogg " + playerstores[i2].x + " " + playerstores[i2].y + " " + playerstores[i2].z, playerstores[i2].x, playerstores[i2].y, playerstores[i2].z, map);
 					playerstores[i2].health -= random(2500, 6500);
 					playerstores[i2].hitby = owner.name + "'s time bomb";
 				}
 			}
 			for (uint i2 = 0; i2 < beehives.length(); i2++) {
-				if (owner.pvp == 1 and beehives[i2].map == map.name and get_3d_distance(x, y, z, beehives[i2].x, beehives[i2].y, beehives[i2].z) <= 25) {
-					send_packet(6, "play base_impact_ext.ogg " + beehives[i2].x + " " + beehives[i2].y + " " + beehives[i2].z, beehives[i2].x, beehives[i2].y, beehives[i2].z, maps[get_map_index(beehives[i2].map)]);
+				if (beehives[i2].map != map.name) continue;
+				if (get_3d_distance(x, y, z, beehives[i2].x, beehives[i2].y, beehives[i2].z) > 25) continue;
+				if (owner.pvp == 1) {
+					send_packet(6, "play base_impact_ext.ogg " + beehives[i2].x + " " + beehives[i2].y + " " + beehives[i2].z, beehives[i2].x, beehives[i2].y, beehives[i2].z, map);
 					beehives[i2].health -= random(2500, 6500);
 					beehives[i2].hitby = owner.name + "'s time bomb";
 				}

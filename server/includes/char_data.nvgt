@@ -167,10 +167,25 @@ void scd(player@p) {
 	f.open(charfolder + "/pitch.usr", "w");
 	f.write(p.pitch);
 	f.close();
+	write_to(p.name, "afk.usr", bool_to_string(p.afk));
+	write_to(p.name, "afktitle.usr", p.afktitle);
+	write_to(p.name, "away.usr", bool_to_string(p.away));
+	write_to(p.name, "last_hit_time.usr", p.last_hit_timer.elapsed);
+	write_to(p.name, "last_attacker.usr", p.last_attacker_name);
 	p.dsave();
 }
 void load_char_data(player@p, bool forced = false) {
 	string charfolder = "chars/" + p.name;
+	if (file_exists(charfolder + "/afk.usr")) p.afk = string_to_bool(file_get_contents(charfolder + "/afk.usr"));
+	if (file_exists(charfolder + "/afktitle.usr")) p.afktitle = file_get_contents(charfolder + "/afktitle.usr");
+	if (file_exists(charfolder + "/away.usr")) p.away = string_to_bool(file_get_contents(charfolder + "/away.usr"));
+	if (file_exists(charfolder + "/last_hit_time.usr")) p.last_hit_timer.force(string_to_number(file_get_contents(charfolder + "/last_hit_time.usr")));
+	if (file_exists(charfolder + "/last_attacker.usr")) p.last_attacker_name = file_get_contents(charfolder + "/last_attacker.usr");
+	if (p.afk or p.away) send_reliable(p, "stopmoving", 0);
+	p.cached_prison_oldx = string_to_number(get_char_val(p.name, "oldx"));
+	p.cached_prison_oldy = string_to_number(get_char_val(p.name, "oldy"));
+	p.cached_prison_oldz = string_to_number(get_char_val(p.name, "oldz"));
+	p.cached_prison_oldmap = get_char_val(p.name, "oldmap");
 	string data;
 	string test;
 	p.dload();

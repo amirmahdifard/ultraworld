@@ -15,6 +15,7 @@ void scpmenu() {
 	}
 	if (admin) {
 		c.add("Foods and drinks", "fads");
+		c.add("Guess the number game", "guess");
 		c.add("Draw sounds", "draws");
 		c.add("item usage limit", "iulimit");
 	}
@@ -44,6 +45,9 @@ void scpmenu() {
 			break;
 		} if (r == "servermag") {
 			scp::menus::server();
+			break;
+		} if (r == "guess") {
+			scp::menus::guess_game();
 			break;
 		} if (r == "porms") {
 			scp::menus::porms();
