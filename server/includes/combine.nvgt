@@ -9,11 +9,13 @@ void combine(player@p, string message) {
 		ihand hand(lefthand, righthand);
 		string fixhand = hand.fixed;
 		p.add_log_entry("combine", "combined " + lefthand + " with " + righthand);
-		if (p.inv_item_number(lefthand) <= 0)
+		if (lefthand != "" and p.inv_item_number(lefthand) <= 0) {
 			send_reliable(p, "hempty 1", 0);
-		if (p.inv_item_number(righthand) <= 0)
+			return;
+		} if (righthand != "" and p.inv_item_number(righthand) <= 0) {
 			send_reliable(p, "hempty 2", 0);
-		if (lefthand == "knife" and righthand == "knife") {
+			return;
+		} if (lefthand == "knife" and righthand == "knife") {
 			send_packet(6, "play getlong_knife.ogg " + p.x + " " + p.y + " " + p.z, p.x, p.y, p.z, maps[get_map_index(p.map)]);
 			p.inv_add_item("long_knife", 1);
 			p.inv_add_item("knife", -2);
