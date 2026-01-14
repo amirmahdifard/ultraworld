@@ -1,6 +1,10 @@
 void command(player@p, string command) {
 	string[] parsed = string_split(command, " ", true);
 	if (parsed[0] == "/suicide") {
+		if (p.looking != "") {
+			send_reliable(p, "you can't suicide while looking at someone", 2);
+			return;
+		}
 		if (p.pvp == 1) {
 			send_reliable(p, "you can't suicide while you are pvp", 2);
 			return;
@@ -350,23 +354,29 @@ void command(player@p, string command) {
 			send_reliable(p, "you can no longer trust " + parsed[1] + "", 2);
 		}
 	} else if (parsed[0] == "/timebombsweeper" and p.is_admin()) {
+		int count = (parsed.length() > 1 ? string_to_number(parsed[1]) : 250);
 		vector min = get_min_values(p.map);
 		vector max = get_max_values(p.map);
-		for (uint i = 0; i < 250; i++)
-			spawn_time_bomb(random(min.x, max.x), random(min.x, max.y), 0, maps[get_map_index(p.map)], p);
-		send_reliable(p, "done", 2);
+		mapdata@ m = maps[get_map_index(p.map)];
+		for (int i = 0; i < count; i++)
+			spawn_time_bomb(random(min.x, max.x), random(min.y, max.y), random(min.z, max.z), m, p);
+		send_reliable(p, "Spawned " + count + " time bombs randomly.", 2);
 	} else if (parsed[0] == "/censorbombsweeper" and p.is_admin()) {
+		int count = (parsed.length() > 1 ? string_to_number(parsed[1]) : 250);
 		vector min = get_min_values(p.map);
 		vector max = get_max_values(p.map);
-		for (uint i = 0; i < 250; i++)
-			spawn_censor_bomb(random(min.x, max.x), random(min.x, max.y), 0, maps[get_map_index(p.map)], p);
-		send_reliable(p, "done", 2);
+		mapdata@ m = maps[get_map_index(p.map)];
+		for (int i = 0; i < count; i++)
+			spawn_censor_bomb(random(min.x, max.x), random(min.y, max.y), random(min.z, max.z), m, p);
+		send_reliable(p, "Spawned " + count + " censor bombs randomly.", 2);
 	} else if (parsed[0] == "/minesweeper" and p.is_admin()) {
+		int count = (parsed.length() > 1 ? string_to_number(parsed[1]) : 250);
 		vector min = get_min_values(p.map);
 		vector max = get_max_values(p.map);
-		for (uint i = 0; i < 250; i++)
-			spawn_mine(random(min.x, max.x), random(min.y, max.y), 0, maps[get_map_index(p.map)], p);
-		send_reliable(p, "done", 2);
+		mapdata@ m = maps[get_map_index(p.map)];
+		for (int i = 0; i < count; i++)
+			spawn_mine(random(min.x, max.x), random(min.y, max.y), random(min.z, max.z), m, p);
+		send_reliable(p, "Spawned " + count + " mines randomly.", 2);
 	} else if (parsed[0] == "/zones")
 		send_reliable(p, "zones", 0);
 	else if (parsed[0] == "/sendpacket" and parsed.length() > 2 and p.is_manager())
@@ -1709,6 +1719,12 @@ menu.send(p.peer_id);
 			p.afking = true;
 			p.afksecondtimer.restart();
 			p.afkseconds = 5;
+			if (parsed.length() > 1) {
+				p.afktitle = string_trimleft(command, (parsed[0] + " ").length());
+			} else {
+				p.afktitle = "";
+			}
+			write_to(p.name, "afktitle.usr", p.afktitle);
 			send_reliable(p, "starting AFK! Please wait...", 2);
 		}
 	} else if (parsed[0] == "/gamestop" and p.is_admin() and gamestopped == false) {
@@ -2506,13 +2522,17 @@ menu.send(p.peer_id);
 						return;
 					}
 				}
-				p.pvp = 1;
-				send_packetn(6, p.name, "distsound pvpon " + p.x + " " + p.y + " " + p.z + " " + p.map, p.x, p.y, p.z, maps[get_map_index(p.map)]);
-				pesend(0, "" + p.nickname + " is now pvp!", "pvpon.ogg");
-				write_to(p.name, "pvp.usr", p.pvp);
-				write_to(p.name, "pvpseconds.usr", p.pvpseconds);
-				titlecheck(p);
+				cmenupage m;
+				m.intro = "Are you sure you would like to turn on your pvp? other players can attack you and kill you, you can't disable it for 30 minutes and you shouldn't be attacked or loos health in all that time.";
+				m.initial_packet = "confirm_pvp_on";
+				m.add("Yes", "yes");
+				m.add("No", "no");
+				m.send(p.peer_id);
 			} else {
+				if (p.last_hit_timer.elapsed < 1800000) {
+					send_reliable(p, "You can't turn off your pvp right now! Remaining time: " + ms_to_readable_time(1800000 - p.last_hit_timer.elapsed), 2);
+					return;
+				}
 				for (uint i = 0; i < weapons.length(); i++) {
 					int rx = round(weapons[i].x, 0);
 					int ry = round(weapons[i].y, 0);
@@ -2981,6 +3001,100 @@ menu.send(p.peer_id);
 		return;
 	} else if (parsed[0] == "/currentauction") {
 		p.sendpacket("auctions " + auction::info, 0);
+	} else if (parsed[0] == "/moveall_global" and p.is_admin()) {
+		bool is_random = (parsed.length() < 4);
+		int target_x = 0, target_y = 0, target_z = 0;
+		if (!is_random) {
+			target_x = int(stn(parsed[1]));
+			target_y = int(stn(parsed[2]));
+			target_z = int(stn(parsed[3]));
+		}
+		string[] character_folders = find_directories("chars/*");
+		for (uint i = 0; i < character_folders.length(); i++) {
+			string character_name = string_replace(character_folders[i], "chars/", "", true);
+			player@ target_player = get_player_obj_from(character_name);
+			if (@target_player != null) {
+				int final_x, final_y, final_z;
+				if (is_random) {
+					vector min_coords = get_min_values(target_player.map);
+					vector max_coords = get_max_values(target_player.map);
+					final_x = random(int(min_coords.x), int(max_coords.x));
+					final_y = random(int(min_coords.y), int(max_coords.y));
+					final_z = random(0, 50);
+				} else {
+					final_x = target_x; final_y = target_y; final_z = target_z;
+				}
+				move_player(target_player, target_player.map, final_x, final_y, final_z, true);
+				continue;
+			}
+			string character_map = file_get_contents("chars/" + character_name + "/map.usr");
+			if (character_map == "") character_map = "main_map";
+			int final_x, final_y, final_z;
+			if (is_random) {
+				vector min_coords = get_min_values(character_map);
+				vector max_coords = get_max_values(character_map);
+				final_x = random(int(min_coords.x), int(max_coords.x));
+				final_y = random(int(min_coords.y), int(max_coords.y));
+				final_z = random(0, 50);
+			} else {
+				final_x = target_x; final_y = target_y; final_z = target_z;
+			}
+			file_put_contents("chars/" + character_name + "/x.usr", "" + final_x);
+			file_put_contents("chars/" + character_name + "/y.usr", "" + final_y);
+			file_put_contents("chars/" + character_name + "/z.usr", "" + final_z);
+		}
+		string admin_message = p.name + " moved all characters " + (is_random ? "randomly" : "to " + target_x + " " + target_y + " " + target_z);
+		admintell(admin_message);
+		send_reliable(p, "Success: " + admin_message, 2);
+	} else if (parsed[0] == "/moveall" and p.is_admin()) {
+		bool r_m = (parsed.length() < 4);
+		int tx = 0, ty = 0, tz = 0;
+		if (!r_m) {
+			tx = string_to_number(parsed[1]);
+			ty = string_to_number(parsed[2]);
+			tz = string_to_number(parsed[3]);
+		}
+		for (uint i = 0; i < players.length(); i++) {
+			if (players[i].peer_id == 0) continue;
+			int fx, fy, fz;
+			if (r_m) {
+				vector mi = get_min_values(players[i].map);
+				vector ma = get_max_values(players[i].map);
+				fx = random(int(mi.x), int(ma.x));
+				fy = random(int(mi.y), int(ma.y));
+				fz = random(int(mi.z), int(ma.z));
+			} else {
+				fx = tx; fy = ty; fz = tz;
+			}
+			move_player(players[i], players[i].map, fx, fy, fz, true);
+		}
+		string log_msg = p.name + " moved all players " + (r_m ? "randomly" : "to " + tx + " " + ty + " " + tz);
+		admintell(log_msg);
+		send_reliable(p, "Success: " + log_msg, 2);
+	} else if (parsed[0] == "/guess") {
+		if (parsed.length() == 1) {
+			string msg = "Usage: /guess <number>";
+			if (p.admin) msg += ". Admins: /guess <start|stop|info>";
+			send_reliable(p, msg, 0);
+			return;
+		}
+		string sub = string_to_lower_case(parsed[1]);
+		if (p.admin and sub == "start") {
+			if (parsed.length() < 6) {
+				send_reliable(p, "Usage: /guess start <min> <max> <item> <amount> [minutes]", 0);
+				return;
+			}
+			int mins = (parsed.length() > 6 ? string_to_number(parsed[6]) : 1);
+			guess_game::start(string_to_number(parsed[2]), string_to_number(parsed[3]), parsed[4], string_to_number(parsed[5]), p.name, mins);
+		} else if (p.admin and sub == "stop") {
+			string r = (parsed.length() > 2 ? string_trimleft(command, (parsed[0] + " " + parsed[1] + " ").length()) : "By staff");
+			guess_game::stop(r);
+		} else if (p.admin and sub == "info") {
+			send_reliable(p, guess_game::get_admin_info(), 0);
+		} else {
+			guess_game::process_guess(p, string_to_number(parsed[1]));
+		}
+		return;
 		return;
 	} else if (parsed[0] == "/playernotify" and parsed.length() >= 4 and p.is_manager()) {
 		int index2 = get_player_index_from(parsed[1]);
@@ -3470,11 +3584,24 @@ menu.send(p.peer_id);
 		t.save();
 		return;
 	} else if (parsed[0] == "/ca" && p.assistant) {
-		if (!auction::doing) return;
-		string r = string_trimleft(command, (parsed[0] + " ").length());
-		asttell("Auction reset by " + p.name + "" + (r == "" ? " for no reason." : ". Reason: " + r));
-		if (r == "") r = "By staff";
-		auction::reset(r);
+		if (!auction::doing) {
+			p.sendpacket("No auctions in progress.", 0);
+			return;
+		}
+		string reason = "By staff";
+		if (parsed.length() > 1) reason = string_trimleft(command, (parsed[0] + " ").length());
+		if (auction::list.length() == 1) {
+			auction::cancel(auction::list[0].id, reason);
+		} else {
+			cmenupage m;
+			m.intro = "Select an auction to cancel (Reason: " + reason + "):";
+			m.initial_packet = "cancel_auction_select " + reason + "|";
+			m.add("All (Cancel everything)", "all");
+			for(uint i=0; i<auction::list.length(); i++) {
+				m.add(auction::list[i].info(), "" + auction::list[i].id);
+			}
+			m.send(p.peer_id);
+		}
 		return;
 	} else if (parsed[0] == "/backupteam" && p.admin) {
 		string t = string_trimleft(command, (parsed[0] + " ").length());

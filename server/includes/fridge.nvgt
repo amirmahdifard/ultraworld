@@ -176,12 +176,7 @@ void load_fridge(string n) {
 			invvalues = parsed[1];
 	}
 	fridge frdg(x, y, z, map, owner, health, id);
-	frdg.x = string_to_number(x);
-	frdg.y = string_to_number(y);
-	frdg.z = string_to_number(z);
-	frdg.map = map;
-	frdg.owner = owner;
-	frdg.health = health;
+	invvalues.replace_this(";", "\n");
 	frdg.invy.import_inv(invvalues);
 	fridges.insert_last(frdg);
 }

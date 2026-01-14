@@ -3,11 +3,10 @@ void netloop() {
 	while ((e = n.request()).type != event_none) {
 		if (e.type == event_disconnect)
 			reconnect();
-		if (e.type == event_receive) {
-			if (e.channel == 0) {
-				string[] parsed = string_split(get_event_message(), " ", true);
-				messager mdic = get_event_message_as_object();
-				if (mdic.get_value("message") == "bsend") {
+						if (e.type == event_receive) {
+							if (e.channel == 0) {
+								string[] parsed = string_split(get_event_message(), " ", true);
+								messager mdic = get_event_message_as_object();				if (mdic.get_value("message") == "bsend") {
 					string buffer = mdic.get_value("buffer");
 					string whichsound = mdic.get_value("soundname");
 					string msg = mdic.get_value("text");
@@ -391,6 +390,8 @@ void netloop() {
 						p.play_stationary("admintell.ogg", false);
 						add_buffer_item("admintells", string_replace(get_event_message(), parsed[0] + " ", "", false));
 					}
+				} else if (parsed[0] == "perm_exit") {
+					final_exit();
 				} else if (parsed[0] == "localchat" and parsed.length() > 1) {
 					if (buffer_active("local chats") == 1) {
 						if (!buffer_muted("local chats")) {

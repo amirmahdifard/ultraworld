@@ -23,26 +23,28 @@ class rocket {
 			send_packet(6, "play rocketexplode.ogg " + x + " " + y + " " + z, x, y, z, maps[get_map_index(map.name)]);
 			send_dpacket(6, "distsound rocketexplodedist " + x + " " + y + " " + z + " " + map.name, maps[get_map_index(map.name)]);
 			for (uint i2 = 0; i2 < players.length(); i2 += 1) {
-				if (players[i2].is_dead or is_safe(players[i2].x, players[i2].y, players[i2].z, maps[get_map_index(players[i2].map)]) or players[i2].safe or players[i2].pvp == 0 or players[i2].away or players[i2].afk or players[i2].newb == 1 or players[i2].looking != "" or players[i2].looker != "" or owner.pvp == 0) continue;
-				if (owner.pvp == 1 and map.name == players[i2].map and get_3d_distance(players[i2].x, players[i2].y, players[i2].z, x, y, z) <= 1) {
-					send_packet(6, "play rockethit.ogg " + players[i2].x + " " + players[i2].y + " " + players[i2].z, players[i2].x, players[i2].y, players[i2].z, maps[get_map_index(players[i2].map)]);
+				if (players[i2].map != map.name) continue;
+				if (get_3d_distance(players[i2].x, players[i2].y, players[i2].z, x, y, z) > 1) continue;
+				if (players[i2].is_dead or is_safe(players[i2].x, players[i2].y, players[i2].z, map) or players[i2].safe or players[i2].pvp == 0 or players[i2].away or players[i2].afk or players[i2].newb == 1 or players[i2].looking != "" or players[i2].looker != "" or owner.pvp == 0) continue;
+				if (owner.pvp == 1) {
+					send_packet(6, "play rockethit.ogg " + players[i2].x + " " + players[i2].y + " " + players[i2].z, players[i2].x, players[i2].y, players[i2].z, map);
 					if (players[i2].shielded == 1) {
-						send_packet(6, "play shieldhit" + random(1, 10) + ".ogg " + players[i2].x + " " + players[i2].y + " " + players[i2].z, players[i2].x, players[i2].y, players[i2].z, maps[get_map_index(players[i2].map)]);
+						send_packet(6, "play shieldhit" + random(1, 10) + ".ogg " + players[i2].x + " " + players[i2].y + " " + players[i2].z, players[i2].x, players[i2].y, players[i2].z, map);
 						players[i2].shieldshots -= random(1000, 2000);
 					} else if (players[i2].steel_shielded == 1) {
-						send_packet(6, "play shieldhit" + random(1, 10) + ".ogg " + players[i2].x + " " + players[i2].y + " " + players[i2].z, players[i2].x, players[i2].y, players[i2].z, maps[get_map_index(players[i2].map)]);
+						send_packet(6, "play shieldhit" + random(1, 10) + ".ogg " + players[i2].x + " " + players[i2].y + " " + players[i2].z, players[i2].x, players[i2].y, players[i2].z, map);
 						players[i2].steel_shieldshots -= random(500, 1000);
 					} else {
 						players[i2].health -= random(20000, 50000);
-						send_packet(6, "play v" + string_to_number(players[i2].voice) + "hit" + random(1, 5) + ".ogg " + players[i2].x + " " + players[i2].y + " " + players[i2].z, players[i2].x, players[i2].y, players[i2].z, maps[get_map_index(players[i2].map)]);
+						send_packet(6, "play v" + string_to_number(players[i2].voice) + "hit" + random(1, 5) + ".ogg " + players[i2].x + " " + players[i2].y + " " + players[i2].z, players[i2].x, players[i2].y, players[i2].z, map);
 						players[i2].hitby = owner.name + "'s rocket";
 					}
 				}
 			}
 			for (uint i2 = 0; i2 < ais.length(); i2 += 1) {
 				if (ais[i2].map.name == map.name and get_3d_distance(ais[i2].x, ais[i2].y, ais[i2].z, x, y, z) <= 33) {
-					send_packet(6, "play rockethit.ogg " + ais[i2].x + " " + ais[i2].y + " " + ais[i2].z, ais[i2].x, ais[i2].y, ais[i2].z, maps[get_map_index(ais[i2].map.name)]);
-					if (ais[i2].painsound != "") send_packet(6, "play " + ais[i2].painsound + " " + ais[i2].x + " " + ais[i2].y + " " + ais[i2].z, ais[i2].x, ais[i2].y, ais[i2].z, maps[get_map_index(ais[i2].map.name)]);
+					send_packet(6, "play rockethit.ogg " + ais[i2].x + " " + ais[i2].y + " " + ais[i2].z, ais[i2].x, ais[i2].y, ais[i2].z, map);
+					if (ais[i2].painsound != "") send_packet(6, "play " + ais[i2].painsound + " " + ais[i2].x + " " + ais[i2].y + " " + ais[i2].z, ais[i2].x, ais[i2].y, ais[i2].z, map);
 					ais[i2].health -= random(70000, 110000);
 					ais[i2].hitby = owner.name + "'s rocket";
 				}

@@ -1,0 +1,30 @@
+namespace scp::actions::misc {
+void start_guess_game() {
+	if (!admin) return;
+	nv_form f;
+	f.create_window("Start Guess Game", false);
+	nv_form_input@ min = f.add_input("Minimum Number", "min");
+	min.text = "1";
+	nv_form_input@ max = f.add_input("Maximum Number", "max");
+	max.text = "100";
+	nv_form_input@ item = f.add_input("Reward Item", "item");
+	item.text = "coins";
+	nv_form_input@ amount = f.add_input("Reward Amount", "amount");
+	amount.text = "5000";
+	nv_form_input@ mins = f.add_input("Duration (Minutes)", "mins");
+	mins.text = "1";
+	nv_form_button@ ok = f.add_button("Start", "ok", primary = true);
+	nv_form_button@ can = f.add_button("Cancel", "can", cancel = true);
+	f.focus_control(min, false, false);
+	while (f.monitor()) {
+		wait(5);
+		mainloop();
+		if (f.is_pressed(can)) break;
+		if (f.is_pressed(ok)) {
+			sendcommand("/guess start " + min.text + " " + max.text + " " + item.text + " " + amount.text + " " + mins.text);
+			break;
+		}
+	}
+	f.reset();
+}
+}

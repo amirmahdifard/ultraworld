@@ -30,6 +30,7 @@ void netloop() {
 		on_web({"player"});
 	}
 	ntmsloop();
+	guess_game::loop();
 	weaponloop();
 	if (ais.length() > 0) {
 		for (int i = ais.length() - 1; i >= 0; i--) {
@@ -66,12 +67,12 @@ void netloop() {
 	if (washbasins.length() > 0) {
 		for (uint i = 0; i < washbasins.length(); i++)
 			if (@washbasins[i] != null)
-				washbasins[i].loop();
+				washbasins[i].loop(i);
 	}
 	if (showers.length() > 0) {
 		for (uint i = 0; i < showers.length(); i++)
 			if (@showers[i] != null)
-				showers[i].loop();
+				showers[i].loop(i);
 	}
 	if (item_cariers.length() > 0) {
 		for (uint i = 0; i < item_cariers.length(); i++)
@@ -707,7 +708,8 @@ msgs.insert_last("contribute to our game at: https://github.com/amirmahdifard/ul
 			ip_conn_counts.set(ip, ""+count);
 			peer_ip_map.set(""+e.peer_id, ip);
 		}
-		if (e.type == event_disconnect) {
+		if (e.type == event_disconnect or e.type == event_disconnect_timeout) {
+			bool lost = (e.type == event_disconnect_timeout);
 			string ip;
 			if(peer_ip_map.exists(""+e.peer_id)){
 				peer_ip_map.get(""+e.peer_id, ip);
@@ -724,7 +726,13 @@ msgs.insert_last("contribute to our game at: https://github.com/amirmahdifard/ul
 			authenticated_peers.delete("" + e.peer_id);
 			if (index > -1) {
 				n.disconnect_peer_softly(players[index].peer_id);
-				log("disconnections", players[index].name + " lost connection", true, true);
+				if (players[index].last_hit_timer.elapsed < 1800000) {
+					players[index].disconnected = true;
+					log("disconnections", players[index].name + " is ghosting (combat log protection)", true, true);
+					return;
+				}
+				if (lost) log("disconnections", players[index].name + " lost connection", true, true);
+				else log("disconnections", players[index].name + " disconnected", true, true);
 				for (uint i2 = 0; i2 < arenas.length(); i2++) {
 					if (players[index].map == arenas[i2].map) {
 						players[index].bullet_proof_vested = 0;
@@ -781,7 +789,7 @@ msgs.insert_last("contribute to our game at: https://github.com/amirmahdifard/ul
 							players[index].pvp = 1;
 							players[index].pvpd = 2;
 						}
-						remove_player(players[index].name, true);
+						remove_player(players[index].name, false, lost);
 						return;
 					}
 				}
@@ -797,7 +805,7 @@ msgs.insert_last("contribute to our game at: https://github.com/amirmahdifard/ul
 					players[index].persisttimer.restart();
 					players[index].disconnected = true;
 				} else
-					remove_player(players[index].name, true);
+					remove_player(players[index].name, false, lost);
 			}
 		}
 		if (e.type == event_receive) {

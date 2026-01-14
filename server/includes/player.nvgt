@@ -3,6 +3,19 @@
 string[] bones = {"head", "knee", "left hand", "right hand", "arm", "forearm", "thumb", "ankle", "back", "elbow", "hip", "waist", "chest", "chin", "left foot", "right foot", "left leg", "right leg", "neck", "nose", "shoulder", "stomach", "left wrist", "right wrist", "forehead", "thigh", "shin", "instep", "jaw", "jawbone", "mandible", "cheekbone"};
 string[] randsounds = {"burp" + random(1, 3) + ""};
 class player {
+	timer stat_check_timer;
+	int cached_prison_oldx = 0, cached_prison_oldy = 0, cached_prison_oldz = 0;
+	string cached_prison_oldmap = "";
+	int last_checked_health = 0;
+	string last_attacker_name = "";
+	bool logout_requested = false;
+	timer logout_timer;
+	double logout_x, logout_y, logout_z;
+	bool should_finalize_close = false;
+	timer last_hit_timer;
+	double real_x, real_y, real_z;
+	string real_map;
+	timer nuke_cooldown;
 	vector cd;
 	int pvpd;
 	string item_to_edit;
@@ -426,6 +439,37 @@ class player {
 	}
 	bool get_in_lcm() property { return this.in_lchm || this.admin; }
 	void loop(int i) {
+		if (this.health < this.last_checked_health) {
+			this.last_hit_timer.restart();
+		}
+		this.last_checked_health = this.health;
+		if (logout_requested) {
+			if (floor(x) != floor(logout_x) or floor(y) != floor(logout_y) or floor(z) != floor(logout_z)) {
+				logout_requested = false;
+				send_reliable(peer_id, "Logout canceled: you moved!", 2);
+			}
+			else if (last_hit_timer.elapsed < 1000) {
+				logout_requested = false;
+				send_reliable(peer_id, "Logout canceled: you are under attack!", 2);
+			}
+			else if (logout_timer.elapsed >= 10000) {
+				logout_requested = false;
+				should_finalize_close = true;
+				send_reliable(peer_id, "perm_exit", 0);
+				player_event(this, "close");
+				return;
+			}
+		}
+		if (disconnected && last_hit_timer.elapsed >= 1800000) {
+			remove_player(name);
+			return;
+		}
+		if (looking == "") {
+			real_x = x;
+			real_y = y;
+			real_z = z;
+			real_map = map;
+		}
 		if (this.prison == true && this.prisontr > 0) {
 			if (this.prisontimer.elapsed > this.prisontr) {
 				this.prisontimer.restart();
@@ -433,10 +477,10 @@ class player {
 				file_delete("chars/" + this.name + "/prison.usr");
 				file_delete("chars/" + this.name + "/prisontime.usr");
 				file_delete("chars/" + this.name + "/prisonctime.usr");
-				int newx = string_to_number(get_char_val(this.name, "oldx"));
-				int newy = string_to_number(get_char_val(this.name, "oldy"));
-				int newz = string_to_number(get_char_val(this.name, "oldz"));
-				string newmap = get_char_val(this.name, "oldmap");
+				int newx = this.cached_prison_oldx;
+				int newy = this.cached_prison_oldy;
+				int newz = this.cached_prison_oldz;
+				string newmap = this.cached_prison_oldmap;
 				string prisonreason = get_char_val(this.name, "prisonreason");
 				if (map_exists(newmap) == false)
 					newmap = "main_map";
@@ -446,6 +490,10 @@ class player {
 				file_copy(charfolder + "/oldinv.usr", charfolder + "/inv.usr", true);
 				if (this.inv.get_size() < 1) this.inv_add_item("starter_pack", 1);
 				load_char_data(this, true);
+				this.cached_prison_oldx = 0;
+				this.cached_prison_oldy = 0;
+				this.cached_prison_oldz = 0;
+				this.cached_prison_oldmap = "";
 				file_delete(charfolder + "/oldx.usr");
 				file_delete(charfolder + "/oldy.usr");
 				file_delete(charfolder + "/oldz.usr");
@@ -472,16 +520,17 @@ class player {
 				if (xp < xprequired) break;
 			}
 			inv_add_item("coins", round(extracoins * quantity, 0));
+			string level_snd = "play_s lvup" + random(1, 11) + ".ogg";
+			string level_msg;
+			if (quantity == 1) level_msg = nickname + " is now on level " + level;
+			else level_msg = nickname + " has increased " + int(quantity) + " levels and is now on level " + level;
 			for (uint ii = 0; ii < players.length(); ii++) {
 				if (players[ii].levelsound == 1) {
-					send_reliable(players[ii], "play_s lvup" + random(1, 11) + ".ogg", 6);
-					if (quantity == 1)
-						send_reliable(players[ii], "" + nickname + " has increased " + quantity + " level and now is on level " + level, 2);
-					else
-						send_reliable(players[ii], "" + nickname + " has increased " + quantity + " levels and now is on level " + level, 2);
+					send_reliable(players[ii], level_snd, 6);
+					send_reliable(players[ii], level_msg, 2);
 				}
 			}
-			titlecheck(players[i]);
+			titlecheck(this);
 			on_web({"player"});
 		}
 		if (this.level > (3000 + this.reinforcement)) {
@@ -494,16 +543,17 @@ class player {
 				quantity++;
 				if (this.level < 3000) break;
 			}
+			string re_snd = "play_s round_over.ogg";
+			string re_msg;
+			if (quantity == 1) re_msg = nickname + " reached reinforcement " + reinforcement;
+			else re_msg = nickname + " has increased " + int(quantity) + " reinforcements and reached reinforcement " + reinforcement;
 			for (uint ii = 0; ii < players.length(); ii++) {
 				if (players[ii].levelsound == 1) {
-					send_reliable(players[ii], "play_s round_over.ogg", 6);
-					if (quantity == 1)
-						send_reliable(players[ii], "" + nickname + " has reached to reinforcement " + reinforcement + "", 2);
-					else
-						send_reliable(players[ii], "" + nickname + " has increased " + quantity + " reinforcements and reached to reinforcement " + reinforcement, 2);
+					send_reliable(players[ii], re_snd, 6);
+					send_reliable(players[ii], re_msg, 2);
 				}
 			}
-			titlecheck(players[i]);
+			titlecheck(this);
 			on_web({"player"});
 		}
 		if (maxhealth < (10000 + (this.reinforcement * 100)))
@@ -670,7 +720,9 @@ class player {
 				afking = false;
 				send_reliable(peer_id, "stopmoving", 0);
 				send_dpacketn(6, name, "distsound afkon " + x + " " + y + " " + z + " " + map, maps[get_map_index(map)]);
-				pesend(0, "" + nickname + " is now AFK!", "afkon.ogg", name = this.name);
+				string msg = nickname + " is now AFK";
+				if (afktitle != "") msg += ", " + afktitle;
+				pesend(0, msg + "!", "afkon.ogg", name = this.name);
 				thirstt = 1;
 				hungerr = 1;
 				write_to(name, "afk.usr", afk);
@@ -1659,10 +1711,12 @@ class player {
 	}
 	*/
 	void hit(int mindamage, int maxdamage) {
+		last_hit_timer.restart();
 		if (this.safe == false and is_safe(this.x, this.y, this.z, maps[get_map_index(this.map)]) == false) this.health -= random(mindamage, maxdamage);
 		send_packet(6, "play v" + string_to_number(this.voice) + "hit" + random(1, 5) + ".ogg " + this.x + " " + this.y + " " + this.z, this.x, this.y, this.z, maps[get_map_index(this.map)]);
 	}
 	void hit(int damage) {
+		last_hit_timer.restart();
 		if (this.safe == false and is_safe(this.x, this.y, this.z, maps[get_map_index(this.map)]) == false) this.health -= damage;
 		send_packet(6, "play v" + string_to_number(this.voice) + "hit" + random(1, 5) + ".ogg " + this.x + " " + this.y + " " + this.z, this.x, this.y, this.z, maps[get_map_index(this.map)]);
 	}
@@ -1875,6 +1929,7 @@ class player {
 			message = genderreplace(this.gender, message, "%g_");
 		}
 		for (uint i = 0; i < players.length(); i++) {
+			if (players[i].looking != "") continue;
 			if (players[i].langchan == langchan and players[i].is_muted(name) == false) {
 				string fmessage = message;
 				if (vars) {
@@ -2112,8 +2167,8 @@ class pld {
 	double dist;
 	int index;
 	pld(player@ p1, player@ p2) {
-		sx = p1.x; sy = p1.y; sz = p1.z;
-		tx = p2.x; ty = p2.y; tz = p2.z;
+		sx = p1.real_x; sy = p1.real_y; sz = p1.real_z;
+		tx = p2.real_x; ty = p2.real_y; tz = p2.real_z;
 		index = get_player_index_from(p2.name);
 		dist = get_3d_distance(sx, sy, sz, tx, ty, tz);
 	}
@@ -2126,7 +2181,7 @@ class pld {
 string[] nearest_player_sorted_array(player@ p) {
 	pld@[] t;
 	for (uint i = 0; i < players.length(); i++) {
-		if (players[i].name == p.name || players[i].is_dead || p.map != players[i].map || players[i].hidden == 1 || players[i].afk == true || players[i].away == true || players[i].looking != "") continue;
+		if (players[i].name == p.name || players[i].is_dead || p.real_map != players[i].real_map || players[i].hidden == 1 || players[i].looking != "") continue;
 		pld temp(p, players[i]);
 		t.insert_last(temp);
 	}
@@ -2141,7 +2196,7 @@ string[] nearest_player_sorted_array(player@ p) {
 string[] nearest_player_sorted_arrayrobot(player@ p) {
 	pld@[] t;
 	for (uint i = 0; i < players.length(); i++) {
-		if (players[i].name == p.name || players[i].is_dead || p.map != players[i].map || players[i].z != p.z || are_teamed(players[i].name, p.name) || players[i].hidden == 1 || is_safe(players[i].x, players[i].y, players[i].z, maps[get_map_index(players[i].map)]) || players[i].safe || players[i].pvp == 0 || players[i].away || players[i].afk || players[i].newb == 1 || players[i].looking != "") continue;
+		if (players[i].name == p.name || players[i].is_dead || p.real_map != players[i].real_map || players[i].real_z != p.real_z || are_teamed(players[i].name, p.name) || players[i].hidden == 1 || is_safe(players[i].x, players[i].y, players[i].z, maps[get_map_index(players[i].map)]) || players[i].safe || players[i].pvp == 0 || players[i].away || players[i].afk || players[i].newb == 1 || players[i].looking != "") continue;
 		pld temp(p, players[i]);
 		t.insert_last(temp);
 	}
@@ -2165,16 +2220,30 @@ string[] nearest_player_sorted_arrayto(player@ p) {
 	t.sort_descending();
 	string[] names;
 	for (uint i = 0; i < t.length(); i++) {
-		if (players[t[i].index].age < 18) {
-			if (players[t[i].index].gender == 0) names.insert_last("" + players[t[i].index].name + " (male)");
-			else if (players[t[i].index].gender == 1) names.insert_last("" + players[t[i].index].name + " (female)");
-		} else if (players[t[i].index].partner == "") {
-			if (players[t[i].index].gender == 0) names.insert_last("" + players[t[i].index].name + " (male, single)");
-			else if (players[t[i].index].gender == 1) names.insert_last("" + players[t[i].index].name + " (female, single)");
-		} else if (players[t[i].index].partner != "") {
-			if (players[t[i].index].gender == 0) names.insert_last("" + players[t[i].index].name + " (male, husband of " + players[t[i].index].partner + ")");
-			else if (players[t[i].index].gender == 1) names.insert_last("" + players[t[i].index].name + " (female, wife of " + players[t[i].index].partner + ")");
+		player@ target = players[t[i].index];
+		string p_status = "";
+		if (target.gender == 0) p_status = "male";
+		else if (target.gender == 1) p_status = "female";
+		if (target.age >= 18) {
+			if (target.partner == "") p_status += ", single";
+			else {
+				if (target.gender == 0) p_status += ", husband of " + target.partner;
+				else if (target.gender == 1) p_status += ", wife of " + target.partner;
+				else p_status += ", partner of " + target.partner;
+			}
 		}
+		if (target.afk) {
+			p_status += ", AFK";
+			if (target.afktitle != "" and string_to_lower_case(target.afktitle) != "afk") p_status += ", " + target.afktitle;
+		} else if (target.away) {
+			p_status += ", Away, idle " + (target.idle.elapsed / 60000) + " minutes";
+		} else if (target.idle.elapsed > 60000) {
+			p_status += ", inactive " + (target.idle.elapsed / 60000) + " minutes";
+		}
+		if (target.status != "" and target.status != "no status message has been set") {
+			p_status += ", status: " + target.status;
+		}
+		names.insert_last(target.name + " (" + p_status + ")");
 	}
 	return names;
 }
@@ -2257,6 +2326,28 @@ player@ get_player_obj_from(string name) {
 	if (x < 0) return null;
 	return @players[x];
 }
+void handle_activity(player@ p, int channel, string message) {
+	if (@p == null) return;
+	if (channel == 10) return;
+	if (channel == 7) {
+		if (string_left(message, 8) == "pmsound1" or string_left(message, 8) == "pmsound2") return;
+	}
+	p.idle.restart();
+	if (p.away == true) {
+		p.away = false;
+		pesend(0, "" + p.nickname + " is no longer away", name = p.name);
+		p.awaytitle = "";
+	}
+	if (p.pvp_stop && channel <= 6) {
+		p.pvp_stop = false;
+		send_reliable(p, "play_s terror.ogg", 6);
+		send_reliable(p, "error! " + p.nickname + ", please don't touch your keyboard while turning off your pvp!", 2);
+	}
+	if (p.afking && channel <= 6) {
+		p.afking = false;
+		send_reliable(p, "error! " + p.nickname + ", please don't touch your keyboard while going afk!", 2);
+	}
+}
 double player_last_sec(string who) {
 	string[] l = get_char_key_val(who, "data", "", "lastseen").split("/");
 	if (l.length() < 6) return 0;
@@ -2274,6 +2365,14 @@ bool handle_pm(player@ p, string target_name, string msg, bool is_reply = false)
 	}
 	player@ w = get_player_obj_from(target_name);
 	if (@w != null) {
+		if (w.afk) {
+			string m = w.nickname + " is currently AFK";
+			if (w.afktitle != "") m += ", " + w.afktitle;
+			m += ", idle " + ms_to_readable_time(w.idle.elapsed);
+			send_reliable(p, m, 0);
+		} else if (w.away) {
+			send_reliable(p, w.nickname + " is currently away, idle " + ms_to_readable_time(w.idle.elapsed), 0);
+		}
 		if (w.pmreceiving == 0) {
 			send_reliable(p, "Error: " + w.name + " has turned private messages off", 0);
 			return false;

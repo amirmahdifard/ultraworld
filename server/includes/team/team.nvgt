@@ -294,16 +294,18 @@ team@ create_team(string id, string name, string password, string[] tplayers = {
 	return t;
 }
 class teamplayer {
-	string name, type;
+	string name, type, lower_name;
 	teamplayer(string name, string type = "") {
 		this.name = name;
 		this.type = type;
+		this.lower_name = name.lower();
 	}
 	string verify(string name, string def = "", string type = "") {
-		string final = def;
-		if (this.name.lower() == name.lower()) final = this.name;
-		if (type != "" && this.type.lower() != type.lower()) final = def;
-		return final;
+		if (this.lower_name == name.lower()) {
+			if (type != "" && this.type.lower() != type.lower()) return def;
+			return this.name;
+		}
+		return def;
 	}
 	json_object@ get_dump() property {
 		json_object j;
@@ -380,9 +382,21 @@ bool save_all_teams() {
 	}
 	return true;
 }
+dictionary player_team_cache;
 int is_in_team(string n) {
+	if (n == "") return -1;
+	string ln = n.lower();
+	if (player_team_cache.exists(ln)) {
+		double d_idx;
+		player_team_cache.get(ln, d_idx);
+		int idx = int(d_idx);
+		if (idx >= 0 && idx < int(teams.length()) && teams[idx].is_player(n)) return idx;
+	}
 	for (uint t = 0; t < teams.length(); t++) {
-		if (teams[t].is_player(n)) return t;
+		if (teams[t].is_player(n)) {
+			player_team_cache.set(ln, double(t));
+			return t;
+		}
 	}
 	return -1;
 }

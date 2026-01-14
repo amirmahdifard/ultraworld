@@ -28,7 +28,7 @@ class washbasin {
 		fechar.force(0);
 		fechar.pause();
 	}
-	void loop() {
+	void loop(int idx) {
 		if (aberta && fechar.elapsed >= 7960) {
 			aberta = false;
 			for (uint i2 = 0; i2 < players.length(); i2++) {
@@ -39,6 +39,8 @@ class washbasin {
 			fechando.pause();
 			fechar.force(0);
 			fechar.pause();
+			active_washbasins.remove_at(idx);
+			return;
 		}
 		if (aberta && fechando.elapsed >= 1960) {
 			fechando.restart();
@@ -46,7 +48,6 @@ class washbasin {
 				if (map == players[i2].map and minx <= players[i2].x and maxx >= players[i2].x and miny <= players[i2].y and maxy >= players[i2].y and minz <= players[i2].z and maxz >= players[i2].z) {
 					players[i2].dirty -= 0.5;
 					players[i2].wet += 1;
-					//players[i2].temperaturelevel-=random(0,1);
 				}
 			}
 		}
@@ -58,6 +59,12 @@ void spawn_washbasin(int minx, int maxx, int miny, int maxy, int minz, int maxz,
 }
 void remove_washbasin(int index) {
 	if (index > -1) {
+		for (uint i = 0; i < active_washbasins.length(); i++) {
+			if (@active_washbasins[i] == @washbasins[index]) {
+				active_washbasins.remove_at(i);
+				break;
+			}
+		}
 		@washbasins[index] = null;
 		washbasins.remove_at(index);
 	}

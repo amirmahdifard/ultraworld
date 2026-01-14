@@ -1,0 +1,225 @@
+namespace guess_game {
+	bool active = false;
+	int secret_number = 0;
+	int min_val = 0;
+	int max_val = 0;
+	string reward_item = "";
+	double reward_amount = 0;
+	string starter_name = "";
+	dictionary guesses;
+	string[] participants;
+	timer game_timer;
+	int duration_ms = 60000;
+	bool rem_5m = false;
+	bool rem_2m = false;
+	bool rem_1m = false;
+	bool rem_30s = false;
+	int last_sec_count = 6;
+
+	void save() {
+		if (!active) {
+			if (file_exists("guess_game.dat")) file_delete("guess_game.dat");
+			return;
+		}
+		string data = secret_number + "|" + min_val + "|" + max_val + "|" + reward_item + "|" + reward_amount + "|" + starter_name + "|" + duration_ms + "|" + game_timer.elapsed + "|";
+		string[] p_data;
+		for (uint i = 0; i < participants.length(); i++) {
+			string pname = participants[i];
+			string[] keys = guesses.get_keys();
+			for (uint j = 0; j < keys.length(); j++) {
+				string owner;
+				guesses.get(keys[j], owner);
+				if (owner == pname) {
+					p_data.insert_last(pname + ":" + keys[j]);
+					break;
+				}
+			}
+		}
+		data += join(p_data, ",");
+		file_put_contents("guess_game.dat", data);
+	}
+
+	void load() {
+		if (!file_exists("guess_game.dat")) return;
+		string[] p = string_split(file_get_contents("guess_game.dat"), "|", false);
+		if (p.length() < 8) return;
+		active = true;
+		secret_number = string_to_number(p[0]);
+		min_val = string_to_number(p[1]);
+		max_val = string_to_number(p[2]);
+		reward_item = p[3];
+		reward_amount = string_to_number(p[4]);
+		starter_name = p[5];
+		duration_ms = string_to_number(p[6]);
+		game_timer.force(string_to_number(p[7]));
+		if (p.length() > 8 && p[8] != "") {
+			string[] players_list = string_split(p[8], ",", false);
+			for (uint i = 0; i < players_list.length(); i++) {
+				string[] pair = string_split(players_list[i], ":", false);
+				if (pair.length() == 2) {
+					guesses.set(pair[1], pair[0]);
+					participants.insert_last(pair[0]);
+				}
+			}
+		}
+	}
+
+	void reset_vars() {
+		rem_5m = false;
+		rem_2m = false;
+		rem_1m = false;
+		rem_30s = false;
+		last_sec_count = 6;
+		guesses.delete_all();
+		participants.resize(0);
+	}
+
+	void start(int min, int max, string item, double amount, string staff, int mins = 1) {
+		if (active) {
+			player@ p = get_player_obj_from(staff);
+			if (@p != null) send_reliable(p, "Error: A Guess the Number game is already active! Use /guess stop to cancel it first.", 0);
+			return;
+		}
+		if (max - min < 10) {
+			player@ p = get_player_obj_from(staff);
+			if (@p != null) send_reliable(p, "Error: Range too small! Minimum spread is 10 numbers.", 0);
+			return;
+		}
+		if (mins < 1) mins = 1;
+		if (mins > 10) mins = 10;
+		reset_vars();
+		active = true;
+		min_val = min;
+		max_val = max;
+		reward_item = item;
+		reward_amount = amount;
+		starter_name = staff;
+		secret_number = random(min, max);
+		duration_ms = mins * 60000;
+		game_timer.restart();
+		save();
+		string msg = "A new Guess the Number game has started! Can you find the secret number between " + min + " and " + max + "? Prize: " + amount + " " + reward_item + "! You have " + mins + " minutes. Type /guess <number> to win!";
+		snotify(0, msg, "auction" + sndtype, true, "notifications");
+		admintell("Staff " + staff + " started Guess Game. Target: " + secret_number);
+	}
+
+	void loop() {
+		if (!active) return;
+		int remaining = duration_ms - game_timer.elapsed;
+		int rem_sec = remaining / 1000;
+		if (remaining <= 0) {
+			active = false;
+			save();
+			string msg = "Time's up! The secret number was " + secret_number + ".";
+			if (participants.length() == 0) msg += " Sadly, no one even tried to guess!";
+			else msg += " Better luck next time, everyone!";
+			snotify(0, msg, "auctionwon" + sndtype, true, "notifications");
+			reset_vars();
+			return;
+		}
+		if (duration_ms > 300000 && remaining <= 300000 && !rem_5m) {
+			rem_5m = true;
+			snotify(0, "5 minutes remaining in the Guess Game! Range: " + min_val + "-" + max_val, "bell" + sndtype, true, "notifications");
+		}
+		if (duration_ms > 120000 && remaining <= 120000 && !rem_2m) {
+			rem_2m = true;
+			snotify(0, "Hurry up! 2 minutes remaining in the Guess Game.", "bell" + sndtype, true, "notifications");
+		}
+		if (remaining <= 60000 && remaining > 30000 && !rem_1m) {
+			rem_1m = true;
+			snotify(0, "Final minute! Can you find the number " + min_val + "-" + max_val + "? Prize: " + reward_amount + " " + reward_item, "bell" + sndtype, true, "notifications");
+		}
+		if (remaining <= 30000 && remaining > 10000 && !rem_30s) {
+			rem_30s = true;
+			snotify(0, "Only 30 seconds left! Make your guess now!", "bell" + sndtype, true, "notifications");
+		}
+		if (remaining <= 5000 && rem_sec < last_sec_count) {
+			last_sec_count = rem_sec;
+			if (rem_sec > 0) {
+				snotify(0, rem_sec + "...", "", true, "notifications");
+			}
+		}
+	}
+
+	string get_admin_info() {
+		if (!active) return "No active game.";
+		int rem_ms = duration_ms - game_timer.elapsed;
+		string r = "Guess Game Active Info:\n";
+		r += "- Secret Number: " + secret_number + "\n";
+		r += "- Range: " + min_val + " to " + max_val + "\n";
+		r += "- Reward: " + reward_amount + " " + reward_item + "\n";
+		r += "- Time Remaining: " + ms_to_readable_time(rem_ms) + "\n";
+		r += "- Participants (" + participants.length() + "): ";
+		string[] p_list;
+		for (uint i = 0; i < participants.length(); i++) {
+			string pname = participants[i];
+			string gval = "unknown";
+			string[] keys = guesses.get_keys();
+			for (uint j = 0; j < keys.length(); j++) {
+				string owner;
+				guesses.get(keys[j], owner);
+				if (owner == pname) {
+					gval = keys[j];
+					break;
+				}
+			}
+			p_list.insert_last(pname + " (" + gval + ")");
+		}
+		return r + join(p_list, ", ");
+	}
+
+	void stop(string reason = "") {
+		if (!active) return;
+		active = false;
+		save();
+		string msg = "The Guess the Number game has been ended by staff.";
+		if (reason != "" and reason != "By staff") msg += " Reason: " + reason;
+		snotify(0, msg, "auctionwon" + sndtype, true, "notifications");
+		reset_vars();
+	}
+
+	void process_guess(player@ p, int num) {
+		if (!active) {
+			send_reliable(p, "No active game found. Ask staff to start one!", 0);
+			return;
+		}
+		if (num < min_val or num > max_val) {
+			send_reliable(p, "Error: Your guess " + num + " is out of the valid range (" + min_val + "-" + max_val + ")!", 0);
+			send_reliable(p, "play_s notice.ogg", 6);
+			return;
+		}
+		if (participants.find(p.name) > -1) {
+			send_reliable(p, "You have already made your guess for this round!", 0);
+			return;
+		}
+		if (guesses.exists("" + num)) {
+			string other;
+			guesses.get("" + num, other);
+			send_reliable(p, "Too late! Number " + num + " was already guessed by " + other + "!", 0);
+			return;
+		}
+		guesses.set("" + num, p.name);
+		participants.insert_last(p.name);
+		save();
+		if (num == secret_number) {
+			active = false;
+			save();
+			snotify(0, "WE HAVE A WINNER! " + p.nickname + " guessed the secret number " + num + " and won " + reward_amount + " " + reward_item + "!", "auctionwon" + sndtype, true, "auctions");
+			p.inv_add_item(reward_item, reward_amount);
+			reset_vars();
+		} else {
+			int diff = absolute(num - secret_number);
+			string hint = "Wrong!";
+			string g_hint = "Cold.";
+			string snd = "notice.ogg";
+			if (diff == 1) { hint = "INCREDIBLY CLOSE!"; g_hint = "INCREDIBLY CLOSE!"; snd = "bell.ogg"; }
+			else if (diff <= 5) { hint = "Very close!"; g_hint = "SO CLOSE!"; }
+			else if (diff <= 10) { hint = "Getting warmer!"; g_hint = "Getting warmer..."; }
+			else { hint = "Cold!"; g_hint = "Not even close."; }
+			send_reliable(p.peer_id, "play_s " + snd, 6);
+			send_reliable(p, hint + " " + num + " is NOT the secret number.", 0);
+			string g_msg = p.nickname + " guessed " + num + "... " + g_hint + " (Range: " + min_val + "-" + max_val + ")";
+			snotify(0, g_msg, "", true, "notifications");
+		}
+	}
+}

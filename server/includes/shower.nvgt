@@ -23,7 +23,7 @@ class shower {
 				send_reliable(players[i2], "startmoving", 0);
 		}
 	}
-	void loop() {
+	void loop(int idx) {
 		if (aberta && fechar.elapsed >= 43500) {
 			aberta = false;
 			for (uint i2 = 0; i2 < players.length(); i2++) {
@@ -34,6 +34,8 @@ class shower {
 			fechando.pause();
 			fechar.force(0);
 			fechar.pause();
+			active_showers.remove_at(idx);
+			return;
 		}
 		if (aberta && fechando.elapsed >= random(1050, 1990)) {
 			fechando.restart();
@@ -41,9 +43,6 @@ class shower {
 				if (map == players[i2].map and minx <= players[i2].x and maxx >= players[i2].x and miny <= players[i2].y and maxy >= players[i2].y and minz <= players[i2].z and maxz >= players[i2].z) {
 					players[i2].dirty -= 2.5;
 					players[i2].wet += 5.5;
-					int n = random(1, 2);
-					//if(n==1) players[i2].temperaturelevel+=random(0,1);
-					//else if(n==2) players[i2].temperaturelevel-=random(0,1);
 				}
 			}
 		}
@@ -55,6 +54,12 @@ void spawn_shower(int minx, int maxx, int miny, int maxy, int minz, int maxz, st
 }
 void remove_shower(int index) {
 	if (index > -1) {
+		for (uint i = 0; i < active_showers.length(); i++) {
+			if (@active_showers[i] == @showers[index]) {
+				active_showers.remove_at(i);
+				break;
+			}
+		}
 		@showers[index] = null;
 		showers.remove_at(index);
 	}

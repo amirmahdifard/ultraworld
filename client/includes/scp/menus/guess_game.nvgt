@@ -1,0 +1,32 @@
+namespace scp::menus {
+void guess_game() {
+	if (!admin) return;
+	custom_menu c;
+	setupmenu(c);
+	c.add("Start a new game", "start");
+	c.add("Stop the current game", "stop");
+	c.add("View current game secret (Staff only)", "info");
+	c.add("Go back", "back");
+	c.create("Guess the Number Management", true);
+	while (c.running) {
+		wait(5);
+		c.monitor();
+		mainloop();
+		string r = c.click;
+		if (r == "start") {
+			scp::actions::misc::start_guess_game();
+			break;
+		} else if (r == "stop") {
+			string reason = input("Stop Game", "Enter cancellation reason (optional):");
+			if (reason != "" && reason != "[cncel]") sendcommand("/guess stop " + reason);
+			else if (reason == "") sendcommand("/guess stop");
+			break;
+		} else if (r == "info") {
+			sendcommand("/guess info");
+			break;
+		} else if (r == "back") {
+			break;
+		}
+	}
+}
+}

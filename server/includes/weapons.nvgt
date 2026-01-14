@@ -2,6 +2,13 @@
 void weapon_e(player@p, string message) {
 	string[] parsed = string_split(message, " ", true);
 	if (parsed[0] == "fire") {
+		int map_idx = get_map_index(p.map);
+		if (map_idx > -1) {
+			if (!can_use_item_at(p.x, p.y, p.z, maps[map_idx], p.weapon_name)) {
+				send_reliable(p, "Sorry, but you cannot use " + string_replace(p.weapon_name, "_", " ", true) + " here!", 2);
+				return;
+			}
+		}
 		fireweapon(p);
 		return;
 	} else if (parsed[0] == "light_punch" || parsed[0] == "punch" || parsed[0] == "heavy_punch" || parsed[0] == "light_kick" || parsed[0] == "kick" || parsed[0] == "heavy_kick")

@@ -3038,10 +3038,12 @@ void combine(player@p, string message) {
 					if (lefthand == "hotdog" or lefthand == "hamburger" or lefthand == "cheeseburger" or lefthand == "chicken_sandwich") {
 						p.inv_add_item(lefthand, -1);
 						p.inv_add_item(lefthand + "_with_sos", 1);
+						p.inv_add_item("sos", -1);
 						send_reliable(p, "hempty 1", 0);
 					} else if (righthand == "hotdog" or righthand == "hamburger" or righthand == "cheeseburger" or righthand == "chicken_sandwich") {
 						p.inv_add_item(righthand, -1);
 						p.inv_add_item(righthand + "_with_sos", 1);
+						p.inv_add_item("sos", -1);
 						send_reliable(p, "hempty 2", 0);
 					}
 					if (lefthand == "sos")
@@ -3063,10 +3065,12 @@ void combine(player@p, string message) {
 					if (lefthand == "piece_of_hotdog" or lefthand == "piece_of_hamburger" or lefthand == "piece_of_cheeseburger" or lefthand == "piece_of_chicken_sandwich") {
 						p.inv_add_item(lefthand, -1);
 						p.inv_add_item(lefthand + "_with_sos", 1);
+						p.inv_add_item("sos", -1);
 						send_reliable(p, "hempty 1", 0);
 					} else if (righthand == "piece_of_hotdog" or righthand == "piece_of_hamburger" or righthand == "piece_of_cheeseburger" or righthand == "piece_of_chicken_sandwich") {
 						p.inv_add_item(righthand, -1);
 						p.inv_add_item(righthand + "_with_sos", 1);
+						p.inv_add_item("sos", -1);
 						send_reliable(p, "hempty 2", 0);
 					}
 					if (lefthand == "piece_of_sos")
