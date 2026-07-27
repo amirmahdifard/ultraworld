@@ -1,4 +1,4 @@
-string[] devs = {"patricus", "kannadiga"};
+string[] devs = {"example1", "example2"};
 const string sndtype = ".ogg";
 #pragma asset "rules"
 #pragma asset "readme.txt"
@@ -1328,12 +1328,11 @@ void create_char(string username, string password, string email, int gender, uin
 		f.close();
 		writeto(username, "node_id", node_id);
 		add_compid(compid, username);
-		//url_post("http://balls.com/dl/mail.php","who="+email+"&from=balls.com&name=Ultra World&sub=Welcome!&mess=Hello.\r\nThank you for creating an account on Ultra World! thank you for joining us!\r\n\r\nThis message was automated by Ultra World. Please do not reply.");
 		send_reliable(id, "createdchar", 0);
 		send_reliable(0, "play_s newchar2.ogg", 6);
 		send_reliable(0, "the player " + username + " has been created!", 2);
 	} else
-		send_reliable(id, "alreadyexists", 0);
+		send_reliable(id, "Error. Account already exist", 0);
 }
 string read_from(string name, string val) {
 	string ret;

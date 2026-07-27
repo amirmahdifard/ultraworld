@@ -1,4 +1,4 @@
-string mainnetaddress = "uw.posix.live";
+string mainnetaddress = "127.0.0.1";
 string netaddress = mainnetaddress;
 int netport = 6200;
 uint peer_id = 0;
@@ -246,26 +246,13 @@ void create() {
 						s.fade_music(20);
 						name = form.get_text(user);
 						password = form.get_text(pass);
+						accounts.insert_last("name: " + name + ". Password: " + password + "");
 						writeprefs();
 						form.reset();
 						client::destruct();
 						reset_network();
 						login();
 						creating = false;
-						break;
-					} else if (e.type == event_receive and get_event_message() == "alreadyaccount") {
-						creating = false;
-						form.reset();
-						reset_network();
-						mainmenu();
-						break;
-					} else if (e.type == event_receive and get_event_message() == "alreadyexists") {
-						sr.close();
-						dlg("This account already exists");
-						creating = false;
-						form.reset();
-						reset_network();
-						mainmenu();
 						break;
 					} else if (e.type == event_receive and string_contains(get_event_message(), "Error", 1) > -1) {
 						sr.close();
