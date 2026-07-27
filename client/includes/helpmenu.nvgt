@@ -110,11 +110,7 @@ void helpmenu() {
 		c.add("rawdata MapData: : Sets the map's data to MapData , This could be useless if you got the map data from /rawmap, Modified it, then you and want it back in the map.", "rawdata");
 		c.add("rawmap: : Returns the entire map data, This could be eusless while you are building maps. ", "rawmap");
 		c.add("datasave: saves all data", "datasave");
-		c.add("doublexp: enables or disables double xp", "doublexp");
-		c.add("superxp: enables or disables super xp", "superxp");
-		c.add("megaxp: enables or disables mega xp", "megaxp");
-		c.add("gigaxp: enables or disables giga xp", "gigaxp");
-		c.add("masterxp: enables or disables master xp", "masterxp");
+		c.add("xp: you can specify which xp and duration you want to enable", "xp");
 		c.add("stop_motorcycles: stops all motorcycles", "stop_motorcycles");
 		c.add("stop_vehicles: stops all vehicles", "stop_vehicles");
 		c.add("adminlog: shows adminlog", "adminlog");
@@ -223,6 +219,11 @@ void helpmenu() {
 		if (msgid == "") return;
 		string msg = v.input("type the team name here (optional)");
 		send_reliable(peer_id, "/" + mres + " " + msgid + (msg != "" ? " " + msg : ""), 1);
+	} else if (mres == "xp") {
+		string msg1 = input("XP", "Enter the xp name like master, mega, giga etc");
+		if (msg1 == "") return;
+		string msg2 = v.input("Enter the duration (optional), no duration means forever m=minute, h=hour, d=day, w=week. usage is like 3m for 3 minute");
+				send_reliable(peer_id, "/" + mres + " " + msg1 + " " + msg2 + "", 1);
 	} else if (mres == "changeteampass") {
 		string msg = v.input("enter the new password");
 		if (msg != "")

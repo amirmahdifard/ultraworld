@@ -16,7 +16,7 @@ class vending_machine {
 	}
 	void command(string c, int peer) {
 		string[] parsed = string_split(c, " ", false);
-		if (parsed[0] == "[SPCE]") {
+		if (parsed[0] == "a") {
 			string vlist;
 			vplay("beeplist");
 			for (uint i = 0; i < vendingitems.length(); i++)
