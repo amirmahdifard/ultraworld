@@ -1,3 +1,4 @@
+#include "helpform/*.nvgt"
 void helpmenu() {
 	custom_menu c;
 	setupmenu(c);
@@ -220,10 +221,7 @@ void helpmenu() {
 		string msg = v.input("type the team name here (optional)");
 		send_reliable(peer_id, "/" + mres + " " + msgid + (msg != "" ? " " + msg : ""), 1);
 	} else if (mres == "xp") {
-		string msg1 = input("XP", "Enter the xp name like master, mega, giga etc");
-		if (msg1 == "") return;
-		string msg2 = v.input("Enter the duration (optional), no duration means forever m=minute, h=hour, d=day, w=week. usage is like 3m for 3 minute");
-				send_reliable(peer_id, "/" + mres + " " + msg1 + " " + msg2 + "", 1);
+		xp();
 	} else if (mres == "changeteampass") {
 		string msg = v.input("enter the new password");
 		if (msg != "")

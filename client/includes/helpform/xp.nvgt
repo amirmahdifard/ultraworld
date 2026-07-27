@@ -1,0 +1,30 @@
+void xp() {
+    form.reset();
+    string xpname, xpduration;
+    form.create_window("xp", false);
+    int a = form.create_input_box("enter the &xp name like master, mega, giga etc");
+    int b = form.create_input_box("enter the &duration (optional), no duration means forever. m=minute, h=hour, d=day, w=week. usage is like 3m for 3 minute");
+    int ok = form.create_button("ok", false);
+    int can = form.create_button("cancel", false, true);
+    form.focus(a);
+
+    while (true) {
+        wait(5);
+        form.monitor(); mainloop();
+        xpname = form.get_text(a);
+        xpduration = form.get_text(b);
+        if (form.is_pressed(ok)) {
+            form.reset();
+            break;
+        } else if (form.is_pressed(can)) {
+            form.reset();
+            return;
+        }
+    }
+
+    if (xpname == "") {
+        speak("canceled");
+        return;
+    }
+    send_reliable(peer_id, "/xp " + xpname + " " + xpduration, 1);
+}
