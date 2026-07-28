@@ -871,22 +871,18 @@ void mainmenu(bool fromgame = false) {
 	}
 		else if(result=="misc:Restart the game")
 {
+writeprefs();
+wait(50);
+speak("Restarting.");
 if (!SCRIPT_COMPILED)
 {
-writeprefs();
-wait(50);
-speak("Restarting.");
 run("C:/nvgt/nvgtw.exe","uw.nvgt",false, false);
-exit();
 }
-else
+else if (SCRIPT_COMPILED)
 {
-writeprefs();
-wait(50);
-speak("Restarting.");
 run("uw.exe","",false, false);
-exit();
 }
+exit();
 		}
 	else if(result=="misc:Check for updates") {
 		s.fade_music(20);
